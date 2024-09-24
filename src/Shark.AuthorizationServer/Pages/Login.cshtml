@@ -1,0 +1,28 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "OAuth Authorization Server";
+}
+
+<div class="text-center">
+    <h1 class="display-4">OAuth Authorization Server</h1>
+    <p>Client id is <span>@Model.ClientId</span></p>
+
+    <form method="post">
+        <div class="form-group">
+            Select scopes: <br />
+            @{
+                var select = @Model.Scopes;
+                if (select != null && select.ToList().Count > 0)
+                {
+                    foreach (var item in select.ToList())
+                    {
+                        <input type="checkbox" name="selectedScopes" value="@item" @(Html.Raw(true ? "checked=\"checked\"" : "")) /> @item <br />
+                    }
+                }
+            }
+        </div>
+
+        <input type="submit" value="Login" />
+    </form>
+</div>

@@ -1,0 +1,33 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "OAuth Client";
+}
+
+<div class="text-center">
+    <h1 class="display-4">OAuth Client</h1>
+
+    <div class="form-container">
+        <form method="post" asp-page-handler="GetAuthToken">
+            <input type="submit" value="Get OAuth Token" />
+        </form>
+
+        <form method="post" asp-page-handler="GetData">
+            <input type="submit" value="Get Data from Protected Resource" />
+        </form>
+    </div>
+    <br />
+    @if (Model.Data is not null)
+    {
+        <div class="center-20">
+            @foreach (var item in Model.Data)
+            {
+                <pre>
+                    <span>@Html.DisplayFor(modelItem => item.Date):&nbsp;</span>
+                    <span>@Html.DisplayFor(modelItem => item.TemperatureC)&degC&nbsp;</span>
+                    <span>@Html.DisplayFor(modelItem => item.Summary)</span>
+                </pre>
+            }
+        </div>
+    }
+</div>
