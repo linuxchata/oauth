@@ -32,13 +32,13 @@ public class AccessTokenGeneratorService : IAccessTokenGeneratorService
         var securityAlgorithms = _configuration.SecurityAlgorithms ?? SecurityAlgorithms.HmacSha256;
         var signingCredentials = new SigningCredentials(securityKey, securityAlgorithms);
 
-        var dateTimeNow = DateTime.Now;
+        var currentTime = DateTime.UtcNow;
         var token = new JwtSecurityToken(
             issuer: _configuration.Issuer ?? "Issuer",
             audience: "audience",
             claims: claims,
-            notBefore: dateTimeNow,
-            expires: dateTimeNow.AddSeconds(_configuration.AccessTokenExpirationInSeconds),
+            notBefore: currentTime,
+            expires: currentTime.AddSeconds(_configuration.AccessTokenExpirationInSeconds),
             signingCredentials: signingCredentials
         );
 

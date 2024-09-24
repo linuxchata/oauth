@@ -7,22 +7,27 @@ namespace Shark.Sample.ProtectedResource.Controllers;
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
+    private static readonly string[] Summaries =
+    [
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+    ];
+
+    private readonly IAuthenticationService _authenticationService;
 
     private readonly ILogger<WeatherForecastController> _logger;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(
+        IAuthenticationService authenticationService,
+        ILogger<WeatherForecastController> logger)
     {
+        _authenticationService = authenticationService;
         _logger = logger;
     }
 
     [HttpGet]
     public IActionResult Get()
     {
-        if (!AuthenticationService.IsAuthenticated(Request.Headers))
+        if (!_authenticationService.IsAuthenticated(Request.Headers))
         {
             return new StatusCodeResult((int)StatusCodes.Status401Unauthorized);
         }
