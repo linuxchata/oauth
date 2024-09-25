@@ -5,52 +5,61 @@ using Shark.Sample.ProtectedResource.Models;
 
 namespace Shark.Sample.ProtectedResource.Services;
 
-public sealed class AuthenticationService : IAuthenticationService
+public sealed class BearerTokenHandlingService : IBearerTokenHandlingService
 {
     private const string HeaderKeyName = "Authorization";
     private const string BearerTokenName = "Bearer";
 
-    private readonly AuthorizationClientConfiguration _configuration;
+    private readonly BearerTokenAuthenticationOptions _configuration;
 
-    public AuthenticationService(IOptions<AuthorizationClientConfiguration> options)
+    public BearerTokenHandlingService(IOptions<BearerTokenAuthenticationOptions> options)
     {
         _configuration = options.Value;
     }
 
-    public bool IsAuthenticated(IHeaderDictionary headers)
+    public string? GetAccessToken(IHeaderDictionary headers)
     {
         if (!headers.TryGetValue(HeaderKeyName, out StringValues headerValue))
         {
-            return false;
-        };
+            return null;
+        }
 
         if (headerValue == StringValues.Empty)
         {
-            return false;
+            return null;
         }
 
         var authorization = headerValue.ToString();
 
         if (!authorization.StartsWith(BearerTokenName, StringComparison.OrdinalIgnoreCase))
         {
-            return false;
+            return null;
         }
 
         var startIndexOfAccessToken = authorization.IndexOf(BearerTokenName) + 1;
         var accessToken = authorization.Substring(startIndexOfAccessToken + BearerTokenName.Length);
 
+        return accessToken;
+    }
+
+    public bool ParseAccessToken(string accessToken, out TokenIdentity tokenIdentity)
+    {
+        tokenIdentity = new TokenIdentity();
+
         var handler = new JwtSecurityTokenHandler();
         if (handler.CanReadToken(accessToken))
         {
             var jwtToken = handler.ReadJwtToken(accessToken);
-            return ValidateAccessToken(jwtToken);
+            return ValidateAccessToken(jwtToken, out tokenIdentity);
         }
 
         return true;
     }
 
-    private bool ValidateAccessToken(JwtSecurityToken jwtToken)
+    private bool ValidateAccessToken(JwtSecurityToken jwtToken, out TokenIdentity tokenIdentity)
     {
+        tokenIdentity = new TokenIdentity();
+
         // Validate subject
         var userId = jwtToken.Subject;
         if (string.IsNullOrWhiteSpace(userId))
@@ -85,6 +94,9 @@ public sealed class AuthenticationService : IAuthenticationService
 
         var claims = jwtToken.Claims;
         var scopes = claims.FirstOrDefault(c => c.Type == "scope")?.Value?.Split(' ');
+
+        tokenIdentity.UserId = userId;
+        tokenIdentity.Scopes = scopes!;
 
         return true;
     }
