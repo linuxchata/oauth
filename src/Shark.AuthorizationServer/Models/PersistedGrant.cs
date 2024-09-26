@@ -6,7 +6,7 @@ public record class PersistedGrant
 
     public required string ClientId { get; set; }
 
-    public string? Scope { get; set; }
+    public string[]? Scopes { get; set; }
 
     public required string Value { get; set; }
 

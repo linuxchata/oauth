@@ -64,7 +64,7 @@ public sealed class TokenApplicationService(
             }
 
             // Validate grant scopes
-            var allowedScopes = codePersistedGrant.Scope?.Split(' ').ToHashSet() ?? [];
+            var allowedScopes = codePersistedGrant.Scopes?.ToHashSet() ?? [];
             foreach (var scope in request.Scopes)
             {
                 if (!allowedScopes.Contains(scope))

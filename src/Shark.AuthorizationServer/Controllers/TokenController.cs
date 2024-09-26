@@ -18,11 +18,14 @@ public class TokenController(ITokenApplicationService tokenApplicationService) :
     {
         var internalResponse = _tokenApplicationService.Execute(request.ToInternalRequest());
 
-        return internalResponse switch
+        switch (internalResponse)
         {
-            TokenInternalBadRequestResponse badRequestResponse => BadRequest(badRequestResponse.Message),
-            TokenInternalResponse response => Ok(response.Response),
-            _ => new StatusCodeResult((int)HttpStatusCode.NotImplemented),
-        };
+            case TokenInternalBadRequestResponse badRequestResponse:
+                return BadRequest(badRequestResponse.Message);
+            case TokenInternalResponse response:
+                return Ok(response.Response);
+            default:
+                return new StatusCodeResult((int)HttpStatusCode.NotImplemented);
+        }
     }
 }

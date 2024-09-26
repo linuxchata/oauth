@@ -6,11 +6,9 @@ namespace Shark.Sample.Client.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class CallbackController(
-    ICallBackApplicationService callBackApplicationService,
-    ILogger<CallbackController> logger) : ControllerBase
+    ICallBackApplicationService callBackApplicationService) : ControllerBase
 {
     private readonly ICallBackApplicationService _callBackApplicationService = callBackApplicationService;
-    private readonly ILogger<CallbackController> _logger = logger;
 
     [HttpGet]
     public async Task<IActionResult> Callback(

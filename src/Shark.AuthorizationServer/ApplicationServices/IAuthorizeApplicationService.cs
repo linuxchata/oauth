@@ -1,8 +1,9 @@
 ﻿using Shark.AuthorizationServer.Requests;
+using Shark.AuthorizationServer.Response;
 
 namespace Shark.AuthorizationServer.ApplicationServices;
 
 public interface IAuthorizeApplicationService
 {
-    void Execute(AuthorizeInternalRequest authorizeInternalRequest);
+    AuthorizeInternalBaseResponse Execute(AuthorizeInternalRequest authorizeInternalRequest);
 }

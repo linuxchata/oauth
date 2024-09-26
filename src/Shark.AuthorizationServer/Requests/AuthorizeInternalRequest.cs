@@ -2,11 +2,13 @@
 
 public sealed class AuthorizeInternalRequest
 {
-    public string ClientId { get; set; } = null!;
+    public required string ResponseType { get; set; }
 
-    public string Scope { get; set; } = null!;
+    public required string ClientId { get; set; }
 
-    public string State { get; set; } = null!;
+    public required string[] Scopes { get; set; }
 
-    public string RedirectUrl { get; set; } = null!;
+    public required string State { get; set; }
+
+    public required string RedirectUrl { get; set; }
 }

@@ -10,18 +10,31 @@
 
     <form method="post">
         <div class="form-group">
-            Select scopes: <br />
+            @Html.LabelFor(m => @Model.UserName, "Name")
+            @Html.TextBoxFor(m =>
+                @Model.UserName,
+                new { @class = "form-input", placeholder = "Enter your name", required="required"})
+        </div>
+
+        <br />
+
+        <div class="form-group">
+            Select scopes:
             @{
                 var select = @Model.Scopes;
                 if (select != null && select.ToList().Count > 0)
                 {
                     foreach (var item in select.ToList())
                     {
-                        <input type="checkbox" name="selectedScopes" value="@item" @(Html.Raw(true ? "checked=\"checked\"" : "")) /> @item <br />
+                        <label>
+                            <input type="checkbox" name="selectedScopes" value="@item" @(Html.Raw(true ? "checked=\"checked\"" : "")) /> @item
+                        </label>
                     }
                 }
             }
         </div>
+
+        <br />
 
         <input type="submit" value="Login" />
     </form>
