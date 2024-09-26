@@ -44,6 +44,7 @@ public sealed class SecurityService : ISecurityService
 
     public async Task<SecureToken> RequestAccessToken(
         string code,
+        string scope,
         string actualState,
         string expectedState)
     {
@@ -64,13 +65,14 @@ public sealed class SecurityService : ISecurityService
             new("client_secret", _clientSecret),
             new("grant_type", AuthorizationCodeGrantType),
             new("code", code),
+            new("scope", scope),
             new("redirect_url", ClientRedirectUrl),
         };
 
         return await RequestAccessTokenInternal(formData);
     }
 
-    public async Task<SecureToken> RequestAccessToken(string refreshToken)
+    public async Task<SecureToken> RequestAccessToken(string refreshToken, string scope)
     {
         if (string.IsNullOrWhiteSpace(refreshToken))
         {
@@ -82,6 +84,7 @@ public sealed class SecurityService : ISecurityService
             new("client_id", _clientId),
             new("client_secret", _clientSecret),
             new("grant_type", RefreshTokenGrantType),
+            new("scope", scope),
             new("refresh_token", refreshToken),
             new("redirect_url", ClientRedirectUrl),
         };

@@ -69,7 +69,7 @@ public sealed class TokenApplicationService : ITokenApplicationService
                 request.Code);
 
             // Generate bearer token
-            var token = GenerateAndStoreBearerToken(request.ClientId);
+            var token = GenerateAndStoreBearerToken(request.ClientId, request.Scopes);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
         else if (string.Equals(request.GrantType, RefreshTokenGrantType, StringComparison.Ordinal))
@@ -91,16 +91,17 @@ public sealed class TokenApplicationService : ITokenApplicationService
                 request.RefreshToken);
 
             // Generate bearer token
-            var token = GenerateAndStoreBearerToken(request.ClientId);
+            var token = GenerateAndStoreBearerToken(request.ClientId, request.Scopes);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
 
         return new TokenInternalBadRequestResponse("Invalid grant_type");
     }
 
-    private TokenResponse GenerateAndStoreBearerToken(string clientId)
+    private TokenResponse GenerateAndStoreBearerToken(string clientId, string[] scopes)
     {
-        var accessToken = _accessTokenGeneratorService.Generate(Guid.NewGuid().ToString(), ["read", "write"]);
+        var userId = Guid.NewGuid().ToString();
+        var accessToken = _accessTokenGeneratorService.Generate(userId, scopes);
         var refreshToken = _stringGeneratorService.GenerateRefreshToken();
 
         var token = new TokenResponse

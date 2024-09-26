@@ -7,14 +7,9 @@ namespace Shark.AuthorizationServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthorizeController : ControllerBase
+public class AuthorizeController(IAuthorizeApplicationService authorizeApplicationService) : ControllerBase
 {
-    private readonly IAuthorizeApplicationService _authorizeApplicationService;
-
-    public AuthorizeController(IAuthorizeApplicationService authorizeApplicationService)
-    {
-        _authorizeApplicationService = authorizeApplicationService;
-    }
+    private readonly IAuthorizeApplicationService _authorizeApplicationService = authorizeApplicationService;
 
     [HttpGet]
     public IActionResult Get(

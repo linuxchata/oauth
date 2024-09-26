@@ -2,11 +2,10 @@
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
-using Shark.Sample.ProtectedResource.Authentication;
 using Shark.Sample.ProtectedResource.Models;
 using Shark.Sample.ProtectedResource.Services;
 
-namespace Taxi.WebApi.Authentication;
+namespace Shark.Sample.ProtectedResource.Authentication;
 
 public class BearerTokenAuthenticationHandler(
     IBearerTokenHandlingService bearerTokenHandlingService,
@@ -14,15 +13,17 @@ public class BearerTokenAuthenticationHandler(
     ILoggerFactory logger,
     UrlEncoder encoder) : AuthenticationHandler<BearerTokenAuthenticationOptions>(options, logger, encoder)
 {
+    private readonly IBearerTokenHandlingService _bearerTokenHandlingService = bearerTokenHandlingService;
+
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var accessToken = bearerTokenHandlingService.GetAccessToken(Request.Headers);
+        var accessToken = _bearerTokenHandlingService.GetAccessToken(Request.Headers);
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
         }
 
-        if (!bearerTokenHandlingService.ParseAccessToken(accessToken, out TokenIdentity tokenIdentity))
+        if (!_bearerTokenHandlingService.ParseAccessToken(accessToken, out TokenIdentity tokenIdentity))
         {
             return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
         }
@@ -34,12 +35,16 @@ public class BearerTokenAuthenticationHandler(
 
     private ClaimsPrincipal CreateClaimsPrincipal(TokenIdentity tokenIdentity)
     {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.Name, tokenIdentity.UserId),
-        };
+        var claims = new List<Claim>();
 
-        var scopeClaims = tokenIdentity.Scopes.Select(s => new Claim(ClaimType.Scope, s));
+        // Add user identifier claim
+        if (!string.IsNullOrWhiteSpace(tokenIdentity.UserId))
+        {
+            claims.Add(new(ClaimType.Subject, tokenIdentity.UserId));
+        }
+
+        // Add scopes claims
+        var scopeClaims = tokenIdentity.Scopes?.Select(s => new Claim(ClaimType.Scope, s)) ?? [];
         claims.AddRange(scopeClaims);
 
         var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);

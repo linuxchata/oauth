@@ -8,6 +8,8 @@ public sealed class TokenInternalRequest
 
     public string GrantType { get; set; } = null!;
 
+    public string[] Scopes { get; set; } = null!;
+
     public string? Code { get; set; }
 
     public string? RefreshToken { get; set; }

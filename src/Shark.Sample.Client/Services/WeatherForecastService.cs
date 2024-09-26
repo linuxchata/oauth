@@ -64,7 +64,7 @@ public sealed class WeatherForecastService : IWeatherForecastService
             throw new ArgumentException("Missing access token and refresh token");
         }
 
-        var secureToken = await _securityService.RequestAccessToken(refreshToken!);
+        var secureToken = await _securityService.RequestAccessToken(refreshToken!, null!);
         _securityStore.Add(secureToken);
         return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
     }

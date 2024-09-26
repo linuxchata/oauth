@@ -8,6 +8,8 @@ public sealed class TokenRequest
 
     public string grant_type { get; set; } = null!;
 
+    public string scope { get; set; } = null!;
+
     public string? code { get; set; }
 
     public string? refresh_token { get; set; }

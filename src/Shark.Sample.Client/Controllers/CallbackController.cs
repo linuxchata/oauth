@@ -19,9 +19,12 @@ public class CallbackController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Callback([FromQuery] string code, [FromQuery] string state)
+    public async Task<IActionResult> Callback(
+        [FromQuery] string code,
+        [FromQuery] string scope,
+        [FromQuery] string state)
     {
-        await _callBackApplicationService.Execute(code, state);
+        await _callBackApplicationService.Execute(code, scope, state);
 
         return RedirectToPage("/Index");
     }

@@ -7,20 +7,14 @@ namespace Shark.AuthorizationServer.Pages;
 public class LoginModel : PageModel
 {
     private readonly IClientRepository _clientRepository;
-    private readonly IRedirectionService _redirectionService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<LoginModel> _logger;
+    private readonly ILoginService _loginService;
 
     public LoginModel(
         IClientRepository clientRepository,
-        IRedirectionService redirectionService,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<LoginModel> logger)
+        ILoginService loginService)
     {
         _clientRepository = clientRepository;
-        _redirectionService = redirectionService;
-        _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
+        _loginService = loginService;
     }
 
     public string? ClientId { get; private set; }
@@ -35,17 +29,8 @@ public class LoginModel : PageModel
         Scopes = client?.AllowedScopes.ToList() ?? [];
     }
 
-    public void OnPost(string code, string[] selectedScopes, string redirectBaseUrl, string state)
+    public void OnPost(string redirectBaseUrl, string code, string[] selectedScopes, string state)
     {
-        if (!string.IsNullOrEmpty(redirectBaseUrl))
-        {
-            var redirectUrl = _redirectionService.BuildRedirectUrl(redirectBaseUrl, code, state);
-            RedirectInternal(redirectUrl);
-        }
-    }
-
-    private void RedirectInternal(string redirectUrl)
-    {
-        _httpContextAccessor.HttpContext?.Response.Redirect(redirectUrl);
+        _loginService.PostLogin(redirectBaseUrl, code, selectedScopes, state);
     }
 }
