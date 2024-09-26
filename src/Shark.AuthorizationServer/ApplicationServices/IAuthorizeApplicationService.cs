@@ -1,8 +1,8 @@
-﻿using Shark.AuthorizationServer.Response;
+﻿using Shark.AuthorizationServer.Requests;
 
 namespace Shark.AuthorizationServer.ApplicationServices;
 
 public interface IAuthorizeApplicationService
 {
-    AuthorizeInternalBaseResponse Execute(string clientId, string redirect_url);
+    void Execute(AuthorizeInternalRequest authorizeInternalRequest);
 }

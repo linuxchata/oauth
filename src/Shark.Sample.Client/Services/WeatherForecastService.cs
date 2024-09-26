@@ -4,24 +4,17 @@ using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Services;
 
-public sealed class WeatherForecastService : IWeatherForecastService
+public sealed class WeatherForecastService(
+    IHttpClientFactory httpClientFactory,
+    ISecureTokenStore securityStore,
+    ISecurityService securityService) : IWeatherForecastService
 {
     private const string Endpoint = "http://localhost:9002/weatherforecast";
     private const string AuthorizationHeaderName = "Authorization";
 
-    private readonly ISecureTokenStore _securityStore;
-    private readonly ISecurityService _securityService;
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public WeatherForecastService(
-        ISecureTokenStore securityStore,
-        ISecurityService securityService,
-        IHttpClientFactory httpClientFactory)
-    {
-        _securityStore = securityStore;
-        _securityService = securityService;
-        _httpClientFactory = httpClientFactory;
-    }
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly ISecureTokenStore _securityStore = securityStore;
+    private readonly ISecurityService _securityService = securityService;
 
     public async Task<List<WeatherForecast>> Get()
     {

@@ -9,14 +9,9 @@ namespace Shark.AuthorizationServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TokenController : ControllerBase
+public class TokenController(ITokenApplicationService tokenApplicationService) : ControllerBase
 {
-    private readonly ITokenApplicationService _tokenApplicationService;
-
-    public TokenController(ITokenApplicationService tokenApplicationService)
-    {
-        _tokenApplicationService = tokenApplicationService;
-    }
+    private readonly ITokenApplicationService _tokenApplicationService = tokenApplicationService;
 
     [HttpPost]
     public IActionResult Post([FromForm] TokenRequest request)

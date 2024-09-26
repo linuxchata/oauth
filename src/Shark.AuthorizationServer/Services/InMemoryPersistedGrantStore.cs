@@ -4,14 +4,9 @@ using Shark.AuthorizationServer.Models;
 
 namespace Shark.AuthorizationServer.Services;
 
-public sealed class InMemoryPersistedGrantStore : IPersistedGrantStore
+public sealed class InMemoryPersistedGrantStore(IDistributedCache cache) : IPersistedGrantStore
 {
-    private readonly IDistributedCache _cache;
-
-    public InMemoryPersistedGrantStore(IDistributedCache cache)
-    {
-        _cache = cache;
-    }
+    private readonly IDistributedCache _cache = cache;
 
     public PersistedGrant? Get(string? value)
     {

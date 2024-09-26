@@ -1,6 +1,6 @@
 ﻿namespace Shark.Sample.ProtectedResource.Authentication;
 
-public class Scope
+public sealed class Scope
 {
     public const string Read = "read";
 

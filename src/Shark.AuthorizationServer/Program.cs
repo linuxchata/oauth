@@ -15,7 +15,6 @@ builder.Services.Configure<AuthorizationServerConfiguration>(
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
 builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>();
-builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
 builder.Services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
 builder.Services.AddTransient<IRedirectionService, RedirectionService>();

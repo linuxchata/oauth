@@ -2,21 +2,14 @@
 
 namespace Shark.Sample.Client.ApplicationServices;
 
-public sealed class CallBackApplicationService : ICallBackApplicationService
+public sealed class CallBackApplicationService(
+    ISecurityService securityService,
+    IStateStore stateStore,
+    ISecureTokenStore securityStore) : ICallBackApplicationService
 {
-    private readonly ISecurityService _securityService;
-    private readonly IStateStore _stateStore;
-    private readonly ISecureTokenStore _securityStore;
-
-    public CallBackApplicationService(
-        ISecurityService securityService,
-        IStateStore stateStore,
-        ISecureTokenStore securityStore)
-    {
-        _securityService = securityService;
-        _stateStore = stateStore;
-        _securityStore = securityStore;
-    }
+    private readonly ISecurityService _securityService = securityService;
+    private readonly IStateStore _stateStore = stateStore;
+    private readonly ISecureTokenStore _securityStore = securityStore;
 
     public async Task Execute(string code, string scope, string state)
     {

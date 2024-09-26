@@ -8,35 +8,24 @@ using Shark.AuthorizationServer.Services;
 
 namespace Shark.AuthorizationServer.ApplicationServices;
 
-public sealed class TokenApplicationService : ITokenApplicationService
+public sealed class TokenApplicationService(
+    IClientRepository clientRepository,
+    IStringGeneratorService stringGeneratorService,
+    IAccessTokenGeneratorService accessTokenGeneratorService,
+    IPersistedGrantStore persistedGrantStore,
+    IOptions<AuthorizationServerConfiguration> options,
+    ILogger<TokenApplicationService> logger) : ITokenApplicationService
 {
     private const string AuthorizationCodeGrantType = "authorization_code";
     private const string RefreshTokenGrantType = "refresh_token";
-
     private const string DefaultAccessTokenType = "Bearer";
 
-    private readonly IClientRepository _clientRepository;
-    private readonly IStringGeneratorService _stringGeneratorService;
-    private readonly IAccessTokenGeneratorService _accessTokenGeneratorService;
-    private readonly IPersistedGrantStore _persistedGrantStore;
-    private readonly AuthorizationServerConfiguration _configuration;
-    private readonly ILogger<TokenApplicationService> _logger;
-
-    public TokenApplicationService(
-        IClientRepository clientRepository,
-        IStringGeneratorService stringGeneratorService,
-        IAccessTokenGeneratorService accessTokenGeneratorService,
-        IPersistedGrantStore persistedGrantStore,
-        IOptions<AuthorizationServerConfiguration> options,
-        ILogger<TokenApplicationService> logger)
-    {
-        _clientRepository = clientRepository;
-        _stringGeneratorService = stringGeneratorService;
-        _accessTokenGeneratorService = accessTokenGeneratorService;
-        _persistedGrantStore = persistedGrantStore;
-        _configuration = options.Value;
-        _logger = logger;
-    }
+    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
+    private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
+    private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
+    private readonly AuthorizationServerConfiguration _configuration = options.Value;
+    private readonly ILogger<TokenApplicationService> _logger = logger;
 
     public TokenInternalBaseResponse Execute(TokenInternalRequest request)
     {
@@ -49,7 +38,16 @@ public sealed class TokenApplicationService : ITokenApplicationService
             return new TokenInternalBadRequestResponse("Invalid client");
         }
 
-        // Validate grant type
+        // Validate scopes against client's scopes
+        var allowedClientScopes = client.AllowedScopes.ToHashSet();
+        foreach (var scope in request.Scopes)
+        {
+            if (!allowedClientScopes.Contains(scope))
+            {
+                return new TokenInternalBadRequestResponse("Invalid client");
+            }
+        }
+
         if (string.Equals(request.GrantType, AuthorizationCodeGrantType, StringComparison.Ordinal))
         {
             // Validate grant
@@ -59,9 +57,20 @@ public sealed class TokenApplicationService : ITokenApplicationService
                 return new TokenInternalBadRequestResponse("Invalid grant");
             }
 
+            // Validate grant client
             if (!string.Equals(codePersistedGrant.ClientId, request.ClientId, StringComparison.Ordinal))
             {
                 return new TokenInternalBadRequestResponse("Invalid grant");
+            }
+
+            // Validate grant scopes
+            var allowedScopes = codePersistedGrant.Scope?.Split(' ').ToHashSet() ?? [];
+            foreach (var scope in request.Scopes)
+            {
+                if (!allowedScopes.Contains(scope))
+                {
+                    return new TokenInternalBadRequestResponse("Invalid client");
+                }
             }
 
             _logger.LogInformation(
@@ -81,6 +90,7 @@ public sealed class TokenApplicationService : ITokenApplicationService
                 return new TokenInternalBadRequestResponse("Invalid grant");
             }
 
+            // Validate grant client
             if (!string.Equals(refreshTokenPersistedGrant.ClientId, request.ClientId, StringComparison.Ordinal))
             {
                 return new TokenInternalBadRequestResponse("Invalid grant");

@@ -6,7 +6,7 @@ public sealed class BearerTokenAuthenticationOptions : AuthenticationSchemeOptio
 {
     public const string Name = nameof(BearerTokenAuthenticationOptions);
 
-    public string Issuer { get; set; }
+    public string Issuer { get; set; } = null!;
 
-    public string Audience { get; set; }
+    public string Audience { get; set; } = null!;
 }

@@ -1,21 +1,18 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Shark.Sample.ProtectedResource.Authentication;
 using Shark.Sample.ProtectedResource.Models;
 
 namespace Shark.Sample.ProtectedResource.Services;
 
-public sealed class BearerTokenHandlingService : IBearerTokenHandlingService
+public sealed class BearerTokenHandlingService(
+    IOptions<BearerTokenAuthenticationOptions> options) : IBearerTokenHandlingService
 {
     private const string HeaderKeyName = "Authorization";
     private const string BearerTokenName = "Bearer";
 
-    private readonly BearerTokenAuthenticationOptions _configuration;
-
-    public BearerTokenHandlingService(IOptions<BearerTokenAuthenticationOptions> options)
-    {
-        _configuration = options.Value;
-    }
+    private readonly BearerTokenAuthenticationOptions _configuration = options.Value;
 
     public string? GetAccessToken(IHeaderDictionary headers)
     {
@@ -93,7 +90,7 @@ public sealed class BearerTokenHandlingService : IBearerTokenHandlingService
         }
 
         var claims = jwtToken.Claims;
-        var scopes = claims.FirstOrDefault(c => c.Type == "scope")?.Value?.Split(' ');
+        var scopes = claims.FirstOrDefault(c => c.Type == ClaimType.Scope)?.Value?.Split(' ');
 
         tokenIdentity.UserId = userId;
         tokenIdentity.Scopes = scopes!;

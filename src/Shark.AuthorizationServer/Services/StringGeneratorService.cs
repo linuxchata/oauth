@@ -3,7 +3,6 @@
 public sealed class StringGeneratorService : IStringGeneratorService
 {
     private const string AuthorizationCodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
     private const string RefreshTokenChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private static readonly Random random = new();

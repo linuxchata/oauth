@@ -4,7 +4,9 @@ using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Services;
 
-public sealed class SecurityService : ISecurityService
+public sealed class SecurityService(
+    IHttpClientFactory httpClientFactory,
+    ILogger<SecurityService> logger) : ISecurityService
 {
     private const string ResponseType = "code";
     private const string AuthorizationCodeGrantType = "authorization_code";
@@ -15,20 +17,10 @@ public sealed class SecurityService : ISecurityService
     private const string ClientCallbackEndpoint = "http://localhost:9001/callback";
     private const string ClientRedirectUrl = "http://localhost:9001";
 
-    private readonly string _clientId;
-    private readonly string _clientSecret;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<SecurityService> _logger;
-
-    public SecurityService(
-        IHttpClientFactory httpClientFactory,
-        ILogger<SecurityService> logger)
-    {
-        _clientId = "client-1";
-        _clientSecret = "client-secret-01";
-        _httpClientFactory = httpClientFactory;
-        _logger = logger;
-    }
+    private readonly string _clientId = "client-1";
+    private readonly string _clientSecret = "client-secret-01";
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly ILogger<SecurityService> _logger = logger;
 
     public string BuildAuthorizeUrl(string state)
     {

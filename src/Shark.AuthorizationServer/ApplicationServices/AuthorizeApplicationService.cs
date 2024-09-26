@@ -1,47 +1,61 @@
 ﻿using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
-using Shark.AuthorizationServer.Response;
+using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Services;
 
 namespace Shark.AuthorizationServer.ApplicationServices;
 
-public sealed class AuthorizeApplicationService : IAuthorizeApplicationService
+public sealed class AuthorizeApplicationService(
+    IClientRepository clientRepository,
+    IStringGeneratorService stringGeneratorService,
+    IRedirectionService redirectionService,
+    IHttpContextAccessor httpContextAccessor,
+    IPersistedGrantStore persistedGrantStore) : IAuthorizeApplicationService
 {
     private const string AuthorizationCodeGrantType = "authorization_code";
     private const int AuthorizationCodeExpirationInSeconds = 30;
 
-    private readonly IClientRepository _clientRepository;
-    private readonly IStringGeneratorService _stringGeneratorService;
-    private readonly IPersistedGrantStore _persistedGrantStore;
+    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
+    private readonly IRedirectionService _redirectionService = redirectionService;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
 
-    public AuthorizeApplicationService(
-        IClientRepository clientRepository,
-        IStringGeneratorService stringGeneratorService,
-        IPersistedGrantStore persistedGrantStore)
+    public void Execute(AuthorizeInternalRequest request)
     {
-        _clientRepository = clientRepository;
-        _stringGeneratorService = stringGeneratorService;
-        _persistedGrantStore = persistedGrantStore;
-    }
-
-    public AuthorizeInternalBaseResponse Execute(string clientId, string redirectUrl)
-    {
-        var client = _clientRepository.GetById(clientId);
-        if (client is null || !client.RedirectUris.Contains(redirectUrl))
+        var client = _clientRepository.GetById(request.ClientId);
+        if (client is null || !client.RedirectUris.Contains(request.RedirectUrl))
         {
-            return new AuthorizeInternalBadRequestResponse("Invalid client");
+            throw new ArgumentException("Invalid client");
+        }
+
+        var allowedClientScopes = client.AllowedScopes.ToHashSet();
+        var scopes = request.Scope?.Split(' ') ?? [];
+        foreach (var scope in scopes)
+        {
+            if (!allowedClientScopes.Contains(scope))
+            {
+                throw new ArgumentException("Invalid client");
+            }
         }
 
         var code = _stringGeneratorService.GenerateCode();
         var persistedGrant = new PersistedGrant
         {
             Type = AuthorizationCodeGrantType,
-            ClientId = clientId,
+            ClientId = request.ClientId,
+            Scope = request.Scope,
             Value = code,
             ExpiredIn = AuthorizationCodeExpirationInSeconds,
         };
         _persistedGrantStore.Add(persistedGrant);
 
-        return new AuthorizeInternalResponse(code);
+        var redirectUrl = _redirectionService.BuildRedirectUrl(request.RedirectUrl, code, request.Scope, request.State);
+        RedirectInternal(redirectUrl);
+    }
+
+    private void RedirectInternal(string redirectUrl)
+    {
+        _httpContextAccessor.HttpContext?.Response.Redirect(redirectUrl);
     }
 }

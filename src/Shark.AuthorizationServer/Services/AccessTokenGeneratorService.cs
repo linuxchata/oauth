@@ -7,14 +7,10 @@ using Shark.AuthorizationServer.Models;
 
 namespace Shark.AuthorizationServer.Services;
 
-public class AccessTokenGeneratorService : IAccessTokenGeneratorService
+public class AccessTokenGeneratorService(
+    IOptions<AuthorizationServerConfiguration> options) : IAccessTokenGeneratorService
 {
-    private readonly AuthorizationServerConfiguration _configuration;
-
-    public AccessTokenGeneratorService(IOptions<AuthorizationServerConfiguration> options)
-    {
-        _configuration = options.Value;
-    }
+    private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
     public string Generate(string userId, string[] scopes)
     {
