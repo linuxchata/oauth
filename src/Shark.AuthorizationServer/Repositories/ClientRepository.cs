@@ -4,8 +4,13 @@ namespace Shark.AuthorizationServer.Repositories;
 
 public sealed class ClientRepository : IClientRepository
 {
-    public Models.Client? GetById(string id)
+    public Models.Client? GetById(string? id)
     {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return null;
+        }
+
         using var streamReader = new StreamReader("Data/clients.json");
         var clients = streamReader.ReadToEnd();
         var deserializedClients = JsonConvert.DeserializeObject<List<Models.Client>>(clients);

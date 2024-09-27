@@ -1,15 +1,18 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shark.AuthorizationServer.ApplicationServices;
+using Shark.AuthorizationServer.Helpers;
 using Shark.AuthorizationServer.Repositories;
+using Shark.AuthorizationServer.Services;
 
 namespace Shark.AuthorizationServer.Pages;
 
 public class LoginModel(
     IClientRepository clientRepository,
-    IAuthorizeApplicationService authorizeApplicationService) : PageModel
+    ILoginService loginService,
+    IRedirectionService redirectionService) : PageModel
 {
     private readonly IClientRepository _clientRepository = clientRepository;
-    private readonly IAuthorizeApplicationService _authorizeApplicationService = authorizeApplicationService;
+    private readonly ILoginService _loginService = loginService;
+    private readonly IRedirectionService _redirectionService = redirectionService;
 
     public string? ClientId { get; private set; }
 
@@ -17,16 +20,20 @@ public class LoginModel(
 
     public string? UserName { get; set; }
 
-    public void OnGet(string clientId)
+    public void OnGet(string returnUrl)
     {
-        ClientId = clientId;
+        ClientId = _redirectionService.GetClientId(returnUrl);
 
         var client = _clientRepository.GetById(ClientId);
         Scopes = client?.AllowedScopes.ToList() ?? [];
     }
 
-    public void OnPost(string clientId, string userName, string[] selectedScopes, string state, string redirectBaseUrl)
+    public async Task OnPost(string returnUrl, string userName, string[] selectedScopes)
     {
-        // Create authentication session
+        await _loginService.SignIn(userName, selectedScopes);
+
+        var authorizationServerUri = HttpContext.Request.GetUri();
+        var authorizeUrl = _redirectionService.BuildAuthorizeUrl(authorizationServerUri, returnUrl, selectedScopes);
+        HttpContext.Response.Redirect(authorizeUrl);
     }
 }

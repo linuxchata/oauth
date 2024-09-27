@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.ApplicationServices;
 using Shark.AuthorizationServer.Requests;
@@ -15,6 +16,7 @@ public class AuthorizeController(
     private readonly IAuthorizeApplicationService _authorizeApplicationService = authorizeApplicationService;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
+    [Authorize]
     [HttpGet]
     public IActionResult Get(
         [FromQuery] string response_type,
@@ -40,7 +42,7 @@ public class AuthorizeController(
                 return BadRequest(badRequestResponse.Message);
             case AuthorizeInternalResponse response:
                 _httpContextAccessor.HttpContext?.Response.Redirect(response.RedirectUrl);
-                return Ok();
+                return new StatusCodeResult((int)HttpStatusCode.Redirect);
             default:
                 return new StatusCodeResult((int)HttpStatusCode.NotImplemented);
         }

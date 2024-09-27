@@ -26,8 +26,8 @@ public class IndexModel(
         var state = Guid.NewGuid().ToString("N").ToLower();
         _stateStore.Add(state);
 
-        var redirectUrl = _securityService.BuildAuthorizeUrl(state);
-        RedirectInternal(redirectUrl);
+        var loginPageUrl = _securityService.BuildLoginPageUrl(state);
+        RedirectInternal(loginPageUrl);
     }
 
     public async Task OnPostGetData()

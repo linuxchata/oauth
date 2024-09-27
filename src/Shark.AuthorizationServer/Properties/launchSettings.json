@@ -4,7 +4,7 @@
     "Shark.AuthorizationServer": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:9000",
       "environmentVariables": {

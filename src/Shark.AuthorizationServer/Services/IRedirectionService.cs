@@ -2,5 +2,9 @@
 
 public interface IRedirectionService
 {
-    string BuildRedirectUrl(string redirectUrl, string code, string[] scopes, string state);
+    string? GetClientId(string returnUrl);
+
+    string BuildAuthorizeUrl(string authorizationServerUri, string returnUrl, string[] scopes);
+
+    string BuildClientCallbackUrl(string redirectUrl, string code, string[] scopes, string state);
 }

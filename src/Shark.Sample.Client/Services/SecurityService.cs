@@ -12,7 +12,8 @@ public sealed class SecurityService(
     private const string AuthorizationCodeGrantType = "authorization_code";
     private const string RefreshTokenGrantType = "refresh_token";
 
-    private const string AuthorizeEndpoint = "http://localhost:9000/authorize";
+    private const string LoginPage = "http://localhost:9000/login";
+    private const string AuthorizeEndpoint = "authorize";
     private const string TokenEndpoint = "http://localhost:9000/token";
     private const string ClientCallbackEndpoint = "http://localhost:9001/callback";
     private const string ClientRedirectUrl = "http://localhost:9001";
@@ -22,16 +23,22 @@ public sealed class SecurityService(
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ILogger<SecurityService> _logger = logger;
 
-    public string BuildAuthorizeUrl(string state)
+    public string BuildLoginPageUrl(string state)
     {
-        var uriBuilder = new UriBuilder(AuthorizeEndpoint);
-        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-        query["response_type"] = ResponseType;
-        query["client_id"] = _clientId;
-        query["redirect_url"] = ClientCallbackEndpoint;
-        query["state"] = state;
-        uriBuilder.Query = query.ToString();
-        return uriBuilder.ToString();
+        var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpoint);
+        var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
+        returnUrlBuilderQuery["response_type"] = ResponseType;
+        returnUrlBuilderQuery["client_id"] = _clientId;
+        returnUrlBuilderQuery["redirect_url"] = ClientCallbackEndpoint;
+        returnUrlBuilderQuery["state"] = state;
+        returnUrlBuilder.Query = returnUrlBuilderQuery.ToString();
+        var returnUrl = returnUrlBuilder.ToString();
+
+        var loginPageUriBuilder = new UriBuilder(LoginPage);
+        var query = HttpUtility.ParseQueryString(loginPageUriBuilder.Query);
+        query["returnurl"] = returnUrl;
+        loginPageUriBuilder.Query = query.ToString();
+        return loginPageUriBuilder.ToString();
     }
 
     public async Task<SecureToken> RequestAccessToken(
@@ -56,8 +63,8 @@ public sealed class SecurityService(
             new("client_id", _clientId),
             new("client_secret", _clientSecret),
             new("grant_type", AuthorizationCodeGrantType),
-            new("code", code),
             new("scope", scope),
+            new("code", code),
             new("redirect_url", ClientRedirectUrl),
         };
 

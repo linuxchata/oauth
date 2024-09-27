@@ -22,6 +22,27 @@ public sealed class AuthorizeApplicationService(
 
     public AuthorizeInternalBaseResponse Execute(AuthorizeInternalRequest request)
     {
+        var response = ValidateRequest(request);
+        if (response != null)
+        {
+            return response;
+        }
+
+        var code = _stringGeneratorService.GenerateCode();
+
+        StorePersistedGrant(request.ClientId, request.Scopes, code);
+
+        var redirectUrl = _redirectionService.BuildClientCallbackUrl(
+            request.RedirectUrl,
+            code,
+            request.Scopes,
+            request.State);
+
+        return new AuthorizeInternalResponse(redirectUrl);
+    }
+
+    private AuthorizeInternalBaseResponse? ValidateRequest(AuthorizeInternalRequest request)
+    {
         var client = _clientRepository.GetById(request.ClientId);
         if (client is null || !client.RedirectUris.Contains(request.RedirectUrl))
         {
@@ -38,19 +59,20 @@ public sealed class AuthorizeApplicationService(
             }
         }
 
-        var code = _stringGeneratorService.GenerateCode();
+        return null;
+    }
+
+    private void StorePersistedGrant(string clientId, string[] scopes, string code)
+    {
         var persistedGrant = new PersistedGrant
         {
             Type = AuthorizationCodeGrantType,
-            ClientId = request.ClientId,
-            Scopes = request.Scopes,
+            ClientId = clientId,
+            Scopes = scopes,
             Value = code,
             ExpiredIn = AuthorizationCodeExpirationInSeconds,
         };
+
         _persistedGrantStore.Add(persistedGrant);
-
-        var redirectUrl = _redirectionService.BuildRedirectUrl(request.RedirectUrl, code, request.Scopes, request.State);
-
-        return new AuthorizeInternalResponse(redirectUrl);
     }
 }

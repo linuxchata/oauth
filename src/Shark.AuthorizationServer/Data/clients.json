@@ -6,6 +6,7 @@
     "ClientSecret": "client-secret-01",
     "AllowedScopes": [ "read", "add", "update", "delete" ],
     "RedirectUris": [ "http://localhost:9001", "http://localhost:9001/callback" ],
+    "Audience": "http://protected-resource-dev.com",
     "AccessTokenLifetimeInSeconds": 3600,
     "RefreshTokenLifetimeInSeconds": 86400
   }

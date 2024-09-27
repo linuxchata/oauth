@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Shark.AuthorizationServer.ApplicationServices;
 using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
@@ -12,11 +13,16 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.Configure<AuthorizationServerConfiguration>(
     builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
 
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
 builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>();
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
 builder.Services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
+builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<IRedirectionService, RedirectionService>();
 builder.Services.AddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
 builder.Services.AddSingleton<IClientRepository, ClientRepository>();
@@ -46,6 +52,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

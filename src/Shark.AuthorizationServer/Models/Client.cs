@@ -14,6 +14,8 @@ public record Client
 
     public required string[] RedirectUris { get; set; }
 
+    public required string Audience { get; set; }
+
     public required int AccessTokenLifetimeInSeconds { get; set; }
 
     public required int RefreshTokenLifetimeInSeconds { get; set; }

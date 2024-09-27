@@ -2,5 +2,5 @@
 
 public interface IClientRepository
 {
-    Models.Client? GetById(string id);
+    Models.Client? GetById(string? id);
 }
