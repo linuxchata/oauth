@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
+using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Services;
@@ -9,8 +10,7 @@ public sealed class WeatherForecastService(
     ISecureTokenStore securityStore,
     ISecurityService securityService) : IWeatherForecastService
 {
-    private const string Endpoint = "http://localhost:9002/weatherforecast";
-    private const string AuthorizationHeaderName = "Authorization";
+    private const string Endpoint = "https://localhost:9002/weatherforecast";
 
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ISecureTokenStore _securityStore = securityStore;
@@ -23,7 +23,7 @@ public sealed class WeatherForecastService(
         try
         {
             using var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Add(AuthorizationHeaderName, $"Bearer {accessToken}");
+            httpClient.DefaultRequestHeaders.Add(Security.AuthorizationHeaderName, $"Bearer {accessToken}");
             var response = await httpClient.GetAsync(Endpoint);
             response.EnsureSuccessStatusCode();
 

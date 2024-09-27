@@ -13,7 +13,6 @@ public sealed class TokenApplicationService(
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
     IPersistedGrantStore persistedGrantStore,
-    IHttpContextAccessor httpContextAccessor,
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<TokenApplicationService> logger) : ITokenApplicationService
 {
@@ -25,7 +24,6 @@ public sealed class TokenApplicationService(
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
@@ -80,7 +78,7 @@ public sealed class TokenApplicationService(
                 request.Code);
 
             // Generate bearer token
-            var token = GenerateAndStoreBearerToken(client, request.Scopes);
+            var token = GenerateAndStoreBearerToken(client, request.Scopes, codePersistedGrant.UserName);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
         else if (string.Equals(request.GrantType, RefreshTokenGrantType, StringComparison.Ordinal))
@@ -103,17 +101,16 @@ public sealed class TokenApplicationService(
                 request.RefreshToken);
 
             // Generate bearer token
-            var token = GenerateAndStoreBearerToken(client, request.Scopes);
+            var token = GenerateAndStoreBearerToken(client, request.Scopes, refreshTokenPersistedGrant.UserName);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
 
         return new TokenInternalBadRequestResponse("Invalid grant_type");
     }
 
-    private TokenResponse GenerateAndStoreBearerToken(Client client, string[] scopes)
+    private TokenResponse GenerateAndStoreBearerToken(Client client, string[] scopes, string? userName)
     {
         var userId = Guid.NewGuid().ToString();
-        var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
         var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, client.Audience);
         var refreshToken = _stringGeneratorService.GenerateRefreshToken();
 

@@ -1,4 +1,5 @@
-﻿using Shark.AuthorizationServer.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Response;
@@ -10,7 +11,8 @@ public sealed class AuthorizeApplicationService(
     IClientRepository clientRepository,
     IStringGeneratorService stringGeneratorService,
     IPersistedGrantStore persistedGrantStore,
-    IRedirectionService redirectionService) : IAuthorizeApplicationService
+    IRedirectionService redirectionService,
+    IHttpContextAccessor httpContextAccessor) : IAuthorizeApplicationService
 {
     private const string AuthorizationCodeGrantType = "authorization_code";
     private const int AuthorizationCodeExpirationInSeconds = 30;
@@ -19,6 +21,7 @@ public sealed class AuthorizeApplicationService(
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
     private readonly IRedirectionService _redirectionService = redirectionService;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public AuthorizeInternalBaseResponse Execute(AuthorizeInternalRequest request)
     {
@@ -30,7 +33,9 @@ public sealed class AuthorizeApplicationService(
 
         var code = _stringGeneratorService.GenerateCode();
 
-        StorePersistedGrant(request.ClientId, request.Scopes, code);
+        var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
+        StorePersistedGrant(request.ClientId, request.Scopes, code, userName);
 
         var redirectUrl = _redirectionService.BuildClientCallbackUrl(
             request.RedirectUrl,
@@ -62,7 +67,7 @@ public sealed class AuthorizeApplicationService(
         return null;
     }
 
-    private void StorePersistedGrant(string clientId, string[] scopes, string code)
+    private void StorePersistedGrant(string clientId, string[] scopes, string code, string? userName)
     {
         var persistedGrant = new PersistedGrant
         {
@@ -70,6 +75,7 @@ public sealed class AuthorizeApplicationService(
             ClientId = clientId,
             Scopes = scopes,
             Value = code,
+            UserName = userName,
             ExpiredIn = AuthorizationCodeExpirationInSeconds,
         };
 

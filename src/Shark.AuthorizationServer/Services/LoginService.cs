@@ -19,7 +19,9 @@ public sealed class LoginService(
 
         if (_httpContextAccessor.HttpContext != null)
         {
-            await _httpContextAccessor.HttpContext.SignInAsync(claimsPrincipal);
+            await _httpContextAccessor.HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                claimsPrincipal);
         }
     }
 

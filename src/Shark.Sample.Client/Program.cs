@@ -1,9 +1,14 @@
+using System.Net;
 using Shark.Sample.Client.ApplicationServices;
+using Shark.Sample.Client.Models;
 using Shark.Sample.Client.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<AuthorizationServerConfiguration>(
+    builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
+
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -39,7 +44,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

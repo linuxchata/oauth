@@ -7,11 +7,11 @@ using Shark.AuthorizationServer.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddHttpClient();
-builder.Services.AddDistributedMemoryCache();
-
 builder.Services.Configure<AuthorizationServerConfiguration>(
     builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
+
+builder.Services.AddHttpClient();
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

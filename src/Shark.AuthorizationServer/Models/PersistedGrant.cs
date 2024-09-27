@@ -10,5 +10,7 @@ public record class PersistedGrant
 
     public required string Value { get; set; }
 
+    public string? UserName { get; set; }
+
     public int ExpiredIn { get; set; }
 }

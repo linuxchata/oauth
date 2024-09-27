@@ -14,7 +14,9 @@ public sealed class CallBackApplicationService(
     public async Task Execute(string code, string scope, string state)
     {
         var expectedState = _stateStore.Get();
+
         var secureToken = await _securityService.RequestAccessToken(code, scope, state, expectedState);
+
         _securityStore.Add(secureToken);
     }
 }

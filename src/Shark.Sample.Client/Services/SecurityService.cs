@@ -1,40 +1,41 @@
 ﻿using System.Web;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Services;
 
 public sealed class SecurityService(
     IHttpClientFactory httpClientFactory,
+    IOptions<AuthorizationServerConfiguration> options,
     ILogger<SecurityService> logger) : ISecurityService
 {
-    private const string ResponseType = "code";
-    private const string AuthorizationCodeGrantType = "authorization_code";
-    private const string RefreshTokenGrantType = "refresh_token";
+    private const string LoginPagePath = "login";
+    private const string AuthorizeEndpointPath = "authorize";
+    private const string TokenEndpointPath = "token";
 
-    private const string LoginPage = "http://localhost:9000/login";
-    private const string AuthorizeEndpoint = "authorize";
-    private const string TokenEndpoint = "http://localhost:9000/token";
-    private const string ClientCallbackEndpoint = "http://localhost:9001/callback";
-    private const string ClientRedirectUrl = "http://localhost:9001";
-
-    private readonly string _clientId = "client-1";
-    private readonly string _clientSecret = "client-secret-01";
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<SecurityService> _logger = logger;
 
     public string BuildLoginPageUrl(string state)
     {
-        var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpoint);
+        // Return URL
+        var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
-        returnUrlBuilderQuery["response_type"] = ResponseType;
-        returnUrlBuilderQuery["client_id"] = _clientId;
-        returnUrlBuilderQuery["redirect_url"] = ClientCallbackEndpoint;
+        returnUrlBuilderQuery["response_type"] = Security.ResponseType;
+        returnUrlBuilderQuery["client_id"] = _configuration.ClientId;
+        returnUrlBuilderQuery["redirect_url"] = _configuration.ClientCallbackEndpoint;
         returnUrlBuilderQuery["state"] = state;
         returnUrlBuilder.Query = returnUrlBuilderQuery.ToString();
         var returnUrl = returnUrlBuilder.ToString();
 
-        var loginPageUriBuilder = new UriBuilder(LoginPage);
+        // Authorization server login page
+        var loginPageUriBuilder = new UriBuilder(_configuration.Address)
+        {
+            Path = LoginPagePath,
+        };
         var query = HttpUtility.ParseQueryString(loginPageUriBuilder.Query);
         query["returnurl"] = returnUrl;
         loginPageUriBuilder.Query = query.ToString();
@@ -60,12 +61,12 @@ public sealed class SecurityService(
 
         var formData = new List<KeyValuePair<string, string>>
         {
-            new("client_id", _clientId),
-            new("client_secret", _clientSecret),
-            new("grant_type", AuthorizationCodeGrantType),
+            new("client_id", _configuration.ClientId),
+            new("client_secret", _configuration.ClientSecret),
+            new("grant_type", Security.AuthorizationCodeGrantType),
             new("scope", scope),
             new("code", code),
-            new("redirect_url", ClientRedirectUrl),
+            new("redirect_url", _configuration.ClientRedirectUrl),
         };
 
         return await RequestAccessTokenInternal(formData);
@@ -80,12 +81,12 @@ public sealed class SecurityService(
 
         var formData = new List<KeyValuePair<string, string>>
         {
-            new("client_id", _clientId),
-            new("client_secret", _clientSecret),
-            new("grant_type", RefreshTokenGrantType),
+            new("client_id", _configuration.ClientId),
+            new("client_secret", _configuration.ClientSecret),
+            new("grant_type", Security.RefreshTokenGrantType),
             new("scope", scope),
             new("refresh_token", refreshToken),
-            new("redirect_url", ClientRedirectUrl),
+            new("redirect_url", _configuration.ClientRedirectUrl),
         };
 
         return await RequestAccessTokenInternal(formData);
@@ -94,12 +95,18 @@ public sealed class SecurityService(
     private async Task<SecureToken> RequestAccessTokenInternal(
         List<KeyValuePair<string, string>> formData)
     {
+        var tokenEndpointUriBuilder = new UriBuilder(_configuration.Address)
+        {
+            Path = TokenEndpointPath,
+        };
+        var tokenEndpointUri = tokenEndpointUriBuilder.ToString();
+
         var content = new FormUrlEncodedContent(formData);
 
         try
         {
             using var httpClient = _httpClientFactory.CreateClient();
-            var response = await httpClient.PostAsync(TokenEndpoint, content);
+            var response = await httpClient.PostAsync(tokenEndpointUri, content);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadAsStringAsync();
@@ -109,7 +116,7 @@ public sealed class SecurityService(
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Unable to fetch bearer token from authorization server");
+            _logger.LogError(ex, "Unable to fetch Bearer token from authorization server");
         }
 
         return new SecureToken(null, null);
