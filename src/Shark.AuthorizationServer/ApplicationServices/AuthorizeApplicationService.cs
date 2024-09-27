@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Shark.AuthorizationServer.Models;
+﻿using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Response;
