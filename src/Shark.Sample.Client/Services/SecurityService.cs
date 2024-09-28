@@ -23,13 +23,15 @@ public sealed class SecurityService(
 
     public string BuildLoginPageUrl(string state)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
+
         // Return URL
         var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
-        returnUrlBuilderQuery["response_type"] = Security.ResponseType;
-        returnUrlBuilderQuery["client_id"] = _configuration.ClientId;
-        returnUrlBuilderQuery["redirect_url"] = _configuration.ClientCallbackEndpoint;
-        returnUrlBuilderQuery["state"] = state;
+        returnUrlBuilderQuery[QueryParam.ResponseType] = Security.ResponseType;
+        returnUrlBuilderQuery[QueryParam.ClientId] = _configuration.ClientId;
+        returnUrlBuilderQuery[QueryParam.RedirectUrl] = _configuration.ClientCallbackEndpoint;
+        returnUrlBuilderQuery[QueryParam.State] = state;
         returnUrlBuilder.Query = returnUrlBuilderQuery.ToString();
         var returnUrl = returnUrlBuilder.ToString();
 
@@ -39,7 +41,7 @@ public sealed class SecurityService(
             Path = LoginPagePath,
         };
         var query = HttpUtility.ParseQueryString(loginPageUriBuilder.Query);
-        query["returnurl"] = returnUrl;
+        query[QueryParam.ReturnUrl] = returnUrl;
         loginPageUriBuilder.Query = query.ToString();
         return loginPageUriBuilder.ToString();
     }
@@ -50,10 +52,9 @@ public sealed class SecurityService(
         string actualState,
         string expectedState)
     {
-        if (string.IsNullOrWhiteSpace(code))
-        {
-            throw new ArgumentNullException(nameof(code));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(code);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(actualState);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(expectedState);
 
         if (!string.Equals(actualState, expectedState, StringComparison.Ordinal))
         {
@@ -76,10 +77,7 @@ public sealed class SecurityService(
 
     public async Task<SecureToken> RequestAccessToken(string refreshToken, string scope)
     {
-        if (string.IsNullOrWhiteSpace(refreshToken))
-        {
-            throw new ArgumentNullException(nameof(refreshToken));
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(refreshToken);
 
         var formData = new List<KeyValuePair<string, string>>
         {

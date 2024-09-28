@@ -11,7 +11,8 @@ namespace Shark.AuthorizationServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TokenController(ITokenApplicationService tokenApplicationService) : ControllerBase
+public class TokenController(
+    ITokenApplicationService tokenApplicationService) : ControllerBase
 {
     private readonly ITokenApplicationService _tokenApplicationService = tokenApplicationService;
 

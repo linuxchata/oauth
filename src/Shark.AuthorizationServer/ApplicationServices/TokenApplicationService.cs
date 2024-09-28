@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
 using Shark.AuthorizationServer.Requests;
@@ -16,8 +17,6 @@ public sealed class TokenApplicationService(
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<TokenApplicationService> logger) : ITokenApplicationService
 {
-    private const string AuthorizationCodeGrantType = "authorization_code";
-    private const string RefreshTokenGrantType = "refresh_token";
     private const string DefaultAccessTokenType = "Bearer";
 
     private readonly IClientRepository _clientRepository = clientRepository;
@@ -35,7 +34,7 @@ public sealed class TokenApplicationService(
             !string.Equals(client.ClientSecret, request.ClientSecret, StringComparison.Ordinal) ||
             !client.RedirectUris.Contains(request.RedirectUrl))
         {
-            return new TokenInternalBadRequestResponse("Invalid client");
+            return new TokenInternalBadRequestResponse(Error.InvalidClient);
         }
 
         // Validate scopes against client's scopes
@@ -44,23 +43,23 @@ public sealed class TokenApplicationService(
         {
             if (!allowedClientScopes.Contains(scope))
             {
-                return new TokenInternalBadRequestResponse("Invalid client");
+                return new TokenInternalBadRequestResponse(Error.InvalidClient);
             }
         }
 
-        if (string.Equals(request.GrantType, AuthorizationCodeGrantType, StringComparison.Ordinal))
+        if (string.Equals(request.GrantType, GrantType.AuthorizationCode, StringComparison.Ordinal))
         {
             // Validate grant
             var codePersistedGrant = _persistedGrantStore.Get(request.Code);
             if (codePersistedGrant is null)
             {
-                return new TokenInternalBadRequestResponse("Invalid grant");
+                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
 
             // Validate grant client
             if (!string.Equals(codePersistedGrant.ClientId, request.ClientId, StringComparison.Ordinal))
             {
-                return new TokenInternalBadRequestResponse("Invalid grant");
+                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
 
             // Validate grant scopes
@@ -69,7 +68,7 @@ public sealed class TokenApplicationService(
             {
                 if (!allowedScopes.Contains(scope))
                 {
-                    return new TokenInternalBadRequestResponse("Invalid client");
+                    return new TokenInternalBadRequestResponse(Error.InvalidGrant);
                 }
             }
 
@@ -81,19 +80,19 @@ public sealed class TokenApplicationService(
             var token = GenerateAndStoreBearerToken(client, request.Scopes, codePersistedGrant.UserName);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
-        else if (string.Equals(request.GrantType, RefreshTokenGrantType, StringComparison.Ordinal))
+        else if (string.Equals(request.GrantType, GrantType.RefreshToken, StringComparison.Ordinal))
         {
             // Validate grant
             var refreshTokenPersistedGrant = _persistedGrantStore.Get(request.RefreshToken);
             if (refreshTokenPersistedGrant is null)
             {
-                return new TokenInternalBadRequestResponse("Invalid grant");
+                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
 
             // Validate grant client
             if (!string.Equals(refreshTokenPersistedGrant.ClientId, request.ClientId, StringComparison.Ordinal))
             {
-                return new TokenInternalBadRequestResponse("Invalid grant");
+                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
 
             _logger.LogInformation(
@@ -105,7 +104,7 @@ public sealed class TokenApplicationService(
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
 
-        return new TokenInternalBadRequestResponse("Invalid grant_type");
+        return new TokenInternalBadRequestResponse(Error.InvalidGrantType);
     }
 
     private TokenResponse GenerateAndStoreBearerToken(Client client, string[] scopes, string? userName)
@@ -124,7 +123,7 @@ public sealed class TokenApplicationService(
 
         var tokenPersistedGrant = new PersistedGrant
         {
-            Type = RefreshTokenGrantType,
+            Type = GrantType.RefreshToken,
             ClientId = client.ClientId,
             Value = refreshToken,
             ExpiredIn = _configuration.AccessTokenExpirationInSeconds * 24,

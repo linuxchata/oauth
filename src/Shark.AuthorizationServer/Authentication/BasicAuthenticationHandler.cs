@@ -31,7 +31,8 @@ public class BasicAuthenticationHandler(
             return Task.FromResult(AuthenticateResult.Fail(UnauthorizedMessage));
         }
 
-        var authenticationTicket = new AuthenticationTicket(new ClaimsPrincipal(), Scheme.Name);
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(Scheme.Name));
+        var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
         return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
     }
 

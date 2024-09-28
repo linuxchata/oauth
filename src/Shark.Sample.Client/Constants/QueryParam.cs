@@ -15,4 +15,10 @@ public sealed class QueryParam
     public const string RefreshToken = "refresh_token";
 
     public const string RedirectUrl = "redirect_url";
+
+    public const string ResponseType = "response_type";
+
+    public const string State = "state";
+
+    public const string ReturnUrl = "returnurl";
 }

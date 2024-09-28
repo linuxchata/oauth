@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Models;
 
-public class BasicAuthenticationOptions : AuthenticationSchemeOptions
+public sealed class BasicAuthenticationOptions : AuthenticationSchemeOptions
 {
     public const string Name = nameof(AuthenticationSchemeOptions);
 }

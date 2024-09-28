@@ -1,4 +1,5 @@
-﻿using Shark.AuthorizationServer.Models;
+﻿using Shark.AuthorizationServer.Constants;
+using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Response;
@@ -13,7 +14,6 @@ public sealed class AuthorizeApplicationService(
     IRedirectionService redirectionService,
     IHttpContextAccessor httpContextAccessor) : IAuthorizeApplicationService
 {
-    private const string AuthorizationCodeGrantType = "authorization_code";
     private const int AuthorizationCodeExpirationInSeconds = 30;
 
     private readonly IClientRepository _clientRepository = clientRepository;
@@ -32,9 +32,7 @@ public sealed class AuthorizeApplicationService(
 
         var code = _stringGeneratorService.GenerateCode();
 
-        var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
-
-        StorePersistedGrant(request.ClientId, request.Scopes, code, userName);
+        StorePersistedGrant(request.ClientId, request.Scopes, code);
 
         var redirectUrl = _redirectionService.BuildClientCallbackUrl(
             request.RedirectUrl,
@@ -50,7 +48,7 @@ public sealed class AuthorizeApplicationService(
         var client = _clientRepository.GetById(request.ClientId);
         if (client is null || !client.RedirectUris.Contains(request.RedirectUrl))
         {
-            return new AuthorizeInternalBadRequestResponse("Invalid client");
+            return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
         var allowedClientScopes = client.AllowedScopes.ToHashSet();
@@ -59,18 +57,20 @@ public sealed class AuthorizeApplicationService(
         {
             if (!allowedClientScopes.Contains(scope))
             {
-                return new AuthorizeInternalBadRequestResponse("Invalid client");
+                return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
             }
         }
 
         return null;
     }
 
-    private void StorePersistedGrant(string clientId, string[] scopes, string code, string? userName)
+    private void StorePersistedGrant(string clientId, string[] scopes, string code)
     {
+        var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+
         var persistedGrant = new PersistedGrant
         {
-            Type = AuthorizationCodeGrantType,
+            Type = GrantType.AuthorizationCode,
             ClientId = clientId,
             Scopes = scopes,
             Value = code,
