@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shark.AuthorizationServer.Helpers;
 using Shark.AuthorizationServer.Repositories;
@@ -20,12 +21,19 @@ public class LoginModel(
 
     public string? UserName { get; set; }
 
-    public void OnGet(string returnUrl)
+    public IActionResult OnGet(string returnUrl)
     {
         ClientId = _redirectionService.GetClientId(returnUrl);
 
         var client = _clientRepository.GetById(ClientId);
+        if (client is null)
+        {
+            return RedirectToPage("/Error");
+        }
+
         Scopes = client?.AllowedScopes.ToList() ?? [];
+
+        return Page();
     }
 
     public async Task OnPost(string returnUrl, string userName, string[] selectedScopes)

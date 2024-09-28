@@ -21,10 +21,8 @@ public sealed class SecurityService(
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<SecurityService> _logger = logger;
 
-    public string BuildLoginPageUrl(string state)
+    public string BuildLoginPageUrl(string? state)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
-
         // Return URL
         var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
@@ -49,12 +47,10 @@ public sealed class SecurityService(
     public async Task<SecureToken> RequestAccessToken(
         string code,
         string scope,
-        string actualState,
-        string expectedState)
+        string? actualState,
+        string? expectedState)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(code);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(actualState);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(expectedState);
 
         if (!string.Equals(actualState, expectedState, StringComparison.Ordinal))
         {
@@ -116,7 +112,8 @@ public sealed class SecurityService(
         {
             _logger.LogError(
                 ex,
-                $"Unable to fetch Bearer token from authorization server. Status code is {ex.StatusCode}");
+                "Unable to fetch Bearer token from authorization server. Status code is [{statusCode}]",
+                ex.StatusCode);
         }
 
         return new SecureToken(null, null);

@@ -8,7 +8,7 @@ public sealed class AuthorizeInternalRequest
 
     public required string[] Scopes { get; set; }
 
-    public required string State { get; set; }
+    public string? State { get; set; }
 
     public required string RedirectUrl { get; set; }
 }

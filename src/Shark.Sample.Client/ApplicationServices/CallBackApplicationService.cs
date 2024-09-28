@@ -11,7 +11,7 @@ public sealed class CallBackApplicationService(
     private readonly IStateStore _stateStore = stateStore;
     private readonly ISecureTokenStore _securityStore = securityStore;
 
-    public async Task Execute(string code, string scope, string state)
+    public async Task Execute(string code, string scope, string? state)
     {
         var expectedState = _stateStore.Get();
 

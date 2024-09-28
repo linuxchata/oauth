@@ -14,7 +14,7 @@ public class CallbackController(
     public async Task<IActionResult> Callback(
         [FromQuery] string code,
         [FromQuery] string scope,
-        [FromQuery] string state)
+        [FromQuery] string? state)
     {
         await _callBackApplicationService.Execute(code, scope, state);
 

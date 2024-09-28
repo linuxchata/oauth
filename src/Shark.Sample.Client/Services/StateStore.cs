@@ -4,18 +4,15 @@ public sealed class StateStore : IStateStore
 {
     private string? storedState;
 
-    public string Get()
+    public string? Get()
     {
-        if (string.IsNullOrWhiteSpace(storedState))
-        {
-            throw new Exception("No state stored");
-        }
-
         return storedState;
     }
 
     public void Add(string state)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
+
         storedState = state;
     }
 }

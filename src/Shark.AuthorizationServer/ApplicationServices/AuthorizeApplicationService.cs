@@ -12,7 +12,8 @@ public sealed class AuthorizeApplicationService(
     IStringGeneratorService stringGeneratorService,
     IPersistedGrantStore persistedGrantStore,
     IRedirectionService redirectionService,
-    IHttpContextAccessor httpContextAccessor) : IAuthorizeApplicationService
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<AuthorizeApplicationService> logger) : IAuthorizeApplicationService
 {
     private const int AuthorizationCodeExpirationInSeconds = 30;
 
@@ -21,6 +22,7 @@ public sealed class AuthorizeApplicationService(
     private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
     private readonly IRedirectionService _redirectionService = redirectionService;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly ILogger<AuthorizeApplicationService> _logger = logger;
 
     public AuthorizeInternalBaseResponse Execute(AuthorizeInternalRequest request)
     {
@@ -45,9 +47,22 @@ public sealed class AuthorizeApplicationService(
 
     private AuthorizeInternalBaseResponse? ValidateRequest(AuthorizeInternalRequest request)
     {
-        var client = _clientRepository.GetById(request.ClientId);
-        if (client is null || !client.RedirectUris.Contains(request.RedirectUrl))
+        if (!string.Equals(request.ResponseType, ResponseType.Code, StringComparison.OrdinalIgnoreCase))
         {
+            _logger.LogWarning("Unsupported response type {responseType}", request.ResponseType);
+            return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
+        }
+
+        var client = _clientRepository.GetById(request.ClientId);
+        if (client is null)
+        {
+            _logger.LogWarning("Unknown client with identifier [{clientId}]", request.ClientId);
+            return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
+        }
+
+        if (!client.RedirectUris.Contains(request.RedirectUrl))
+        {
+            _logger.LogWarning("Mismatched redirected URL [{redirectUrl}]", request.RedirectUrl);
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
@@ -57,6 +72,7 @@ public sealed class AuthorizeApplicationService(
         {
             if (!allowedClientScopes.Contains(scope))
             {
+                _logger.LogWarning("Mismatched scope [{scope}] from request", scope);
                 return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
             }
         }

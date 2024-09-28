@@ -4,9 +4,9 @@ namespace Shark.Sample.Client.Services;
 
 public interface ISecurityService
 {
-    string BuildLoginPageUrl(string state);
+    string BuildLoginPageUrl(string? state);
 
-    Task<SecureToken> RequestAccessToken(string code, string scope, string actualState, string expectedState);
+    Task<SecureToken> RequestAccessToken(string code, string scope, string? actualState, string? expectedState);
 
     Task<SecureToken> RequestAccessToken(string refreshToken, string scope);
 }

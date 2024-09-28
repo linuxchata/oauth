@@ -22,7 +22,7 @@ public class AuthorizeController(
     public IActionResult Get(
         [FromQuery] string response_type,
         [FromQuery] string client_id,
-        [FromQuery] string state,
+        [FromQuery] string? state,
         [FromQuery] string redirect_url,
         [FromQuery] string scope)
     {
