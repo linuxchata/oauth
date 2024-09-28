@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Shark.AuthorizationServer.ApplicationServices;
+using Shark.AuthorizationServer.Authentication;
+using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
 using Shark.AuthorizationServer.Services;
@@ -10,12 +12,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<AuthorizationServerConfiguration>(
     builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
 
+var basicAuthenticationOptions = new BasicAuthenticationOptions();
+builder.Configuration.GetSection(BasicAuthenticationOptions.Name).Bind(basicAuthenticationOptions);
+
 builder.Services.AddHttpClient();
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddAuthentication(Scheme.Cookies)
     .AddCookie();
+
+builder.Services
+    .AddAuthentication(Scheme.Basic)
+    .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(
+        Scheme.Basic,
+        options => options = basicAuthenticationOptions);
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();

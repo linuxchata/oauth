@@ -1,4 +1,5 @@
 using Shark.Sample.ProtectedResource.Authentication;
+using Shark.Sample.ProtectedResource.Constants;
 using Shark.Sample.ProtectedResource.Models;
 using Shark.Sample.ProtectedResource.Services;
 

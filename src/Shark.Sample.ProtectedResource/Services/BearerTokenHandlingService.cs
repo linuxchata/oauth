@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Shark.Sample.ProtectedResource.Authentication;
+using Shark.Sample.ProtectedResource.Constants;
 using Shark.Sample.ProtectedResource.Models;
 
 namespace Shark.Sample.ProtectedResource.Services;

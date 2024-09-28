@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.ApplicationServices;
+using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Response;
 
@@ -16,7 +17,7 @@ public class AuthorizeController(
     private readonly IAuthorizeApplicationService _authorizeApplicationService = authorizeApplicationService;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-    [Authorize]
+    [Authorize(AuthenticationSchemes = Scheme.Cookies)]
     [HttpGet]
     public IActionResult Get(
         [FromQuery] string response_type,

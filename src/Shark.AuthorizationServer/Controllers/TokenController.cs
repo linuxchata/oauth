@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.ApplicationServices;
+using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Response;
@@ -14,6 +15,7 @@ public class TokenController(ITokenApplicationService tokenApplicationService) :
 {
     private readonly ITokenApplicationService _tokenApplicationService = tokenApplicationService;
 
+    [Authorize(AuthenticationSchemes = Scheme.Basic)]
     [HttpPost]
     public IActionResult Post([FromForm] TokenRequest request)
     {

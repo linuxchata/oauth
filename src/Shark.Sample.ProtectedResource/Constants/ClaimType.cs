@@ -1,4 +1,4 @@
-﻿namespace Shark.Sample.ProtectedResource.Authentication;
+﻿namespace Shark.Sample.ProtectedResource.Constants;
 
 public sealed class ClaimType
 {

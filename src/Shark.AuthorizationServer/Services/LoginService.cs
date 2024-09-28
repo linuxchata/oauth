@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Shark.AuthorizationServer.Models;
+using Shark.AuthorizationServer.Constants;
 
 namespace Shark.AuthorizationServer.Services;
 

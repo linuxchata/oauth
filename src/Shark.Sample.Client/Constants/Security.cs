@@ -1,6 +1,6 @@
 ﻿namespace Shark.Sample.Client.Constants;
 
-public class Security
+public sealed class Security
 {
     public const string ResponseType = "code";
 

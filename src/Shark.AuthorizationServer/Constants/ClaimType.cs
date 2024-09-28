@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Models;
+﻿namespace Shark.AuthorizationServer.Constants;
 
 public sealed class ClaimType
 {

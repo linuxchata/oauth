@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shark.Sample.ProtectedResource.Authentication;
+using Shark.Sample.ProtectedResource.Constants;
 using Shark.Sample.ProtectedResource.Services;
 
 namespace Shark.Sample.ProtectedResource.Controllers;
