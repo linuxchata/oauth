@@ -13,7 +13,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-builder.Services.AddTransient<ISecurityService, SecurityService>();
+builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
 builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddTransient<ICallBackApplicationService, CallBackApplicationService>();
 

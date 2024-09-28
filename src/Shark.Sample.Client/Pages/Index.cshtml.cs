@@ -6,12 +6,12 @@ namespace Shark.Sample.Client.Pages;
 
 public class IndexModel(
     IWeatherForecastService weatherForecastService,
-    ISecurityService securityService,
+    IAuthorizationService securityService,
     IStateStore stateStore,
     IHttpContextAccessor httpContextAccessor) : PageModel
 {
     private readonly IWeatherForecastService _weatherForecastService = weatherForecastService;
-    private readonly ISecurityService _securityService = securityService;
+    private readonly IAuthorizationService _securityService = securityService;
     private readonly IStateStore _stateStore = stateStore;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 

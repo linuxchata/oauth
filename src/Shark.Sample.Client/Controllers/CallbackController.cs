@@ -13,7 +13,7 @@ public class CallbackController(
     [HttpGet]
     public async Task<IActionResult> Callback(
         [FromQuery] string code,
-        [FromQuery] string scope,
+        [FromQuery] string? scope,
         [FromQuery] string? state)
     {
         await _callBackApplicationService.Execute(code, scope, state);

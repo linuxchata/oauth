@@ -8,10 +8,10 @@ using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Services;
 
-public sealed class SecurityService(
+public sealed class AuthorizationService(
     IHttpClientFactory httpClientFactory,
     IOptions<AuthorizationServerConfiguration> options,
-    ILogger<SecurityService> logger) : ISecurityService
+    ILogger<AuthorizationService> logger) : IAuthorizationService
 {
     private const string LoginPagePath = "login";
     private const string AuthorizeEndpointPath = "authorize";
@@ -19,11 +19,11 @@ public sealed class SecurityService(
 
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
-    private readonly ILogger<SecurityService> _logger = logger;
+    private readonly ILogger<AuthorizationService> _logger = logger;
 
     public string BuildLoginPageUrl(string? state)
     {
-        // Return URL
+        // Create Return URL
         var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
         returnUrlBuilderQuery[QueryParam.ResponseType] = Security.ResponseType;
@@ -33,7 +33,7 @@ public sealed class SecurityService(
         returnUrlBuilder.Query = returnUrlBuilderQuery.ToString();
         var returnUrl = returnUrlBuilder.ToString();
 
-        // Authorization server login page
+        // Create authorization server login page URL
         var loginPageUriBuilder = new UriBuilder(_configuration.Address)
         {
             Path = LoginPagePath,
@@ -44,15 +44,11 @@ public sealed class SecurityService(
         return loginPageUriBuilder.ToString();
     }
 
-    public async Task<SecureToken> RequestAccessToken(
-        string code,
-        string scope,
-        string? actualState,
-        string? expectedState)
+    public async Task<SecureToken> RequestAccessToken(string code, string? scope, string? state, string? expectedState)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(code);
 
-        if (!string.Equals(actualState, expectedState, StringComparison.Ordinal))
+        if (!string.Equals(state, expectedState, StringComparison.Ordinal))
         {
             _logger.LogError("State does not match");
             return new SecureToken(null, null);
@@ -63,15 +59,19 @@ public sealed class SecurityService(
             new(QueryParam.ClientId, _configuration.ClientId),
             new(QueryParam.ClientSecret, _configuration.ClientSecret),
             new(QueryParam.GrantType, Security.AuthorizationCodeGrantType),
-            new(QueryParam.Scope, scope),
             new(QueryParam.Code, code),
             new(QueryParam.RedirectUrl, _configuration.ClientRedirectUrl),
         };
 
+        if (!string.IsNullOrWhiteSpace(scope))
+        {
+            formData.Add(new(QueryParam.Scope, scope));
+        }
+
         return await RequestAccessTokenInternal(formData);
     }
 
-    public async Task<SecureToken> RequestAccessToken(string refreshToken, string scope)
+    public async Task<SecureToken> RequestAccessToken(string refreshToken, string? scope)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(refreshToken);
 
@@ -80,10 +80,14 @@ public sealed class SecurityService(
             new(QueryParam.ClientId, _configuration.ClientId),
             new(QueryParam.ClientSecret, _configuration.ClientSecret),
             new(QueryParam.GrantType, Security.RefreshTokenGrantType),
-            new(QueryParam.Scope, scope),
             new(QueryParam.RefreshToken, refreshToken),
             new(QueryParam.RedirectUrl, _configuration.ClientRedirectUrl),
         };
+
+        if (!string.IsNullOrWhiteSpace(scope))
+        {
+            formData.Add(new(QueryParam.Scope, scope));
+        }
 
         return await RequestAccessTokenInternal(formData);
     }

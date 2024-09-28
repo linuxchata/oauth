@@ -33,8 +33,12 @@ public class AccessTokenGeneratorService(
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, userId),
-            new(ClaimType.Scope, string.Join(" ", scopes)),
         };
+
+        if (scopes.Length != 0)
+        {
+            claims.Add(new(ClaimType.Scope, string.Join(" ", scopes)));
+        }
 
         if (!string.IsNullOrWhiteSpace(userName))
         {

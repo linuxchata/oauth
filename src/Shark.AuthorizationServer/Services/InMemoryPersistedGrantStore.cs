@@ -30,4 +30,14 @@ public sealed class InMemoryPersistedGrantStore(IDistributedCache cache) : IPers
         var serializedItem = JsonConvert.SerializeObject(item);
         _cache.SetString(item.Value, serializedItem, cacheEntryOptions);
     }
+
+    public void Remove(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        _cache.Remove(value);
+    }
 }

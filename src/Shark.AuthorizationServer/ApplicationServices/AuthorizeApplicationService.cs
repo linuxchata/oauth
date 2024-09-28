@@ -45,7 +45,7 @@ public sealed class AuthorizeApplicationService(
         return new AuthorizeInternalResponse(redirectUrl);
     }
 
-    private AuthorizeInternalBaseResponse? ValidateRequest(AuthorizeInternalRequest request)
+    private AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request)
     {
         if (!string.Equals(request.ResponseType, ResponseType.Code, StringComparison.OrdinalIgnoreCase))
         {
@@ -62,7 +62,7 @@ public sealed class AuthorizeApplicationService(
 
         if (!client.RedirectUris.Contains(request.RedirectUrl))
         {
-            _logger.LogWarning("Mismatched redirected URL [{redirectUrl}]", request.RedirectUrl);
+            _logger.LogWarning("Mismatched redirect URL [{redirectUrl}]", request.RedirectUrl);
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
@@ -80,7 +80,7 @@ public sealed class AuthorizeApplicationService(
         return null;
     }
 
-    private void StorePersistedGrant(string clientId, string[] scopes, string code)
+    private void StorePersistedGrant(string clientId, string[]? scopes, string code)
     {
         var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
 

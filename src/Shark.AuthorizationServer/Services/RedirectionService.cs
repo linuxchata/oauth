@@ -1,18 +1,13 @@
 ﻿using System.Web;
+using Shark.AuthorizationServer.Constants;
 
 namespace Shark.AuthorizationServer.Services;
 
 public sealed class RedirectionService : IRedirectionService
 {
-    private const string ResponseTypeQueryParameterName = "response_type";
-    private const string ClientIdQueryParameterName = "client_id";
-    private const string StateQueryParameterName = "state";
-    private const string ScopeQueryParameterName = "scope";
-    private const string RedirectUrlQueryParameterName = "redirect_url";
-
     public string? GetClientId(string returnUrl)
     {
-        return HttpUtility.ParseQueryString(returnUrl)?.Get(ClientIdQueryParameterName);
+        return HttpUtility.ParseQueryString(returnUrl)?.Get(QueryParam.ClientId);
     }
 
     public string BuildAuthorizeUrl(
@@ -23,10 +18,10 @@ public sealed class RedirectionService : IRedirectionService
         // Parse parameters from query string to rebuild URL to Autorize endpoint
         var returnUri = new Uri("http://localhost/" + returnUrl); // Fix issue with parsing query string
         var returnUriQueryString = returnUri.Query;
-        var code = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(ResponseTypeQueryParameterName);
-        var clientId = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(ClientIdQueryParameterName);
-        var state = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(StateQueryParameterName);
-        var redirectUrl = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(RedirectUrlQueryParameterName);
+        var code = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ResponseType);
+        var clientId = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ClientId);
+        var state = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.State);
+        var redirectUrl = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.RedirectUrl);
 
         // Rebuild URL to Autorize endpoint (mostly validation purpose)
         var uriBuilder = new UriBuilder(authorizationServerUri)
@@ -38,27 +33,27 @@ public sealed class RedirectionService : IRedirectionService
 
         if (!string.IsNullOrWhiteSpace(code))
         {
-            query[ResponseTypeQueryParameterName] = code;
+            query[QueryParam.ResponseType] = code;
         }
 
         if (!string.IsNullOrWhiteSpace(clientId))
         {
-            query[ClientIdQueryParameterName] = clientId;
+            query[QueryParam.ClientId] = clientId;
         }
 
         if (!string.IsNullOrWhiteSpace(state))
         {
-            query[StateQueryParameterName] = state;
+            query[QueryParam.State] = state;
         }
 
         if (!string.IsNullOrWhiteSpace(redirectUrl))
         {
-            query[RedirectUrlQueryParameterName] = redirectUrl;
+            query[QueryParam.RedirectUrl] = redirectUrl;
         }
 
         if (scopes != null && scopes.Length != 0)
         {
-            query[ScopeQueryParameterName] = string.Join(' ', scopes);
+            query[QueryParam.Scope] = string.Join(' ', scopes);
         }
 
         uriBuilder.Query = query.ToString();
@@ -66,7 +61,7 @@ public sealed class RedirectionService : IRedirectionService
         return uriBuilder.ToString();
     }
 
-    public string BuildClientCallbackUrl(string redirectUrl, string code, string[] scopes, string state)
+    public string BuildClientCallbackUrl(string redirectUrl, string code, string[] scopes, string? state)
     {
         var uriBuilder = new UriBuilder(redirectUrl);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -75,12 +70,12 @@ public sealed class RedirectionService : IRedirectionService
 
         if (scopes != null && scopes.Length != 0)
         {
-            query[ScopeQueryParameterName] = string.Join(' ', scopes);
+            query[QueryParam.Scope] = string.Join(' ', scopes);
         }
 
         if (!string.IsNullOrWhiteSpace(state))
         {
-            query[StateQueryParameterName] = state;
+            query[QueryParam.State] = state;
         }
 
         uriBuilder.Query = query.ToString();

@@ -24,7 +24,7 @@ public class AuthorizeController(
         [FromQuery] string client_id,
         [FromQuery] string? state,
         [FromQuery] string redirect_url,
-        [FromQuery] string scope)
+        [FromQuery] string? scope)
     {
         var internalRequest = new AuthorizeInternalRequest
         {

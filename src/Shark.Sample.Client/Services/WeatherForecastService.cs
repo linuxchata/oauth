@@ -1,6 +1,6 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using Newtonsoft.Json;
-using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Services;
@@ -8,22 +8,20 @@ namespace Shark.Sample.Client.Services;
 public sealed class WeatherForecastService(
     IHttpClientFactory httpClientFactory,
     ISecureTokenStore securityStore,
-    ISecurityService securityService) : IWeatherForecastService
+    IAuthorizationService securityService) : IWeatherForecastService
 {
     private const string Endpoint = "https://localhost:9002/weatherforecast";
 
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ISecureTokenStore _securityStore = securityStore;
-    private readonly ISecurityService _securityService = securityService;
+    private readonly IAuthorizationService _securityService = securityService;
 
     public async Task<List<WeatherForecast>> Get()
     {
-        var accessToken = await GetAccessToken();
-
         try
         {
             using var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Add(Security.AuthorizationHeaderName, $"Bearer {accessToken}");
+            httpClient.DefaultRequestHeaders.Authorization = await GetAuthorizationHeaderValue();
             var response = await httpClient.GetAsync(Endpoint);
             response.EnsureSuccessStatusCode();
 
@@ -41,6 +39,12 @@ public sealed class WeatherForecastService(
         {
             throw;
         }
+    }
+
+    private async Task<AuthenticationHeaderValue> GetAuthorizationHeaderValue()
+    {
+        var accessToken = await GetAccessToken();
+        return new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
     private async Task<string> GetAccessToken()
