@@ -32,27 +32,27 @@ public sealed class AuthorizeApplicationService(
             return response;
         }
 
-        var code = _stringGeneratorService.GenerateCode();
+        if (string.Equals(request.ResponseType, ResponseType.Code, StringComparison.OrdinalIgnoreCase))
+        {
+            var code = _stringGeneratorService.GenerateCode();
 
-        StorePersistedGrant(request.ClientId, request.Scopes, code);
+            StorePersistedGrant(request.ClientId, request.Scopes, code);
 
-        var redirectUrl = _redirectionService.BuildClientCallbackUrl(
-            request.RedirectUrl,
-            code,
-            request.Scopes,
-            request.State);
+            var redirectUrl = _redirectionService.BuildClientCallbackUrl(
+                request.RedirectUrl,
+                code,
+                request.Scopes,
+                request.State);
 
-        return new AuthorizeInternalResponse(redirectUrl);
+            return new AuthorizeInternalResponse(redirectUrl);
+        }
+
+        _logger.LogWarning("Unsupported response type {responseType}", request.ResponseType);
+        return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
     }
 
     private AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request)
     {
-        if (!string.Equals(request.ResponseType, ResponseType.Code, StringComparison.OrdinalIgnoreCase))
-        {
-            _logger.LogWarning("Unsupported response type {responseType}", request.ResponseType);
-            return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
-        }
-
         var client = _clientRepository.GetById(request.ClientId);
         if (client is null)
         {

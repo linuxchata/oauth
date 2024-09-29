@@ -91,6 +91,7 @@ public sealed class TokenApplicationService(
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
 
+        _logger.LogWarning("Unsupported grant type {grantType}", request.GrantType);
         return new TokenInternalBadRequestResponse(Error.InvalidGrantType);
     }
 
