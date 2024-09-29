@@ -17,8 +17,6 @@ public sealed class TokenApplicationService(
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<TokenApplicationService> logger) : ITokenApplicationService
 {
-    private const string DefaultAccessTokenType = "Bearer";
-
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
@@ -87,7 +85,7 @@ public sealed class TokenApplicationService(
                 "Issuing access token for {grantType}",
                 GrantType.ClientCredentials);
 
-            var token = GenerateAndStoreBearerToken(client!, request.Scopes);
+            var token = GenerateBearerToken(client!, request.Scopes);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
 
@@ -196,7 +194,7 @@ public sealed class TokenApplicationService(
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            TokenType = DefaultAccessTokenType,
+            TokenType = AccessTokenType.Bearer,
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };
 
@@ -213,14 +211,14 @@ public sealed class TokenApplicationService(
         return token;
     }
 
-    private TokenResponse GenerateAndStoreBearerToken(Client client, string[] scopes)
+    private TokenResponse GenerateBearerToken(Client client, string[] scopes)
     {
         var accessToken = _accessTokenGeneratorService.Generate(null, null, scopes, client.Audience);
 
         var token = new TokenResponse
         {
             AccessToken = accessToken,
-            TokenType = DefaultAccessTokenType,
+            TokenType = AccessTokenType.Bearer,
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };
 

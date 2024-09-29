@@ -1,4 +1,5 @@
-﻿using Shark.AuthorizationServer.Constants;
+﻿using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
 using Shark.AuthorizationServer.Requests;
@@ -10,23 +11,29 @@ namespace Shark.AuthorizationServer.ApplicationServices;
 public sealed class AuthorizeApplicationService(
     IClientRepository clientRepository,
     IStringGeneratorService stringGeneratorService,
+    IAccessTokenGeneratorService accessTokenGeneratorService,
     IPersistedGrantStore persistedGrantStore,
     IRedirectionService redirectionService,
     IHttpContextAccessor httpContextAccessor,
+    IOptions<AuthorizationServerConfiguration> options,
     ILogger<AuthorizeApplicationService> logger) : IAuthorizeApplicationService
 {
     private const int AuthorizationCodeExpirationInSeconds = 30;
 
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
+    private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
     private readonly IRedirectionService _redirectionService = redirectionService;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<AuthorizeApplicationService> _logger = logger;
 
     public AuthorizeInternalBaseResponse Execute(AuthorizeInternalRequest request)
     {
-        var response = ValidateRequest(request);
+        var client = _clientRepository.GetById(request.ClientId);
+
+        var response = ValidateRequest(request, client);
         if (response != null)
         {
             return response;
@@ -34,6 +41,10 @@ public sealed class AuthorizeApplicationService(
 
         if (string.Equals(request.ResponseType, ResponseType.Code, StringComparison.OrdinalIgnoreCase))
         {
+            _logger.LogInformation(
+                "Issuing authorization code for {responseType} response type",
+                ResponseType.Code);
+
             var code = _stringGeneratorService.GenerateCode();
 
             StorePersistedGrant(request.ClientId, request.Scopes, code);
@@ -44,16 +55,30 @@ public sealed class AuthorizeApplicationService(
                 request.Scopes,
                 request.State);
 
-            return new AuthorizeInternalResponse(redirectUrl);
+            return new AuthorizeInternalCodeResponse(redirectUrl);
+        }
+        else if (string.Equals(request.ResponseType, ResponseType.Token, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogInformation(
+                "Issuing access token for {responseType} response type",
+                ResponseType.Token);
+
+            var token = GenerateBearerToken(client!, request.Scopes);
+
+            var redirectUrl = _redirectionService.BuildClientCallbackUrl(
+                request.RedirectUrl,
+                token.AccessToken,
+                token.TokenType);
+
+            return new AuthorizeInternalTokenResponse(redirectUrl);
         }
 
         _logger.LogWarning("Unsupported response type {responseType}", request.ResponseType);
         return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
     }
 
-    private AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request)
+    private AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request, Client? client)
     {
-        var client = _clientRepository.GetById(request.ClientId);
         if (client is null)
         {
             _logger.LogWarning("Unknown client with identifier [{clientId}]", request.ClientId);
@@ -95,5 +120,20 @@ public sealed class AuthorizeApplicationService(
         };
 
         _persistedGrantStore.Add(persistedGrant);
+    }
+
+    private TokenResponse GenerateBearerToken(Client client, string[] scopes)
+    {
+        var userId = Guid.NewGuid().ToString();
+        var accessToken = _accessTokenGeneratorService.Generate(userId, null, scopes, client.Audience);
+
+        var token = new TokenResponse
+        {
+            AccessToken = accessToken,
+            TokenType = AccessTokenType.Bearer,
+            ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
+        };
+
+        return token;
     }
 }

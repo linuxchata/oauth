@@ -21,12 +21,12 @@ public sealed class AuthorizationService(
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<AuthorizationService> _logger = logger;
 
-    public string BuildLoginPageUrl(string? state)
+    public string BuildLoginPageUrl(string responseType, string? state)
     {
         // Create Return URL
         var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
-        returnUrlBuilderQuery[QueryParam.ResponseType] = Security.ResponseType;
+        returnUrlBuilderQuery[QueryParam.ResponseType] = responseType;
         returnUrlBuilderQuery[QueryParam.ClientId] = _configuration.ClientId;
         returnUrlBuilderQuery[QueryParam.RedirectUrl] = _configuration.ClientCallbackEndpoint;
         returnUrlBuilderQuery[QueryParam.State] = state;

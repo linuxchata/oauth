@@ -2,5 +2,5 @@
 
 public interface ICallBackApplicationService
 {
-    Task Execute(string code, string? scope, string? state);
+    Task Execute(string? accessToken, string? tokenType, string? code, string? scope, string? state);
 }

@@ -11,4 +11,8 @@ public sealed class QueryParam
     public const string ResponseType = "response_type";
 
     public const string State = "state";
+
+    public const string Token = "access_token";
+
+    public const string TokenType = "token_type";
 }

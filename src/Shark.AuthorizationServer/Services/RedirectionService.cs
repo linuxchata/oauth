@@ -15,10 +15,13 @@ public sealed class RedirectionService : IRedirectionService
         string returnUrl,
         string[] scopes)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(authorizationServerUri);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(returnUrl);
+
         // Parse parameters from query string to rebuild URL to Autorize endpoint
         var returnUri = new Uri("http://localhost/" + returnUrl); // Fix issue with parsing query string
         var returnUriQueryString = returnUri.Query;
-        var code = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ResponseType);
+        var responseType = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ResponseType);
         var clientId = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ClientId);
         var state = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.State);
         var redirectUrl = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.RedirectUrl);
@@ -31,9 +34,9 @@ public sealed class RedirectionService : IRedirectionService
 
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
-        if (!string.IsNullOrWhiteSpace(code))
+        if (!string.IsNullOrWhiteSpace(responseType))
         {
-            query[QueryParam.ResponseType] = code;
+            query[QueryParam.ResponseType] = responseType;
         }
 
         if (!string.IsNullOrWhiteSpace(clientId))
@@ -63,6 +66,9 @@ public sealed class RedirectionService : IRedirectionService
 
     public string BuildClientCallbackUrl(string redirectUrl, string code, string[] scopes, string? state)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(redirectUrl);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(code);
+
         var uriBuilder = new UriBuilder(redirectUrl);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
@@ -77,6 +83,23 @@ public sealed class RedirectionService : IRedirectionService
         {
             query[QueryParam.State] = state;
         }
+
+        uriBuilder.Query = query.ToString();
+
+        return uriBuilder.ToString();
+    }
+
+    public string BuildClientCallbackUrl(string redirectUrl, string token, string tokenType)
+    {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(redirectUrl);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(token);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(tokenType);
+
+        var uriBuilder = new UriBuilder(redirectUrl);
+        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+
+        query[QueryParam.Token] = token;
+        query[QueryParam.TokenType] = tokenType;
 
         uriBuilder.Query = query.ToString();
 

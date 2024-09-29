@@ -1,22 +1,31 @@
-﻿using Shark.Sample.Client.Services;
+﻿using Shark.Sample.Client.Models;
+using Shark.Sample.Client.Services;
 
 namespace Shark.Sample.Client.ApplicationServices;
 
 public sealed class CallBackApplicationService(
-    IAuthorizationService securityService,
+    IAuthorizationService authorizationService,
     IStateStore stateStore,
     ISecureTokenStore securityStore) : ICallBackApplicationService
 {
-    private readonly IAuthorizationService _securityService = securityService;
+    private readonly IAuthorizationService _authorizationService = authorizationService;
     private readonly IStateStore _stateStore = stateStore;
     private readonly ISecureTokenStore _securityStore = securityStore;
 
-    public async Task Execute(string code, string? scope, string? state)
+    public async Task Execute(string? accessToken, string? tokenType, string? code, string? scope, string? state)
     {
-        var expectedState = _stateStore.Get();
+        if (!string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(tokenType))
+        {
+            var secureToken = new SecureToken(accessToken, null);
+            _securityStore.Add(secureToken);
+        }
+        else if (!string.IsNullOrWhiteSpace(code))
+        {
+            var expectedState = _stateStore.Get();
 
-        var secureToken = await _securityService.RequestAccessToken(code, scope, state, expectedState);
+            var secureToken = await _authorizationService.RequestAccessToken(code, scope, state, expectedState);
 
-        _securityStore.Add(secureToken);
+            _securityStore.Add(secureToken);
+        }
     }
 }

@@ -9,15 +9,23 @@
 
     <div class="form-container">
         <form method="post" asp-page-handler="GetAuthToken">
-            <input type="submit" value="Get OAuth Token" />
+            <label>Get OAuth token with Authorization Code grant type</label>
+            <input type="submit" value="Get token" />
+        </form>
+
+        <form method="post" asp-page-handler="GetAuthTokenWithImplicit">
+            <label>Get OAuth token with Implicit grant type</label>
+            <input type="submit" value="Get token" />
         </form>
 
         <form method="post" asp-page-handler="GetData">
-            <input type="submit" value="Get Data from PR" />
+            <label>Get Data from Protected Resource</label>
+            <input type="submit" value="Get Data" />
         </form>
 
         <form method="post" asp-page-handler="GetDataWithClientCredentials">
-            <input type="submit" value="Get Data from PR with Client Credentials" />
+            <label>Get Data from Protected Resource with Client Credentials grant type</label>
+            <input type="submit" value="Get Data" />
         </form>
     </div>
     <br />

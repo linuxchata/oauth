@@ -41,7 +41,10 @@ public class AuthorizeController(
         {
             case AuthorizeInternalBadRequestResponse badRequestResponse:
                 return BadRequest(badRequestResponse.Message);
-            case AuthorizeInternalResponse response:
+            case AuthorizeInternalCodeResponse response:
+                _httpContextAccessor.HttpContext?.Response.Redirect(response.RedirectUrl);
+                return new StatusCodeResult((int)HttpStatusCode.Redirect);
+            case AuthorizeInternalTokenResponse response:
                 _httpContextAccessor.HttpContext?.Response.Redirect(response.RedirectUrl);
                 return new StatusCodeResult((int)HttpStatusCode.Redirect);
             default:

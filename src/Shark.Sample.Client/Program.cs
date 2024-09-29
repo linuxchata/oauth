@@ -1,4 +1,3 @@
-using System.Net;
 using Shark.Sample.Client.ApplicationServices;
 using Shark.Sample.Client.Models;
 using Shark.Sample.Client.Services;
