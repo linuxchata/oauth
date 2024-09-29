@@ -14,5 +14,5 @@ public sealed class TokenRequest
 
     public string? refresh_token { get; set; }
 
-    public string redirect_url { get; set; } = null!;
+    public string? redirect_url { get; set; } = null!;
 }

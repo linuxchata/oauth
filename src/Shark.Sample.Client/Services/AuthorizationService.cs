@@ -92,6 +92,23 @@ public sealed class AuthorizationService(
         return await RequestAccessTokenInternal(formData);
     }
 
+    public async Task<SecureToken> RequestAccessToken(string? scope)
+    {
+        var formData = new List<KeyValuePair<string, string>>
+        {
+            new(QueryParam.ClientId, _configuration.ClientId),
+            new(QueryParam.ClientSecret, _configuration.ClientSecret),
+            new(QueryParam.GrantType, Security.ClientCredentialsGrantType),
+        };
+
+        if (!string.IsNullOrWhiteSpace(scope))
+        {
+            formData.Add(new(QueryParam.Scope, scope));
+        }
+
+        return await RequestAccessTokenInternal(formData);
+    }
+
     private async Task<SecureToken> RequestAccessTokenInternal(List<KeyValuePair<string, string>> formData)
     {
         var tokenEndpointUri = BuildTokenEndpointUri();

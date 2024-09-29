@@ -14,5 +14,5 @@ public sealed class TokenInternalRequest
 
     public string? RefreshToken { get; set; }
 
-    public string RedirectUrl { get; set; } = null!;
+    public string? RedirectUrl { get; set; } = null!;
 }

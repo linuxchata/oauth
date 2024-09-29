@@ -38,9 +38,9 @@ public sealed class TokenApplicationService(
 
         if (string.Equals(request.GrantType, GrantType.AuthorizationCode, StringComparison.Ordinal))
         {
-            var codePersistedGrant = _persistedGrantStore.Get(request.Code);
+            var persistedGrant = _persistedGrantStore.Get(request.Code);
 
-            response = ValidateCodeGrant(codePersistedGrant, request);
+            response = ValidateCodeGrant(persistedGrant, request);
             if (response != null)
             {
                 return response;
@@ -50,17 +50,18 @@ public sealed class TokenApplicationService(
             _persistedGrantStore.Remove(request.Code);
 
             _logger.LogInformation(
-                "Found matching authorization code {code}. Issuing access token and refresh token",
-                request.Code);
+                "Found matching authorization code {code}. Issuing access token and refresh token for {grantType}",
+                request.Code,
+                GrantType.AuthorizationCode);
 
-            var token = GenerateAndStoreBearerToken(client!, request.Scopes, codePersistedGrant!.UserName);
+            var token = GenerateAndStoreBearerToken(client!, request.Scopes, persistedGrant!.UserName);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
         else if (string.Equals(request.GrantType, GrantType.RefreshToken, StringComparison.Ordinal))
         {
-            var refreshTokenPersistedGrant = _persistedGrantStore.Get(request.RefreshToken);
+            var persistedGrant = _persistedGrantStore.Get(request.RefreshToken);
 
-            response = ValidateRefreshTokenGrant(refreshTokenPersistedGrant, request);
+            response = ValidateRefreshTokenGrant(persistedGrant, request);
             if (response != null)
             {
                 // Remove refresh token persisted grant if it exists, since it can be compromised
@@ -73,10 +74,20 @@ public sealed class TokenApplicationService(
             _persistedGrantStore.Remove(request.RefreshToken);
 
             _logger.LogInformation(
-                "Found matching refresh token {refreshToken}. Issuing access token and refresh token",
-                request.RefreshToken);
+                "Found matching refresh token {refreshToken}. Issuing access token and refresh token for {grantType}",
+                request.RefreshToken,
+                GrantType.RefreshToken);
 
-            var token = GenerateAndStoreBearerToken(client!, request.Scopes, refreshTokenPersistedGrant!.UserName);
+            var token = GenerateAndStoreBearerToken(client!, request.Scopes, persistedGrant!.UserName);
+            return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+        }
+        else if (string.Equals(request.GrantType, GrantType.ClientCredentials, StringComparison.Ordinal))
+        {
+            _logger.LogInformation(
+                "Issuing access token for {grantType}",
+                GrantType.ClientCredentials);
+
+            var token = GenerateAndStoreBearerToken(client!, request.Scopes);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
 
@@ -98,7 +109,8 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidClient);
         }
 
-        if (!client.RedirectUris.Contains(request.RedirectUrl))
+        if (!string.IsNullOrWhiteSpace(request.RedirectUrl) &&
+            !client.RedirectUris.Contains(request.RedirectUrl))
         {
             _logger.LogWarning("Mismatched redirect URL [{redirectUrl}]", request.RedirectUrl);
             return new TokenInternalBadRequestResponse(Error.InvalidClient);
@@ -117,7 +129,9 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private TokenInternalBadRequestResponse? ValidateCodeGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)
+    private TokenInternalBadRequestResponse? ValidateCodeGrant
+        (PersistedGrant? persistedGrant,
+        TokenInternalRequest request)
     {
         // Validate grant
         if (persistedGrant is null)
@@ -147,7 +161,9 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private TokenInternalBadRequestResponse? ValidateRefreshTokenGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)
+    private TokenInternalBadRequestResponse? ValidateRefreshTokenGrant(
+        PersistedGrant? persistedGrant,
+        TokenInternalRequest request)
     {
         // Validate grant
         if (persistedGrant is null)
@@ -166,7 +182,10 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private TokenResponse GenerateAndStoreBearerToken(Client client, string[] scopes, string? userName)
+    private TokenResponse GenerateAndStoreBearerToken(
+        Client client,
+        string[] scopes,
+        string? userName = null)
     {
         var userId = Guid.NewGuid().ToString();
         var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, client.Audience);
@@ -189,6 +208,20 @@ public sealed class TokenApplicationService(
         };
 
         _persistedGrantStore.Add(tokenPersistedGrant);
+
+        return token;
+    }
+
+    private TokenResponse GenerateAndStoreBearerToken(Client client, string[] scopes)
+    {
+        var accessToken = _accessTokenGeneratorService.Generate(null, null, scopes, client.Audience);
+
+        var token = new TokenResponse
+        {
+            AccessToken = accessToken,
+            TokenType = DefaultAccessTokenType,
+            ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
+        };
 
         return token;
     }

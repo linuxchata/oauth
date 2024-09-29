@@ -13,9 +13,8 @@ public class AccessTokenGeneratorService(
 {
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public string Generate(string userId, string? userName, string[] scopes, string audience)
+    public string Generate(string? userId, string? userName, string[] scopes, string audience)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(nameof(userId));
         ArgumentNullException.ThrowIfNull(nameof(scopes));
         ArgumentNullException.ThrowIfNullOrWhiteSpace(nameof(audience));
 
@@ -28,21 +27,23 @@ public class AccessTokenGeneratorService(
         return token;
     }
 
-    private List<Claim> CreateClaims(string userId, string? userName, string[] scopes)
+    private List<Claim> CreateClaims(string? userId, string? userName, string[] scopes)
     {
-        var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, userId),
-        };
+        var claims = new List<Claim>();
 
-        if (scopes.Length != 0)
+        if (!string.IsNullOrWhiteSpace(userId))
         {
-            claims.Add(new(ClaimType.Scope, string.Join(" ", scopes)));
+            claims.Add(new(JwtRegisteredClaimNames.Sub, userId));
         }
 
         if (!string.IsNullOrWhiteSpace(userName))
         {
             claims.Add(new(JwtRegisteredClaimNames.Name, userName));
+        }
+
+        if (scopes.Length != 0)
+        {
+            claims.Add(new(ClaimType.Scope, string.Join(" ", scopes)));
         }
 
         return claims;

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.Sample.ProtectedResource.Constants;
-using Shark.Sample.ProtectedResource.Services;
 
 namespace Shark.Sample.ProtectedResource.Controllers;
 
@@ -16,17 +15,8 @@ public class WeatherForecastController : ControllerBase
 
     private readonly List<WeatherForecast> _forecast;
 
-    private readonly IBearerTokenHandlingService _authenticationService;
-
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public WeatherForecastController(
-        IBearerTokenHandlingService authenticationService,
-        ILogger<WeatherForecastController> logger)
+    public WeatherForecastController()
     {
-        _authenticationService = authenticationService;
-        _logger = logger;
-
         _forecast = Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

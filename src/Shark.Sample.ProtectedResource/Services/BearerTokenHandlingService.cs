@@ -59,10 +59,6 @@ public sealed class BearerTokenHandlingService(
 
         // Validate subject
         var userId = jwtToken.Subject;
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return false;
-        }
 
         // Validate issuer
         var issuer = jwtToken.Issuer;

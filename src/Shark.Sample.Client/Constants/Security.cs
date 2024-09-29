@@ -8,5 +8,7 @@ public sealed class Security
 
     public const string RefreshTokenGrantType = "refresh_token";
 
+    public const string ClientCredentialsGrantType = "client_credentials";
+
     public const string AuthorizationHeaderName = "Authorization";
 }

@@ -35,6 +35,11 @@ public class IndexModel(
         Data = await _weatherForecastService.Get();
     }
 
+    public async Task OnPostGetDataWithClientCredentials()
+    {
+        Data = await _weatherForecastService.GetWithClientCredentials();
+    }
+
     private void RedirectInternal(string redirectUrl)
     {
         _httpContextAccessor.HttpContext?.Response.Redirect(redirectUrl);

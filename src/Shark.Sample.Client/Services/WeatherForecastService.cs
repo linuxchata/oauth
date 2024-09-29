@@ -18,10 +18,20 @@ public sealed class WeatherForecastService(
 
     public async Task<List<WeatherForecast>> Get()
     {
+        return await GetInternal(await GetAuthorizationHeaderValue());
+    }
+
+    public async Task<List<WeatherForecast>> GetWithClientCredentials()
+    {
+        return await GetInternal(await GetAuthorizationHeaderValueWithClientCredentials());
+    }
+
+    private async Task<List<WeatherForecast>> GetInternal(AuthenticationHeaderValue authorizationHeaderValue)
+    {
         try
         {
             using var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Authorization = await GetAuthorizationHeaderValue();
+            httpClient.DefaultRequestHeaders.Authorization = authorizationHeaderValue;
             var response = await httpClient.GetAsync(Endpoint);
             response.EnsureSuccessStatusCode();
 
@@ -47,6 +57,12 @@ public sealed class WeatherForecastService(
         return new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
+    private async Task<AuthenticationHeaderValue> GetAuthorizationHeaderValueWithClientCredentials()
+    {
+        var accessToken = await GetAccessTokenWithClientCredentials("read");
+        return new AuthenticationHeaderValue("Bearer", accessToken);
+    }
+
     private async Task<string> GetAccessToken()
     {
         var accessToken = _securityStore.GetAccessToken();
@@ -62,6 +78,19 @@ public sealed class WeatherForecastService(
         }
 
         var secureToken = await _securityService.RequestAccessToken(refreshToken!, null!);
+        _securityStore.Add(secureToken);
+        return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
+    }
+
+    private async Task<string> GetAccessTokenWithClientCredentials(string? scope)
+    {
+        var accessToken = _securityStore.GetAccessToken();
+        if (!string.IsNullOrWhiteSpace(accessToken))
+        {
+            return accessToken;
+        }
+
+        var secureToken = await _securityService.RequestAccessToken(scope);
         _securityStore.Add(secureToken);
         return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
     }

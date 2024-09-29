@@ -2,5 +2,5 @@
 
 public interface IAccessTokenGeneratorService
 {
-    string Generate(string userId, string? userName, string[] scopes, string audience);
+    string Generate(string? userId, string? userName, string[] scopes, string audience);
 }
