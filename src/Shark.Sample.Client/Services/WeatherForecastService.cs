@@ -26,6 +26,11 @@ public sealed class WeatherForecastService(
         return await GetInternal(await GetAuthorizationHeaderValueWithClientCredentials());
     }
 
+    public async Task<List<WeatherForecast>> GetWithResourceOwnerCredentials()
+    {
+        return await GetInternal(await GetAuthorizationHeaderValueWithResourceOwnerCredentials());
+    }
+
     private async Task<List<WeatherForecast>> GetInternal(AuthenticationHeaderValue authorizationHeaderValue)
     {
         try
@@ -63,6 +68,12 @@ public sealed class WeatherForecastService(
         return new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
+    private async Task<AuthenticationHeaderValue> GetAuthorizationHeaderValueWithResourceOwnerCredentials()
+    {
+        var accessToken = await GetAccessTokenWithResourceOwnerCredentials("alice", "secret", "read");
+        return new AuthenticationHeaderValue("Bearer", accessToken);
+    }
+
     private async Task<string> GetAccessToken()
     {
         var accessToken = _securityStore.GetAccessToken();
@@ -91,6 +102,19 @@ public sealed class WeatherForecastService(
         }
 
         var secureToken = await _securityService.RequestAccessToken(scope);
+        _securityStore.Add(secureToken);
+        return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
+    }
+
+    private async Task<string> GetAccessTokenWithResourceOwnerCredentials(string username, string password, string? scope)
+    {
+        var accessToken = _securityStore.GetAccessToken();
+        if (!string.IsNullOrWhiteSpace(accessToken))
+        {
+            return accessToken;
+        }
+
+        var secureToken = await _securityService.RequestAccessToken(username, password, scope);
         _securityStore.Add(secureToken);
         return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
     }

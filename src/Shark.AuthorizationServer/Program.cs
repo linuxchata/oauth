@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Shark.AuthorizationServer.ApplicationServices;
 using Shark.AuthorizationServer.Authentication;
 using Shark.AuthorizationServer.Constants;
@@ -34,6 +33,7 @@ builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
 builder.Services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
 builder.Services.AddTransient<ILoginService, LoginService>();
+builder.Services.AddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();
 builder.Services.AddTransient<IRedirectionService, RedirectionService>();
 builder.Services.AddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
 builder.Services.AddSingleton<IClientRepository, ClientRepository>();

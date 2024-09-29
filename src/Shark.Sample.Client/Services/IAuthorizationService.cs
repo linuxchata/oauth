@@ -11,4 +11,6 @@ public interface IAuthorizationService
     Task<SecureToken> RequestAccessToken(string refreshToken, string? scope);
 
     Task<SecureToken> RequestAccessToken(string? scope);
+
+    Task<SecureToken> RequestAccessToken(string username, string password, string? scope);
 }

@@ -7,4 +7,6 @@ public interface IWeatherForecastService
     Task<List<WeatherForecast>> Get();
 
     Task<List<WeatherForecast>> GetWithClientCredentials();
+
+    Task<List<WeatherForecast>> GetWithResourceOwnerCredentials();
 }

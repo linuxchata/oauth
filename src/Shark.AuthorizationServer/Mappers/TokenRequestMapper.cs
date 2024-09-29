@@ -14,6 +14,8 @@ public static class TokenRequestMapper
             Scopes = request.scope?.Split(' ') ?? [],
             Code = request.code,
             RefreshToken = request.refresh_token,
+            Username = request.username,
+            Password = request.password,
             RedirectUrl = request.redirect_url,
         };
     }

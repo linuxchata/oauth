@@ -12,5 +12,7 @@ public sealed class Security
 
     public const string ClientCredentialsGrantType = "client_credentials";
 
+    public const string ResourceOwnerCredentialsGrantType = "password";
+
     public const string AuthorizationHeaderName = "Authorization";
 }

@@ -21,4 +21,8 @@ public sealed class QueryParam
     public const string State = "state";
 
     public const string ReturnUrl = "returnurl";
+
+    public const string Username = "username";
+
+    public const string Password = "password";
 }

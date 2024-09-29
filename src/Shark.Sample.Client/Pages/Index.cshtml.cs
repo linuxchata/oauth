@@ -42,6 +42,11 @@ public class IndexModel(
         RedirectInternal(loginPageUrl);
     }
 
+    public async Task OnPostGetDataWithResourceOwnerCredentials()
+    {
+        Data = await _weatherForecastService.GetWithResourceOwnerCredentials();
+    }
+
     public async Task OnPostGetData()
     {
         Data = await _weatherForecastService.Get();
