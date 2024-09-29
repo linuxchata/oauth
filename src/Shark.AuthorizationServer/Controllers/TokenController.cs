@@ -5,13 +5,13 @@ using Shark.AuthorizationServer.ApplicationServices;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
-using Shark.AuthorizationServer.Response;
+using Shark.AuthorizationServer.Responses;
 
 namespace Shark.AuthorizationServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TokenController(
+public sealed class TokenController(
     ITokenApplicationService tokenApplicationService) : ControllerBase
 {
     private readonly ITokenApplicationService _tokenApplicationService = tokenApplicationService;

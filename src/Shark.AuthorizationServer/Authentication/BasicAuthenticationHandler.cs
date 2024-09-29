@@ -8,7 +8,7 @@ using Shark.AuthorizationServer.Repositories;
 
 namespace Shark.AuthorizationServer.Authentication;
 
-public class BasicAuthenticationHandler(
+public sealed class BasicAuthenticationHandler(
     IClientRepository clientRepository,
     IOptionsMonitor<BasicAuthenticationOptions> options,
     ILoggerFactory logger,

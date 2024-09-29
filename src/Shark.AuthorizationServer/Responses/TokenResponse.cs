@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace Shark.AuthorizationServer.Response;
+namespace Shark.AuthorizationServer.Responses;
 
-public class TokenResponse
+public sealed class TokenResponse
 {
     [JsonProperty(PropertyName = "access_token")]
     public string AccessToken { get; set; } = null!;

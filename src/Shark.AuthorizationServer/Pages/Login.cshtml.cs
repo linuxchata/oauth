@@ -6,7 +6,7 @@ using Shark.AuthorizationServer.Services;
 
 namespace Shark.AuthorizationServer.Pages;
 
-public class LoginModel(
+public sealed class LoginModel(
     IClientRepository clientRepository,
     ILoginService loginService,
     IRedirectionService redirectionService) : PageModel

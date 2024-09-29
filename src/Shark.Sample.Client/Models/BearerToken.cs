@@ -2,7 +2,7 @@
 
 namespace Shark.Sample.Client.Models;
 
-public class BearerToken
+public sealed class BearerToken
 {
     [JsonProperty(PropertyName = "access_token")]
     public string AccessToken { get; set; } = null!;

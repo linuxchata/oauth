@@ -8,7 +8,7 @@ using Shark.Sample.ProtectedResource.Services;
 
 namespace Shark.Sample.ProtectedResource.Authentication;
 
-public class BearerTokenAuthenticationHandler(
+public sealed class BearerTokenAuthenticationHandler(
     IBearerTokenHandlingService bearerTokenHandlingService,
     IOptionsMonitor<BearerTokenAuthenticationOptions> options,
     ILoggerFactory logger,

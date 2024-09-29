@@ -29,7 +29,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    app.UseHsts();
 }
 
 if (app.Environment.IsDevelopment())
@@ -38,7 +37,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHsts();
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();

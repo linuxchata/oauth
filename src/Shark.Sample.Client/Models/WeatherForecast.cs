@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Shark.Sample.Client.Models;
 
-public class WeatherForecast
+public sealed class WeatherForecast
 {
     [JsonProperty(PropertyName = "date")]
     public DateOnly Date { get; set; }

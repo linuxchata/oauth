@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.Sample.ProtectedResource.Constants;
@@ -6,7 +7,7 @@ namespace Shark.Sample.ProtectedResource.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public sealed class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries =
     [
@@ -26,7 +27,8 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Scope.Read)]
+    // [Authorize(Scope.Read)]
+    [Produces(MediaTypeNames.Application.Json)]
     public IActionResult Get()
     {
         return Ok(_forecast.ToArray());

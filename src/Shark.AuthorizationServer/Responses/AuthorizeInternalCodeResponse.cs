@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Response;
+﻿namespace Shark.AuthorizationServer.Responses;
 
 public sealed class AuthorizeInternalCodeResponse(string redirectUrl) : AuthorizeInternalBaseResponse
 {

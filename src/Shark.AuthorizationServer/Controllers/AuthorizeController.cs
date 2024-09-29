@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.ApplicationServices;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Requests;
-using Shark.AuthorizationServer.Response;
+using Shark.AuthorizationServer.Responses;
 
 namespace Shark.AuthorizationServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthorizeController(
+public sealed class AuthorizeController(
     IAuthorizeApplicationService authorizeApplicationService,
     IHttpContextAccessor httpContextAccessor) : ControllerBase
 {

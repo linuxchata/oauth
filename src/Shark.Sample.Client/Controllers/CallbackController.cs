@@ -5,7 +5,7 @@ namespace Shark.Sample.Client.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CallbackController(
+public sealed class CallbackController(
     ICallBackApplicationService callBackApplicationService) : ControllerBase
 {
     private readonly ICallBackApplicationService _callBackApplicationService = callBackApplicationService;

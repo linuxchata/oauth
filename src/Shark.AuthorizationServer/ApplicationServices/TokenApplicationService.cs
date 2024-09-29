@@ -4,7 +4,7 @@ using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Repositories;
 using Shark.AuthorizationServer.Requests;
-using Shark.AuthorizationServer.Response;
+using Shark.AuthorizationServer.Responses;
 using Shark.AuthorizationServer.Services;
 
 namespace Shark.AuthorizationServer.ApplicationServices;
