@@ -6,7 +6,7 @@ public sealed class QueryParam
 
     public const string Scope = "scope";
 
-    public const string RedirectUrl = "redirect_url";
+    public const string RedirectUri = "redirect_uri";
 
     public const string ResponseType = "response_type";
 

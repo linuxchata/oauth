@@ -1,4 +1,5 @@
-﻿using Shark.Sample.Client.Models;
+﻿using Shark.Sample.Client.Constants;
+using Shark.Sample.Client.Models;
 using Shark.Sample.Client.Services;
 
 namespace Shark.Sample.Client.ApplicationServices;
@@ -14,18 +15,40 @@ public sealed class CallBackApplicationService(
 
     public async Task Execute(string? accessToken, string? tokenType, string? code, string? scope, string? state)
     {
-        if (!string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(tokenType))
+        if (IsImplicitGrantType(accessToken, tokenType))
         {
-            var secureToken = new SecureToken(accessToken, null);
-            _securityStore.Add(secureToken);
+            HandleImplicitGrantType(accessToken);
         }
-        else if (!string.IsNullOrWhiteSpace(code))
+        else if (IsAuthorizationCodeGrantType(code))
         {
-            var expectedState = _stateStore.Get();
-
-            var secureToken = await _authorizationService.RequestAccessToken(code, scope, state, expectedState);
-
-            _securityStore.Add(secureToken);
+            await HandleAuthorizationCodeGrantType(code!, scope, state);
         }
+    }
+
+    private bool IsImplicitGrantType(string? accessToken, string? tokenType)
+    {
+        return !string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(tokenType) &&
+            string.Equals(tokenType, AccessTokenType.Bearer, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsAuthorizationCodeGrantType(string? code)
+    {
+        return !string.IsNullOrWhiteSpace(code);
+    }
+
+    private void HandleImplicitGrantType(string? accessToken)
+    {
+        var secureToken = new SecureToken(accessToken, null);
+
+        _securityStore.Add(secureToken);
+    }
+
+    private async Task HandleAuthorizationCodeGrantType(string code, string? scope, string? state)
+    {
+        var expectedState = _stateStore.Get();
+
+        var secureToken = await _authorizationService.RequestAccessToken(code!, scope, state, expectedState);
+
+        _securityStore.Add(secureToken);
     }
 }

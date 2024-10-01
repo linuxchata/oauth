@@ -16,7 +16,7 @@ public static class TokenRequestMapper
             RefreshToken = request.refresh_token,
             Username = request.username,
             Password = request.password,
-            RedirectUrl = request.redirect_url,
+            RedirectUri = request.redirect_uri,
         };
     }
 }

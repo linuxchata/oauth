@@ -9,4 +9,6 @@ public sealed class Error
     public const string InvalidGrant = "Invalid grant";
 
     public const string InvalidGrantType = "Invalid grant_type";
+
+    public const string InvalidScope = "Invalid scope";
 }

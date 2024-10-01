@@ -28,7 +28,7 @@ public sealed class AuthorizationService(
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
         returnUrlBuilderQuery[QueryParam.ResponseType] = responseType;
         returnUrlBuilderQuery[QueryParam.ClientId] = _configuration.ClientId;
-        returnUrlBuilderQuery[QueryParam.RedirectUrl] = _configuration.ClientCallbackEndpoint;
+        returnUrlBuilderQuery[QueryParam.RedirectUri] = _configuration.ClientCallbackEndpoint;
         returnUrlBuilderQuery[QueryParam.State] = state;
         returnUrlBuilder.Query = returnUrlBuilderQuery.ToString();
         var returnUrl = returnUrlBuilder.ToString();
@@ -46,6 +46,8 @@ public sealed class AuthorizationService(
 
     public async Task<SecureToken> RequestAccessToken(string code, string? scope, string? state, string? expectedState)
     {
+        // authorization_code
+
         ArgumentNullException.ThrowIfNullOrWhiteSpace(code);
 
         if (!string.Equals(state, expectedState, StringComparison.Ordinal))
@@ -60,7 +62,7 @@ public sealed class AuthorizationService(
             new(QueryParam.ClientSecret, _configuration.ClientSecret),
             new(QueryParam.GrantType, Security.AuthorizationCodeGrantType),
             new(QueryParam.Code, code),
-            new(QueryParam.RedirectUrl, _configuration.ClientRedirectUrl),
+            new(QueryParam.RedirectUri, _configuration.ClientCallbackEndpoint),
         };
 
         if (!string.IsNullOrWhiteSpace(scope))
@@ -73,6 +75,8 @@ public sealed class AuthorizationService(
 
     public async Task<SecureToken> RequestAccessToken(string refreshToken, string? scope)
     {
+        // refresh_token
+
         ArgumentNullException.ThrowIfNullOrWhiteSpace(refreshToken);
 
         var formData = new List<KeyValuePair<string, string>>
@@ -81,7 +85,7 @@ public sealed class AuthorizationService(
             new(QueryParam.ClientSecret, _configuration.ClientSecret),
             new(QueryParam.GrantType, Security.RefreshTokenGrantType),
             new(QueryParam.RefreshToken, refreshToken),
-            new(QueryParam.RedirectUrl, _configuration.ClientRedirectUrl),
+            new(QueryParam.RedirectUri, _configuration.ClientCallbackEndpoint),
         };
 
         if (!string.IsNullOrWhiteSpace(scope))
@@ -94,6 +98,8 @@ public sealed class AuthorizationService(
 
     public async Task<SecureToken> RequestAccessToken(string? scope)
     {
+        // client_credentials
+
         var formData = new List<KeyValuePair<string, string>>
         {
             new(QueryParam.ClientId, _configuration.ClientId),
@@ -111,6 +117,8 @@ public sealed class AuthorizationService(
 
     public async Task<SecureToken> RequestAccessToken(string username, string password, string? scope)
     {
+        // password
+
         var formData = new List<KeyValuePair<string, string>>
         {
             new(QueryParam.ClientId, _configuration.ClientId),

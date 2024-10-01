@@ -39,42 +39,16 @@ public sealed class AuthorizeApplicationService(
             return response;
         }
 
-        if (string.Equals(request.ResponseType, ResponseType.Code, StringComparison.OrdinalIgnoreCase))
+        if (IsCodeResponseType(request.ResponseType))
         {
-            _logger.LogInformation(
-                "Issuing authorization code for {responseType} response type",
-                ResponseType.Code);
-
-            var code = _stringGeneratorService.GenerateCode();
-
-            StorePersistedGrant(request.ClientId, request.Scopes, code);
-
-            var redirectUrl = _redirectionService.BuildClientCallbackUrl(
-                request.RedirectUrl,
-                code,
-                request.Scopes,
-                request.State);
-
-            return new AuthorizeInternalCodeResponse(redirectUrl);
+            return HandleCodeResponseType(request);
         }
-        else if (string.Equals(request.ResponseType, ResponseType.Token, StringComparison.OrdinalIgnoreCase))
+        else if (IsTokenResponseType(request.ResponseType))
         {
-            _logger.LogInformation(
-                "Issuing access token for {responseType} response type",
-                ResponseType.Token);
-
-            var token = GenerateBearerToken(client!, request.Scopes);
-
-            var redirectUrl = _redirectionService.BuildClientCallbackUrl(
-                request.RedirectUrl,
-                token.AccessToken,
-                token.TokenType);
-
-            return new AuthorizeInternalTokenResponse(redirectUrl);
+            return HandleTokenResponseType(request, client!);
         }
 
-        _logger.LogWarning("Unsupported response type {responseType}", request.ResponseType);
-        return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
+        return HandleUnsupportedResponseType(request.ResponseType);
     }
 
     private AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request, Client? client)
@@ -85,9 +59,9 @@ public sealed class AuthorizeApplicationService(
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
-        if (!client.RedirectUris.Contains(request.RedirectUrl))
+        if (!client.RedirectUris.Contains(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URL [{redirectUrl}]", request.RedirectUrl);
+            _logger.LogWarning("Mismatched redirect URL [{redirectUri}]", request.RedirectUri);
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
@@ -98,14 +72,65 @@ public sealed class AuthorizeApplicationService(
             if (!allowedClientScopes.Contains(scope))
             {
                 _logger.LogWarning("Mismatched scope [{scope}] from request", scope);
-                return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
+                return new AuthorizeInternalBadRequestResponse(Error.InvalidScope);
             }
         }
 
         return null;
     }
 
-    private void StorePersistedGrant(string clientId, string[]? scopes, string code)
+    private bool IsCodeResponseType(string responseType)
+    {
+        return string.Equals(responseType, ResponseType.Code, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsTokenResponseType(string responseType)
+    {
+        return string.Equals(responseType, ResponseType.Token, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private AuthorizeInternalCodeResponse HandleCodeResponseType(AuthorizeInternalRequest request)
+    {
+        _logger.LogInformation(
+            "Issuing authorization code for {responseType} response type",
+            ResponseType.Code);
+
+        var code = _stringGeneratorService.GenerateCode();
+
+        StorePersistedGrant(request.ClientId, request.RedirectUri, request.Scopes, code);
+
+        var redirectUrl = _redirectionService.BuildClientCallbackUrl(
+            request.RedirectUri,
+            code,
+            request.Scopes,
+            request.State);
+
+        return new AuthorizeInternalCodeResponse(redirectUrl);
+    }
+
+    private AuthorizeInternalTokenResponse HandleTokenResponseType(AuthorizeInternalRequest request, Client client)
+    {
+        _logger.LogInformation(
+            "Issuing access token for {responseType} response type",
+            ResponseType.Token);
+
+        var token = GenerateBearerToken(client!, request.Scopes);
+
+        var redirectUrl = _redirectionService.BuildClientCallbackUrl(
+            request.RedirectUri,
+            token.AccessToken,
+            token.TokenType);
+
+        return new AuthorizeInternalTokenResponse(redirectUrl);
+    }
+
+    private AuthorizeInternalBadRequestResponse HandleUnsupportedResponseType(string responseType)
+    {
+        _logger.LogWarning("Unsupported response type {responseType}", responseType);
+        return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
+    }
+
+    private void StorePersistedGrant(string clientId, string redirectUri, string[] scopes, string code)
     {
         var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
 
@@ -113,6 +138,7 @@ public sealed class AuthorizeApplicationService(
         {
             Type = GrantType.AuthorizationCode,
             ClientId = clientId,
+            RedirectUri = redirectUri,
             Scopes = scopes,
             Value = code,
             UserName = userName,

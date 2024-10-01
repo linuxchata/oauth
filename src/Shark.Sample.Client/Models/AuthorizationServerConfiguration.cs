@@ -11,6 +11,4 @@ public sealed class AuthorizationServerConfiguration
     public required string ClientSecret { get; set; }
 
     public required string ClientCallbackEndpoint { get; set; }
-
-    public required string ClientRedirectUrl { get; set; }
 }

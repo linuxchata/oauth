@@ -24,7 +24,7 @@ public sealed class RedirectionService : IRedirectionService
         var responseType = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ResponseType);
         var clientId = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ClientId);
         var state = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.State);
-        var redirectUrl = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.RedirectUrl);
+        var redirectUrl = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.RedirectUri);
 
         // Rebuild URL to Autorize endpoint (mostly validation purpose)
         var uriBuilder = new UriBuilder(authorizationServerUri)
@@ -51,7 +51,7 @@ public sealed class RedirectionService : IRedirectionService
 
         if (!string.IsNullOrWhiteSpace(redirectUrl))
         {
-            query[QueryParam.RedirectUrl] = redirectUrl;
+            query[QueryParam.RedirectUri] = redirectUrl;
         }
 
         if (scopes != null && scopes.Length != 0)
@@ -64,12 +64,12 @@ public sealed class RedirectionService : IRedirectionService
         return uriBuilder.ToString();
     }
 
-    public string BuildClientCallbackUrl(string redirectUrl, string code, string[] scopes, string? state)
+    public string BuildClientCallbackUrl(string redirectUri, string code, string[] scopes, string? state)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(redirectUrl);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(redirectUri);
         ArgumentNullException.ThrowIfNullOrWhiteSpace(code);
 
-        var uriBuilder = new UriBuilder(redirectUrl);
+        var uriBuilder = new UriBuilder(redirectUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
         query[nameof(code)] = code;
@@ -89,13 +89,13 @@ public sealed class RedirectionService : IRedirectionService
         return uriBuilder.ToString();
     }
 
-    public string BuildClientCallbackUrl(string redirectUrl, string token, string tokenType)
+    public string BuildClientCallbackUrl(string redirectUri, string token, string tokenType)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(redirectUrl);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(redirectUri);
         ArgumentNullException.ThrowIfNullOrWhiteSpace(token);
         ArgumentNullException.ThrowIfNullOrWhiteSpace(tokenType);
 
-        var uriBuilder = new UriBuilder(redirectUrl);
+        var uriBuilder = new UriBuilder(redirectUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
         query[QueryParam.Token] = token;

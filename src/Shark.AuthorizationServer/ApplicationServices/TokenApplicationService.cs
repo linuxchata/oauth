@@ -54,7 +54,7 @@ public sealed class TokenApplicationService(
                 request.Code,
                 GrantType.AuthorizationCode);
 
-            var token = GenerateAndStoreBearerToken(client!, request.Scopes, persistedGrant!.UserName);
+            var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
         else if (string.Equals(request.GrantType, GrantType.RefreshToken, StringComparison.Ordinal))
@@ -78,7 +78,7 @@ public sealed class TokenApplicationService(
                 request.RefreshToken,
                 GrantType.RefreshToken);
 
-            var token = GenerateAndStoreBearerToken(client!, request.Scopes, persistedGrant!.UserName);
+            var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
         else if (string.Equals(request.GrantType, GrantType.ClientCredentials, StringComparison.Ordinal))
@@ -101,7 +101,7 @@ public sealed class TokenApplicationService(
                 "Issuing access token for {grantType}",
                 GrantType.ResourceOwnerCredentials);
 
-            var token = GenerateAndStoreBearerToken(client!, request.Scopes, request.Username);
+            var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, request.Username);
             return new TokenInternalResponse(JsonConvert.SerializeObject(token));
         }
 
@@ -124,11 +124,11 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidClient);
         }
 
-        if (!string.IsNullOrWhiteSpace(request.RedirectUrl) &&
-            !client.RedirectUris.Contains(request.RedirectUrl))
+        if (!string.IsNullOrWhiteSpace(request.RedirectUri) &&
+            !client.RedirectUris.Contains(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URL [{redirectUrl}]", request.RedirectUrl);
-            return new TokenInternalBadRequestResponse(Error.InvalidClient);
+            _logger.LogWarning("Mismatched redirect URI [{redirectUri}]", request.RedirectUri);
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate requested scopes against client's allowed scopes
@@ -137,7 +137,7 @@ public sealed class TokenApplicationService(
         {
             if (!allowedClientScopes.Contains(scope))
             {
-                return new TokenInternalBadRequestResponse(Error.InvalidClient);
+                return new TokenInternalBadRequestResponse(Error.InvalidScope);
             }
         }
 
@@ -162,8 +162,15 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
+        // Validate redirect URI
+        if (!string.Equals(persistedGrant.RedirectUri, request.RedirectUri, StringComparison.Ordinal))
+        {
+            _logger.LogWarning("Mismatched redirect URI for code persisted grant");
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
         // Validate grant scopes
-        var allowedScopes = persistedGrant.Scopes?.ToHashSet() ?? [];
+        var allowedScopes = persistedGrant.Scopes.ToHashSet() ?? [];
         foreach (var scope in request.Scopes)
         {
             if (!allowedScopes.Contains(scope))
@@ -194,10 +201,17 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
+        // Validate redirect URI
+        if (!string.Equals(persistedGrant.RedirectUri, request.RedirectUri, StringComparison.Ordinal))
+        {
+            _logger.LogWarning("Mismatched redirect URI for refresh token persisted grant");
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
         return null;
     }
 
-    private TokenResponse GenerateAndStoreBearerToken(Client client, string[] scopes, string? userName = null)
+    private TokenResponse GenerateAndStoreBearerToken(Client client, string? redirectUri, string[] scopes, string? userName = null)
     {
         var userId = Guid.NewGuid().ToString();
         var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, client.Audience);
@@ -215,6 +229,8 @@ public sealed class TokenApplicationService(
         {
             Type = GrantType.RefreshToken,
             ClientId = client.ClientId,
+            RedirectUri = redirectUri,
+            Scopes = scopes,
             Value = refreshToken,
             ExpiredIn = _configuration.AccessTokenExpirationInSeconds * 24,
         };

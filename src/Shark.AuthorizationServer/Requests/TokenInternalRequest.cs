@@ -2,11 +2,11 @@
 
 public sealed class TokenInternalRequest
 {
-    public string ClientId { get; set; } = null!;
+    public string? ClientId { get; set; }
 
-    public string ClientSecret { get; set; } = null!;
+    public string? ClientSecret { get; set; }
 
-    public string GrantType { get; set; } = null!;
+    public string? GrantType { get; set; }
 
     public string[] Scopes { get; set; } = null!;
 
@@ -18,5 +18,5 @@ public sealed class TokenInternalRequest
 
     public string? Password { get; set; }
 
-    public string? RedirectUrl { get; set; }
+    public string? RedirectUri { get; set; }
 }

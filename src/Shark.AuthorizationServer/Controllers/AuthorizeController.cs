@@ -22,17 +22,17 @@ public sealed class AuthorizeController(
     public IActionResult Get(
         [FromQuery] string response_type,
         [FromQuery] string client_id,
-        [FromQuery] string? state,
-        [FromQuery] string redirect_url,
-        [FromQuery] string? scope)
+        [FromQuery] string redirect_uri,
+        [FromQuery] string? scope,
+        [FromQuery] string? state)
     {
         var internalRequest = new AuthorizeInternalRequest
         {
             ResponseType = response_type,
             ClientId = client_id,
+            RedirectUri = redirect_uri,
             Scopes = scope?.Split(' ') ?? [],
             State = state,
-            RedirectUrl = redirect_url,
         };
 
         var internalResponse = _authorizeApplicationService.Execute(internalRequest);
