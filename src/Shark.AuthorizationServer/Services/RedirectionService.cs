@@ -25,6 +25,8 @@ public sealed class RedirectionService : IRedirectionService
         var responseType = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ResponseType);
         var clientId = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ClientId);
         var state = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.State);
+        var codeChallenge = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.CodeChallenge);
+        var codeChallengeMethod = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.CodeChallengeMethod);
         var redirectUrl = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.RedirectUri);
 
         // Rebuild URL to Autorize endpoint (mostly validation purpose)
@@ -48,6 +50,16 @@ public sealed class RedirectionService : IRedirectionService
         if (!string.IsNullOrWhiteSpace(state))
         {
             query[QueryParam.State] = state;
+        }
+
+        if (!string.IsNullOrWhiteSpace(codeChallenge))
+        {
+            query[QueryParam.CodeChallenge] = codeChallenge;
+        }
+
+        if (!string.IsNullOrWhiteSpace(codeChallengeMethod))
+        {
+            query[QueryParam.CodeChallengeMethod] = codeChallengeMethod;
         }
 
         if (!string.IsNullOrWhiteSpace(redirectUrl))

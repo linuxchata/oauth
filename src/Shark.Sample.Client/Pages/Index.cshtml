@@ -18,6 +18,16 @@
             <input type="submit" value="Get Data" />
         </form>
 
+        <form method="post" asp-page-handler="GetAuthTokenAuthorizationCodePkce">
+            <label>Get OAuth token with Authorization Code PKCE grant type</label>
+            <input type="submit" value="Get token" />
+        </form>
+
+        <form method="post" asp-page-handler="GetDataAuthorizationCodePkce">
+            <label>Get Data from Protected Resource with Authorization Code PKCE grant type</label>
+            <input type="submit" value="Get Data" />
+        </form>
+
         <form method="post" asp-page-handler="GetAuthTokenImplicit">
             <label>Get OAuth token with Implicit grant type</label>
             <input type="submit" value="Get token" />

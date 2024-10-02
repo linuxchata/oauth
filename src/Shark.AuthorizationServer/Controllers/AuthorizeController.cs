@@ -24,7 +24,9 @@ public sealed class AuthorizeController(
         [FromQuery] string client_id,
         [FromQuery] string redirect_uri,
         [FromQuery] string? scope,
-        [FromQuery] string? state)
+        [FromQuery] string? state,
+        [FromQuery] string? code_challenge,
+        [FromQuery] string? code_challenge_method)
     {
         var internalRequest = new AuthorizeInternalRequest
         {
@@ -33,6 +35,8 @@ public sealed class AuthorizeController(
             RedirectUri = redirect_uri,
             Scopes = scope?.Split(' ') ?? [],
             State = state,
+            CodeChallenge = code_challenge,
+            CodeChallengeMethod = code_challenge_method,
         };
 
         var internalResponse = _authorizeApplicationService.Execute(internalRequest);

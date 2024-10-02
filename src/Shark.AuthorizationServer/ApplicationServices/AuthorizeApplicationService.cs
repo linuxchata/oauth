@@ -97,7 +97,7 @@ public sealed class AuthorizeApplicationService(
 
         var code = _stringGeneratorService.GenerateCode();
 
-        StorePersistedGrant(request.ClientId, request.RedirectUri, request.Scopes, code);
+        StorePersistedGrant(request, code);
 
         var redirectUrl = _redirectionService.BuildClientCallbackUrl(
             request.RedirectUri,
@@ -130,18 +130,20 @@ public sealed class AuthorizeApplicationService(
         return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
     }
 
-    private void StorePersistedGrant(string clientId, string redirectUri, string[] scopes, string code)
+    private void StorePersistedGrant(AuthorizeInternalRequest request, string code)
     {
         var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
 
         var persistedGrant = new PersistedGrant
         {
             Type = GrantType.AuthorizationCode,
-            ClientId = clientId,
-            RedirectUri = redirectUri,
-            Scopes = scopes,
+            ClientId = request.ClientId,
+            RedirectUri = request.RedirectUri,
+            Scopes = request.Scopes,
             Value = code,
             UserName = userName,
+            CodeChallenge = request.CodeChallenge,
+            CodeChallengeMethod = request.CodeChallengeMethod,
             ExpiredIn = AuthorizationCodeExpirationInSeconds,
         };
 

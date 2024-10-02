@@ -17,9 +17,13 @@ public sealed class InMemoryPersistedGrantStore(IDistributedCache cache) : IPers
         }
 
         var serializedItem = _cache.GetString(value);
-        var item = JsonConvert.DeserializeObject<PersistedGrant>(serializedItem!);
 
-        return item;
+        if (!string.IsNullOrWhiteSpace(serializedItem))
+        {
+            return JsonConvert.DeserializeObject<PersistedGrant>(serializedItem);
+        }
+
+        return null;
     }
 
     public void Add(PersistedGrant item)

@@ -14,5 +14,9 @@ public record class PersistedGrant
 
     public string? UserName { get; set; }
 
+    public string? CodeChallenge { get; set; }
+
+    public string? CodeChallengeMethod { get; set; }
+
     public int ExpiredIn { get; set; }
 }

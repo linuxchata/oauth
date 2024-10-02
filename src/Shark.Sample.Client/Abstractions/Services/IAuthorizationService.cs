@@ -4,7 +4,7 @@ namespace Shark.Sample.Client.Abstractions.Services;
 
 public interface IAuthorizationService
 {
-    string BuildLoginPageUrl(string responseType, string? state);
+    string BuildLoginPageUrl(string responseType, string? state, ProofKeyForCodeExchange? pkce = null);
 
     Task<SecureToken> RequestAccessToken(string code, string? scope, string? actualState, string? expectedState);
 

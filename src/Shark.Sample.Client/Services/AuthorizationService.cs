@@ -22,7 +22,7 @@ public sealed class AuthorizationService(
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<AuthorizationService> _logger = logger;
 
-    public string BuildLoginPageUrl(string responseType, string? state)
+    public string BuildLoginPageUrl(string responseType, string? state, ProofKeyForCodeExchange? pkce = null)
     {
         // Create Return URL
         var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
@@ -31,6 +31,13 @@ public sealed class AuthorizationService(
         returnUrlBuilderQuery[QueryParam.ClientId] = _configuration.ClientId;
         returnUrlBuilderQuery[QueryParam.RedirectUri] = _configuration.ClientCallbackEndpoint;
         returnUrlBuilderQuery[QueryParam.State] = state;
+
+        if (pkce != null)
+        {
+            returnUrlBuilderQuery[QueryParam.CodeChallenge] = pkce.CodeChallenge;
+            returnUrlBuilderQuery[QueryParam.CodeChallengeMethod] = pkce.CodeChallengeMethod;
+        }
+
         returnUrlBuilder.Query = returnUrlBuilderQuery.ToString();
         var returnUrl = returnUrlBuilder.ToString();
 
