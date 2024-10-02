@@ -36,77 +36,24 @@ public sealed class TokenApplicationService(
             return response;
         }
 
-        if (string.Equals(request.GrantType, GrantType.AuthorizationCode, StringComparison.Ordinal))
+        if (IsGrantType(request.GrantType, GrantType.AuthorizationCode))
         {
-            var persistedGrant = _persistedGrantStore.Get(request.Code);
-
-            response = ValidateCodeGrant(persistedGrant, request);
-            if (response != null)
-            {
-                return response;
-            }
-
-            // Remove code persisted grant, since it can be considered consumed at this point
-            _persistedGrantStore.Remove(request.Code);
-
-            _logger.LogInformation(
-                "Found matching authorization code {code}. Issuing access token and refresh token for {grantType}",
-                request.Code,
-                GrantType.AuthorizationCode);
-
-            var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
-            return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+            return HandleAuthorizationCodeGrantType(request, client!);
         }
-        else if (string.Equals(request.GrantType, GrantType.RefreshToken, StringComparison.Ordinal))
+        else if (IsGrantType(request.GrantType, GrantType.RefreshToken))
         {
-            var persistedGrant = _persistedGrantStore.Get(request.RefreshToken);
-
-            response = ValidateRefreshTokenGrant(persistedGrant, request);
-            if (response != null)
-            {
-                // Remove refresh token persisted grant if it exists, since it can be compromised
-                _persistedGrantStore.Remove(request.RefreshToken);
-
-                return response;
-            }
-
-            // Remove previous refresh token
-            _persistedGrantStore.Remove(request.RefreshToken);
-
-            _logger.LogInformation(
-                "Found matching refresh token {refreshToken}. Issuing access token and refresh token for {grantType}",
-                request.RefreshToken,
-                GrantType.RefreshToken);
-
-            var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
-            return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+            return HandleRefreshTokenGrantType(request, client!);
         }
-        else if (string.Equals(request.GrantType, GrantType.ClientCredentials, StringComparison.Ordinal))
+        else if (IsGrantType(request.GrantType, GrantType.ClientCredentials))
         {
-            _logger.LogInformation(
-                "Issuing access token for {grantType}",
-                GrantType.ClientCredentials);
-
-            var token = GenerateBearerToken(client!, request.Scopes);
-            return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+            return HandleClientCredentialsGrantType(request, client!);
         }
-        else if (string.Equals(request.GrantType, GrantType.ResourceOwnerCredentials, StringComparison.Ordinal))
+        else if (IsGrantType(request.GrantType, GrantType.ResourceOwnerCredentials))
         {
-            if (!_resourceOwnerCredentialsValidationService.ValidateCredentials(request.Username, request.Password))
-            {
-                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-            }
-
-            _logger.LogInformation(
-                "Issuing access token for {grantType}",
-                GrantType.ResourceOwnerCredentials);
-
-            var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, request.Username);
-            return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+            return HandleResourceOwnerCredentialsGrantType(request, client!);
         }
 
-        _logger.LogWarning("Unsupported grant type {grantType}", request.GrantType);
-        return new TokenInternalBadRequestResponse(Error.InvalidGrantType);
+        return HandleUnsupportedGrantType(request);
     }
 
     private TokenInternalBadRequestResponse? ValidateClient(Client? client, TokenInternalRequest request)
@@ -142,6 +89,89 @@ public sealed class TokenApplicationService(
         }
 
         return null;
+    }
+
+    private bool IsGrantType(string? grantType, string expectedGrantType)
+    {
+        return string.Equals(grantType, expectedGrantType, StringComparison.Ordinal);
+    }
+
+    private TokenInternalBaseResponse HandleAuthorizationCodeGrantType(TokenInternalRequest request, Client client)
+    {
+        var persistedGrant = _persistedGrantStore.Get(request.Code);
+
+        var response = ValidateCodeGrant(persistedGrant, request);
+        if (response != null)
+        {
+            return response;
+        }
+
+        // Remove code persisted grant, since it can be considered consumed at this point
+        _persistedGrantStore.Remove(request.Code);
+
+        _logger.LogInformation(
+            "Found matching authorization code {code}. Issuing access token and refresh token for {grantType}",
+            request.Code,
+            GrantType.AuthorizationCode);
+
+        var token = GenerateAndStoreBearerToken(client, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
+        return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+    }
+
+    private TokenInternalBaseResponse HandleRefreshTokenGrantType(TokenInternalRequest request, Client client)
+    {
+        var persistedGrant = _persistedGrantStore.Get(request.RefreshToken);
+
+        var response = ValidateRefreshTokenGrant(persistedGrant, request);
+        if (response != null)
+        {
+            // Remove refresh token persisted grant if it exists, since it can be compromised
+            _persistedGrantStore.Remove(request.RefreshToken);
+
+            return response;
+        }
+
+        // Remove previous refresh token
+        _persistedGrantStore.Remove(request.RefreshToken);
+
+        _logger.LogInformation(
+            "Found matching refresh token {refreshToken}. Issuing access token and refresh token for {grantType}",
+            request.RefreshToken,
+            GrantType.RefreshToken);
+
+        var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
+        return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+    }
+
+    private TokenInternalResponse HandleClientCredentialsGrantType(TokenInternalRequest request, Client client)
+    {
+        _logger.LogInformation(
+            "Issuing access token for {grantType}",
+            GrantType.ClientCredentials);
+
+        var token = GenerateBearerToken(client!, request.Scopes);
+        return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+    }
+
+    private TokenInternalBaseResponse HandleResourceOwnerCredentialsGrantType(TokenInternalRequest request, Client client)
+    {
+        if (!_resourceOwnerCredentialsValidationService.ValidateCredentials(request.Username, request.Password))
+        {
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
+        _logger.LogInformation(
+            "Issuing access token for {grantType}",
+            GrantType.ResourceOwnerCredentials);
+
+        var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, request.Username);
+        return new TokenInternalResponse(JsonConvert.SerializeObject(token));
+    }
+
+    private TokenInternalBadRequestResponse HandleUnsupportedGrantType(TokenInternalRequest request)
+    {
+        _logger.LogWarning("Unsupported grant type {grantType}", request.GrantType);
+        return new TokenInternalBadRequestResponse(Error.InvalidGrantType);
     }
 
     private TokenInternalBadRequestResponse? ValidateCodeGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)

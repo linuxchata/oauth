@@ -39,11 +39,11 @@ public sealed class AuthorizeApplicationService(
             return response;
         }
 
-        if (IsCodeResponseType(request.ResponseType))
+        if (IsResponseType(request.ResponseType, ResponseType.Code))
         {
             return HandleCodeResponseType(request);
         }
-        else if (IsTokenResponseType(request.ResponseType))
+        else if (IsResponseType(request.ResponseType, ResponseType.Token))
         {
             return HandleTokenResponseType(request, client!);
         }
@@ -79,14 +79,9 @@ public sealed class AuthorizeApplicationService(
         return null;
     }
 
-    private bool IsCodeResponseType(string responseType)
+    private bool IsResponseType(string responseType, string expectedResponseType)
     {
-        return string.Equals(responseType, ResponseType.Code, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private bool IsTokenResponseType(string responseType)
-    {
-        return string.Equals(responseType, ResponseType.Token, StringComparison.OrdinalIgnoreCase);
+        return string.Equals(responseType, expectedResponseType, StringComparison.OrdinalIgnoreCase);
     }
 
     private AuthorizeInternalCodeResponse HandleCodeResponseType(AuthorizeInternalRequest request)
