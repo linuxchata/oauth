@@ -1,0 +1,23 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - src/**
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore ./src/Shark.OAuth2.0.sln
+    - name: Build
+      run: dotnet build ./src/Shark.OAuth2.0.sln --configuration Release --no-restore
