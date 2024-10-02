@@ -6,13 +6,5 @@ public sealed class Security
 
     public const string TokenResponseType = "token";
 
-    public const string AuthorizationCodeGrantType = "authorization_code";
-
-    public const string RefreshTokenGrantType = "refresh_token";
-
-    public const string ClientCredentialsGrantType = "client_credentials";
-
-    public const string ResourceOwnerCredentialsGrantType = "password";
-
     public const string AuthorizationHeaderName = "Authorization";
 }

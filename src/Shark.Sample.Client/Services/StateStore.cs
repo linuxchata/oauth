@@ -1,18 +1,23 @@
-﻿namespace Shark.Sample.Client.Services;
+﻿using Microsoft.Extensions.Caching.Distributed;
 
-public sealed class StateStore : IStateStore
+namespace Shark.Sample.Client.Services;
+
+public sealed class StateStore(IDistributedCache cache) : IStateStore
 {
-    private string? storedState;
+    private readonly IDistributedCache _cache = cache;
 
-    public string? Get()
+    public string? Get(string key)
     {
-        return storedState;
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+
+        return _cache.GetString(key);
     }
 
-    public void Add(string state)
+    public void Add(string key, string state)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
         ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
 
-        storedState = state;
+        _cache.SetString(key, state);
     }
 }

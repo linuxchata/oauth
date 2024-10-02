@@ -1,28 +1,63 @@
-﻿using Shark.Sample.Client.Models;
+﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
+using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Services;
 
-public sealed class SecureTokenStore : ISecureTokenStore
+public sealed class SecureTokenStore(IDistributedCache cache) : ISecureTokenStore
 {
-    private SecureToken? _storedSecureToken;
+    private readonly IDistributedCache _cache = cache;
 
-    public string? GetAccessToken()
+    public string? GetAccessToken(string key)
     {
-        return _storedSecureToken?.AccessToken;
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+
+        var secureToken = GetSecureToken(key);
+
+        return secureToken?.AccessToken;
     }
 
-    public string? GetRefreshToken()
+    public string? GetRefreshToken(string key)
     {
-        return _storedSecureToken?.RefreshToken;
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+
+        var secureToken = GetSecureToken(key);
+
+        return secureToken?.RefreshToken;
     }
 
-    public void Add(SecureToken secureToken)
+    public void Add(string key, SecureToken secureToken)
     {
-        _storedSecureToken = secureToken;
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNull(secureToken);
+
+        var serializedItem = JsonConvert.SerializeObject(secureToken);
+        _cache.SetString(key, serializedItem);
     }
 
-    public void RemoveAccessToken()
+    public void RemoveAccessToken(string key)
     {
-        _storedSecureToken = new SecureToken(null, _storedSecureToken?.RefreshToken);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+
+        var secureToken = GetSecureToken(key);
+
+        if (secureToken != null)
+        {
+            var updatedSecureToken = new SecureToken(null, secureToken.RefreshToken);
+
+            Add(key, updatedSecureToken);
+        }
+    }
+
+    private SecureToken? GetSecureToken(string key)
+    {
+        var serializedItem = _cache.GetString(key);
+        if(serializedItem != null)
+        {
+            return JsonConvert.DeserializeObject<SecureToken>(serializedItem!);
+        }
+
+        return null;
     }
 }

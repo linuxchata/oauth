@@ -10,12 +10,14 @@ builder.Services.Configure<AuthorizationServerConfiguration>(
 
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
 builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddTransient<ICallBackApplicationService, CallBackApplicationService>();
 
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IStateStore, StateStore>();
 builder.Services.AddSingleton<ISecureTokenStore, SecureTokenStore>();
 

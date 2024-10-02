@@ -8,27 +8,32 @@
     <h1 class="display-4">OAuth Client</h1>
 
     <div class="form-container">
-        <form method="post" asp-page-handler="GetAuthToken">
+        <form method="post" asp-page-handler="GetAuthTokenAuthorizationCode">
             <label>Get OAuth token with Authorization Code grant type</label>
             <input type="submit" value="Get token" />
         </form>
 
-        <form method="post" asp-page-handler="GetAuthTokenWithImplicit">
+        <form method="post" asp-page-handler="GetDataAuthorizationCode">
+            <label>Get Data from Protected Resource with Authorization Code grant type</label>
+            <input type="submit" value="Get Data" />
+        </form>
+
+        <form method="post" asp-page-handler="GetAuthTokenImplicit">
             <label>Get OAuth token with Implicit grant type</label>
             <input type="submit" value="Get token" />
         </form>
 
-        <form method="post" asp-page-handler="GetData">
-            <label>Get Data from Protected Resource</label>
+        <form method="post" asp-page-handler="GetDataImplicit">
+            <label>Get Data from Protected Resource with Implicit grant type</label>
             <input type="submit" value="Get Data" />
         </form>
 
-        <form method="post" asp-page-handler="GetDataWithResourceOwnerCredentials">
+        <form method="post" asp-page-handler="GetDataResourceOwnerCredentials">
             <label>Get Data from Protected Resource with Resource Owner Credentials grant type</label>
             <input type="submit" value="Get Data" />
         </form>
 
-        <form method="post" asp-page-handler="GetDataWithClientCredentials">
+        <form method="post" asp-page-handler="GetDataClientCredentials">
             <label>Get Data from Protected Resource with Client Credentials grant type</label>
             <input type="submit" value="Get Data" />
         </form>

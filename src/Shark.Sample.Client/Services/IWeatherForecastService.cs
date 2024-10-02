@@ -4,9 +4,5 @@ namespace Shark.Sample.Client.Services;
 
 public interface IWeatherForecastService
 {
-    Task<List<WeatherForecast>> Get();
-
-    Task<List<WeatherForecast>> GetWithClientCredentials();
-
-    Task<List<WeatherForecast>> GetWithResourceOwnerCredentials();
+    Task<List<WeatherForecast>> Get(string grantType);
 }

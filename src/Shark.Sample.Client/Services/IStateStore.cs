@@ -2,7 +2,7 @@
 
 public interface IStateStore
 {
-    string? Get();
+    string? Get(string key);
 
-    void Add(string state);
+    void Add(string key, string state);
 }

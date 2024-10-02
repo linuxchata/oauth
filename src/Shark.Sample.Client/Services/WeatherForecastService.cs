@@ -8,31 +8,44 @@ namespace Shark.Sample.Client.Services;
 
 public sealed class WeatherForecastService(
     IHttpClientFactory httpClientFactory,
-    ISecureTokenStore securityStore,
+    ISecureTokenStore secureTokenStore,
     IAuthorizationService authorizationService) : IWeatherForecastService
 {
     private const string ProtectedResourceEndpoint = "https://localhost:9002/weatherforecast";
 
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-    private readonly ISecureTokenStore _securityStore = securityStore;
+    private readonly ISecureTokenStore _secureTokenStore = secureTokenStore;
     private readonly IAuthorizationService _authorizationService = authorizationService;
 
-    public async Task<List<WeatherForecast>> Get()
+    public async Task<List<WeatherForecast>> Get(string grantType)
     {
-        return await GetInternal(await GetAuthorizationHeaderValue());
+        if (string.Equals(grantType, GrantType.AuthorizationCode, StringComparison.OrdinalIgnoreCase))
+        {
+            var header = await GetHeaderForAuthorizationCode(grantType);
+            return await GetInternal(header, grantType);
+        }
+        if (string.Equals(grantType, GrantType.Implicit, StringComparison.OrdinalIgnoreCase))
+        {
+            var header = GetHeaderForImplicit(grantType);
+            return await GetInternal(header, grantType);
+        }
+        else if (string.Equals(grantType, GrantType.ClientCredentials, StringComparison.OrdinalIgnoreCase))
+        {
+            var header = await GetHeaderForClientCredentials("read", grantType);
+            return await GetInternal(header, grantType);
+        }
+        else if (string.Equals(grantType, GrantType.ResourceOwnerCredentials, StringComparison.OrdinalIgnoreCase))
+        {
+            var header = await GetHeaderForResourceOwnerCredentials("alice", "secret", "read", grantType);
+            return await GetInternal(header, grantType);
+        }
+
+        throw new ArgumentException("Unsupported grant type");
     }
 
-    public async Task<List<WeatherForecast>> GetWithClientCredentials()
-    {
-        return await GetInternal(await GetAuthorizationHeaderValueWithClientCredentials());
-    }
-
-    public async Task<List<WeatherForecast>> GetWithResourceOwnerCredentials()
-    {
-        return await GetInternal(await GetAuthorizationHeaderValueWithResourceOwnerCredentials());
-    }
-
-    private async Task<List<WeatherForecast>> GetInternal(AuthenticationHeaderValue authorizationHeaderValue)
+    private async Task<List<WeatherForecast>> GetInternal(
+        AuthenticationHeaderValue authorizationHeaderValue,
+        string grantType)
     {
         try
         {
@@ -48,7 +61,7 @@ public sealed class WeatherForecastService(
         }
         catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
         {
-            _securityStore.RemoveAccessToken();
+            _secureTokenStore.RemoveAccessToken(grantType);
             throw;
         }
         catch (HttpRequestException)
@@ -57,66 +70,83 @@ public sealed class WeatherForecastService(
         }
     }
 
-    private async Task<AuthenticationHeaderValue> GetAuthorizationHeaderValue()
+    private async Task<AuthenticationHeaderValue> GetHeaderForAuthorizationCode(string grantType)
     {
-        var accessToken = await GetAccessToken();
+        var accessToken = await GetAccessTokenAuthorizationCode(grantType);
         return new AuthenticationHeaderValue(AccessTokenType.Bearer, accessToken);
     }
 
-    private async Task<AuthenticationHeaderValue> GetAuthorizationHeaderValueWithClientCredentials()
+    private AuthenticationHeaderValue GetHeaderForImplicit(string grantType)
     {
-        var accessToken = await GetAccessTokenWithClientCredentials("read");
+        var accessToken = GetAccessTokenImplicit(grantType);
         return new AuthenticationHeaderValue(AccessTokenType.Bearer, accessToken);
     }
 
-    private async Task<AuthenticationHeaderValue> GetAuthorizationHeaderValueWithResourceOwnerCredentials()
+    private async Task<AuthenticationHeaderValue> GetHeaderForClientCredentials(string? scope, string grantType)
     {
-        var accessToken = await GetAccessTokenWithResourceOwnerCredentials("alice", "secret", "read");
+        var accessToken = await GetAccessTokenClientCredentials(scope, grantType);
         return new AuthenticationHeaderValue(AccessTokenType.Bearer, accessToken);
     }
 
-    private async Task<string> GetAccessToken()
+    private async Task<AuthenticationHeaderValue> GetHeaderForResourceOwnerCredentials(string username, string password, string? scope, string grantType)
     {
-        var accessToken = _securityStore.GetAccessToken();
+        var accessToken = await GetAccessTokenResourceOwnerCredentials(username, password, scope, grantType);
+        return new AuthenticationHeaderValue(AccessTokenType.Bearer, accessToken);
+    }
+
+    private async Task<string> GetAccessTokenAuthorizationCode(string grantType)
+    {
+        var accessToken = _secureTokenStore.GetAccessToken(grantType);
         if (!string.IsNullOrWhiteSpace(accessToken))
         {
             return accessToken;
         }
 
-        var refreshToken = _securityStore.GetRefreshToken();
+        var refreshToken = _secureTokenStore.GetRefreshToken(grantType);
         if (string.IsNullOrWhiteSpace(refreshToken))
         {
             throw new ArgumentException("Missing access token and refresh token");
         }
 
         var secureToken = await _authorizationService.RequestAccessToken(refreshToken!, null!);
-        _securityStore.Add(secureToken);
+        _secureTokenStore.Add(grantType, secureToken);
         return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
     }
 
-    private async Task<string> GetAccessTokenWithClientCredentials(string? scope)
+    private string GetAccessTokenImplicit(string grantType)
     {
-        var accessToken = _securityStore.GetAccessToken();
+        var accessToken = _secureTokenStore.GetAccessToken(grantType);
+        if (!string.IsNullOrWhiteSpace(accessToken))
+        {
+            return accessToken;
+        }
+
+        throw new ArgumentException("Missing access token");
+    }
+
+    private async Task<string> GetAccessTokenClientCredentials(string? scope, string grantType)
+    {
+        var accessToken = _secureTokenStore.GetAccessToken(grantType);
         if (!string.IsNullOrWhiteSpace(accessToken))
         {
             return accessToken;
         }
 
         var secureToken = await _authorizationService.RequestAccessToken(scope);
-        _securityStore.Add(secureToken);
+        _secureTokenStore.Add(grantType, secureToken);
         return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
     }
 
-    private async Task<string> GetAccessTokenWithResourceOwnerCredentials(string username, string password, string? scope)
+    private async Task<string> GetAccessTokenResourceOwnerCredentials(string username, string password, string? scope, string grantType)
     {
-        var accessToken = _securityStore.GetAccessToken();
+        var accessToken = _secureTokenStore.GetAccessToken(grantType);
         if (!string.IsNullOrWhiteSpace(accessToken))
         {
             return accessToken;
         }
 
         var secureToken = await _authorizationService.RequestAccessToken(username, password, scope);
-        _securityStore.Add(secureToken);
+        _secureTokenStore.Add(grantType, secureToken);
         return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
     }
 }

@@ -40,15 +40,15 @@ public sealed class CallBackApplicationService(
     {
         var secureToken = new SecureToken(accessToken, null);
 
-        _securityStore.Add(secureToken);
+        _securityStore.Add(GrantType.Implicit, secureToken);
     }
 
     private async Task HandleAuthorizationCodeGrantType(string code, string? scope, string? state)
     {
-        var expectedState = _stateStore.Get();
+        var expectedState = _stateStore.Get(GrantType.AuthorizationCode);
 
         var secureToken = await _authorizationService.RequestAccessToken(code!, scope, state, expectedState);
 
-        _securityStore.Add(secureToken);
+        _securityStore.Add(GrantType.AuthorizationCode, secureToken);
     }
 }

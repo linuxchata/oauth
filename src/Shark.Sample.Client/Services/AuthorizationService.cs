@@ -60,7 +60,7 @@ public sealed class AuthorizationService(
         {
             new(QueryParam.ClientId, _configuration.ClientId),
             new(QueryParam.ClientSecret, _configuration.ClientSecret),
-            new(QueryParam.GrantType, Security.AuthorizationCodeGrantType),
+            new(QueryParam.GrantType, GrantType.AuthorizationCode),
             new(QueryParam.Code, code),
             new(QueryParam.RedirectUri, _configuration.ClientCallbackEndpoint),
         };
@@ -83,7 +83,7 @@ public sealed class AuthorizationService(
         {
             new(QueryParam.ClientId, _configuration.ClientId),
             new(QueryParam.ClientSecret, _configuration.ClientSecret),
-            new(QueryParam.GrantType, Security.RefreshTokenGrantType),
+            new(QueryParam.GrantType, GrantType.RefreshToken),
             new(QueryParam.RefreshToken, refreshToken),
             new(QueryParam.RedirectUri, _configuration.ClientCallbackEndpoint),
         };
@@ -104,7 +104,7 @@ public sealed class AuthorizationService(
         {
             new(QueryParam.ClientId, _configuration.ClientId),
             new(QueryParam.ClientSecret, _configuration.ClientSecret),
-            new(QueryParam.GrantType, Security.ClientCredentialsGrantType),
+            new(QueryParam.GrantType, GrantType.ClientCredentials),
         };
 
         if (!string.IsNullOrWhiteSpace(scope))
@@ -125,7 +125,7 @@ public sealed class AuthorizationService(
             new(QueryParam.ClientSecret, _configuration.ClientSecret),
             new(QueryParam.Username, username),
             new(QueryParam.Password, password),
-            new(QueryParam.GrantType, Security.ResourceOwnerCredentialsGrantType),
+            new(QueryParam.GrantType, GrantType.ResourceOwnerCredentials),
         };
 
         if (!string.IsNullOrWhiteSpace(scope))

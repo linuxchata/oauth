@@ -144,9 +144,7 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private TokenInternalBadRequestResponse? ValidateCodeGrant
-        (PersistedGrant? persistedGrant,
-        TokenInternalRequest request)
+    private TokenInternalBadRequestResponse? ValidateCodeGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)
     {
         // Validate grant
         if (persistedGrant is null)
@@ -183,9 +181,7 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private TokenInternalBadRequestResponse? ValidateRefreshTokenGrant(
-        PersistedGrant? persistedGrant,
-        TokenInternalRequest request)
+    private TokenInternalBadRequestResponse? ValidateRefreshTokenGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)
     {
         // Validate grant
         if (persistedGrant is null)

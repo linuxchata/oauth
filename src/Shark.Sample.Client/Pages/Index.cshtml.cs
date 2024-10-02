@@ -22,39 +22,41 @@ public class IndexModel(
     {
     }
 
-    public void OnPostGetAuthToken()
+    public void OnPostGetAuthTokenAuthorizationCode()
     {
         var state = Guid.NewGuid().ToString("N").ToLower();
-        _stateStore.Add(state);
+        _stateStore.Add(GrantType.AuthorizationCode, state);
 
         var loginPageUrl = _authorizationService.BuildLoginPageUrl(Security.CodeResponseType, state);
 
         RedirectInternal(loginPageUrl);
     }
 
-    public void OnPostGetAuthTokenWithImplicit()
+    public async Task OnPostGetDataAuthorizationCode()
     {
-        var state = Guid.NewGuid().ToString("N").ToLower();
-        _stateStore.Add(state);
+        Data = await _weatherForecastService.Get(GrantType.AuthorizationCode);
+    }
 
-        var loginPageUrl = _authorizationService.BuildLoginPageUrl(Security.TokenResponseType, state);
+    public void OnPostGetAuthTokenImplicit()
+    {
+        var loginPageUrl = _authorizationService.BuildLoginPageUrl(Security.TokenResponseType, null);
 
         RedirectInternal(loginPageUrl);
     }
 
-    public async Task OnPostGetDataWithResourceOwnerCredentials()
+    public async Task OnPostGetDataImplicit()
     {
-        Data = await _weatherForecastService.GetWithResourceOwnerCredentials();
+        Data = await _weatherForecastService.Get(GrantType.Implicit);
     }
 
-    public async Task OnPostGetData()
+    public async Task OnPostGetDataResourceOwnerCredentials()
     {
-        Data = await _weatherForecastService.Get();
+        Data = await _weatherForecastService.Get(GrantType.ResourceOwnerCredentials);
     }
 
-    public async Task OnPostGetDataWithClientCredentials()
+    public async Task OnPostGetDataClientCredentials()
     {
-        Data = await _weatherForecastService.GetWithClientCredentials();
+        Data = await _weatherForecastService.Get(GrantType.ClientCredentials);
     }
 
     private void RedirectInternal(string redirectUrl)

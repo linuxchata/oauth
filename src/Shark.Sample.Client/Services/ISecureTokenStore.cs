@@ -4,11 +4,11 @@ namespace Shark.Sample.Client.Services;
 
 public interface ISecureTokenStore
 {
-    string? GetAccessToken();
+    string? GetAccessToken(string key);
 
-    string? GetRefreshToken();
+    string? GetRefreshToken(string key);
 
-    void Add(SecureToken secureToken);
+    void Add(string key, SecureToken secureToken);
 
-    void RemoveAccessToken();
+    void RemoveAccessToken(string key);
 }
