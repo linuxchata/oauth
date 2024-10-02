@@ -1,4 +1,6 @@
-﻿namespace Shark.AuthorizationServer.Services;
+﻿using Shark.AuthorizationServer.Abstractions.Services;
+
+namespace Shark.AuthorizationServer.Services;
 
 public sealed class StringGeneratorService : IStringGeneratorService
 {

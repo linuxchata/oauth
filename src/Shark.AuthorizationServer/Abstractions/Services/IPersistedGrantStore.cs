@@ -1,6 +1,6 @@
 ﻿using Shark.AuthorizationServer.Models;
 
-namespace Shark.AuthorizationServer.Services;
+namespace Shark.AuthorizationServer.Abstractions.Services;
 
 public interface IPersistedGrantStore : IStore<PersistedGrant>
 {

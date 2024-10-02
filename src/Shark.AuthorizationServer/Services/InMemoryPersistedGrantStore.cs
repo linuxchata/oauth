@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Shark.AuthorizationServer.Abstractions.Services;
 using Shark.AuthorizationServer.Models;
 
 namespace Shark.AuthorizationServer.Services;

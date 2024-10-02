@@ -1,6 +1,6 @@
 ﻿using Shark.Sample.Client.Models;
 
-namespace Shark.Sample.Client.Services;
+namespace Shark.Sample.Client.Abstractions.Services;
 
 public interface IAuthorizationService
 {

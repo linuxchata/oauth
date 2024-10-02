@@ -3,6 +3,7 @@ using System.Text;
 using System.Web;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
 

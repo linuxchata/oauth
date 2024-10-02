@@ -1,4 +1,5 @@
 ﻿using System.Web;
+using Shark.AuthorizationServer.Abstractions.Services;
 using Shark.AuthorizationServer.Constants;
 
 namespace Shark.AuthorizationServer.Services;

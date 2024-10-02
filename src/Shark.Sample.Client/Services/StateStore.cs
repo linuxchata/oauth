@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Shark.Sample.Client.Abstractions.Services;
 
 namespace Shark.Sample.Client.Services;
 

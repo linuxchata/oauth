@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
-using Shark.Sample.Client.Services;
 
 namespace Shark.Sample.Client.Pages;
 

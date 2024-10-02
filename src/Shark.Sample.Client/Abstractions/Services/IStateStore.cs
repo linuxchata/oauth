@@ -1,4 +1,4 @@
-﻿namespace Shark.Sample.Client.Services;
+﻿namespace Shark.Sample.Client.Abstractions.Services;
 
 public interface IStateStore
 {

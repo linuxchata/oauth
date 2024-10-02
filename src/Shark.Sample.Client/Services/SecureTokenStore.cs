@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Services;

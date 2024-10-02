@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Services;
+﻿namespace Shark.AuthorizationServer.Abstractions.Services;
 
 public interface IAccessTokenGeneratorService
 {
