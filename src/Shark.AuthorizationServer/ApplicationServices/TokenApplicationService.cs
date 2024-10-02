@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Abstractions.Services;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Models;
-using Shark.AuthorizationServer.Repositories;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Responses;
 

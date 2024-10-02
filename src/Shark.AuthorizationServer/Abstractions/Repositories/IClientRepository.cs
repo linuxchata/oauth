@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Repositories;
+﻿namespace Shark.AuthorizationServer.Abstractions.Repositories;
 
 public interface IClientRepository
 {

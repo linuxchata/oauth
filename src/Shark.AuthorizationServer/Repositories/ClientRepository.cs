@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Shark.AuthorizationServer.Abstractions.Repositories;
 
 namespace Shark.AuthorizationServer.Repositories;
 

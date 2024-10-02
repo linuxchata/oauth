@@ -1,3 +1,4 @@
+using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Abstractions.Services;
 using Shark.AuthorizationServer.ApplicationServices;
 using Shark.AuthorizationServer.Authentication;
