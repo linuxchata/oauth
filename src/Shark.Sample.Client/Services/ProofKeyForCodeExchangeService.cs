@@ -17,8 +17,10 @@ public sealed class ProofKeyForCodeExchangeService(
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IDistributedCache _cache = cache;
 
-    public ProofKeyForCodeExchange Generate()
+    public ProofKeyForCodeExchange Generate(string? state)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
+
         var codeVerifier = _stringGeneratorService.GenerateCodeVerifier();
         var codeChallenge = GetCodeChallenge(codeVerifier);
 
@@ -34,16 +36,16 @@ public sealed class ProofKeyForCodeExchangeService(
             AbsoluteExpiration = DateTime.Now.AddSeconds(ExpirationInSeconds),
         };
         var serializedPkce = JsonConvert.SerializeObject(pkce);
-        _cache.SetString(pkce.CodeChallenge, serializedPkce, cacheEntryOptions);
+        _cache.SetString(GetKey(state), serializedPkce, cacheEntryOptions);
 
         return pkce;
     }
 
-    public ProofKeyForCodeExchange? Get(string codeChallenge)
+    public ProofKeyForCodeExchange? Get(string? state)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(codeChallenge);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
 
-        var serializedPkce = _cache.GetString(codeChallenge);
+        var serializedPkce = _cache.GetString(GetKey(state));
 
         if (!string.IsNullOrWhiteSpace(serializedPkce))
         {
@@ -67,5 +69,10 @@ public sealed class ProofKeyForCodeExchangeService(
             .Replace('+', '-')
             .Replace('/', '_')
             .TrimEnd('=');
+    }
+
+    private string GetKey(string state)
+    {
+        return $"pkce_{state}";
     }
 }

@@ -15,6 +15,7 @@ public sealed class TokenApplicationService(
     IAccessTokenGeneratorService accessTokenGeneratorService,
     IPersistedGrantStore persistedGrantStore,
     IResourceOwnerCredentialsValidationService resourceOwnerCredentialsValidationService,
+    IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<TokenApplicationService> logger) : ITokenApplicationService
 {
@@ -23,6 +24,7 @@ public sealed class TokenApplicationService(
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
     private readonly IResourceOwnerCredentialsValidationService _resourceOwnerCredentialsValidationService = resourceOwnerCredentialsValidationService;
+    private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
@@ -204,6 +206,39 @@ public sealed class TokenApplicationService(
             if (!allowedScopes.Contains(scope))
             {
                 _logger.LogWarning("Mismatched scope for code persisted grant");
+                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+            }
+        }
+
+        // Validate code verifier
+        if (!string.IsNullOrWhiteSpace(persistedGrant.CodeChallenge))
+        {
+            if (string.IsNullOrWhiteSpace(request.CodeVerifier))
+            {
+                _logger.LogWarning("Code verifier was not found in request");
+                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+            }
+
+            string codeChallenge;
+
+            if (string.Equals(persistedGrant.CodeChallengeMethod, CodeChallengeMethod.Plain, StringComparison.OrdinalIgnoreCase))
+            {
+                codeChallenge = request.CodeVerifier;
+            }
+            else if (string.Equals(persistedGrant.CodeChallengeMethod, CodeChallengeMethod.Sha256, StringComparison.OrdinalIgnoreCase))
+            {
+                codeChallenge = _proofKeyForCodeExchangeService.GetCodeChallenge(
+                    request.CodeVerifier,
+                    persistedGrant.CodeChallengeMethod!);
+            }
+            else
+            {
+                return new TokenInternalBadRequestResponse(Error.InvalidRequest);
+            }
+
+            if (!string.Equals(persistedGrant.CodeChallenge, codeChallenge, StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogWarning("Mismatched code challenge for code persisted grant");
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }

@@ -47,7 +47,7 @@ public class IndexModel(
         var state = Guid.NewGuid().ToString("N").ToLower();
         _stateStore.Add(GrantType.AuthorizationCode, state);
 
-        var pkce = _proofKeyForCodeExchangeService.Generate();
+        var pkce = _proofKeyForCodeExchangeService.Generate(state);
 
         var loginPageUrl = _authorizationService.BuildLoginPageUrl(Security.CodeResponseType, state, pkce);
 

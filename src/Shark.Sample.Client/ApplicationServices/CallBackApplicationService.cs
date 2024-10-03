@@ -1,4 +1,5 @@
-﻿using Shark.Sample.Client.Abstractions.Services;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
 
@@ -7,11 +8,13 @@ namespace Shark.Sample.Client.ApplicationServices;
 public sealed class CallBackApplicationService(
     IAuthorizationService authorizationService,
     IStateStore stateStore,
-    ISecureTokenStore securityStore) : ICallBackApplicationService
+    ISecureTokenStore securityStore,
+    IProofKeyForCodeExchangeService proofKeyForCodeExchangeService) : ICallBackApplicationService
 {
     private readonly IAuthorizationService _authorizationService = authorizationService;
     private readonly IStateStore _stateStore = stateStore;
     private readonly ISecureTokenStore _securityStore = securityStore;
+    private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
 
     public async Task Execute(string? accessToken, string? tokenType, string? code, string? scope, string? state)
     {
@@ -47,7 +50,14 @@ public sealed class CallBackApplicationService(
     {
         var expectedState = _stateStore.Get(GrantType.AuthorizationCode);
 
-        var secureToken = await _authorizationService.RequestAccessToken(code!, scope, state, expectedState);
+        var proofKeyForCodeExchange = _proofKeyForCodeExchangeService.Get(expectedState);
+
+        var secureToken = await _authorizationService.RequestAccessToken(
+            code!,
+            scope,
+            state,
+            expectedState,
+            proofKeyForCodeExchange?.CodeVerifier);
 
         _securityStore.Add(GrantType.AuthorizationCode, secureToken);
     }

@@ -4,7 +4,7 @@ namespace Shark.Sample.Client.Abstractions.Services;
 
 public interface IProofKeyForCodeExchangeService
 {
-    ProofKeyForCodeExchange Generate();
+    ProofKeyForCodeExchange Generate(string? state);
 
-    ProofKeyForCodeExchange? Get(string codeChallenge);
+    ProofKeyForCodeExchange? Get(string? state);
 }

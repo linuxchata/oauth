@@ -8,15 +8,16 @@ public static class TokenRequestMapper
     {
         return new TokenInternalRequest
         {
+            GrantType = request.grant_type,
+            Code = request.code,
+            CodeVerifier = request.code_verifier,
+            RedirectUri = request.redirect_uri,
             ClientId = request.client_id,
             ClientSecret = request.client_secret,
-            GrantType = request.grant_type,
             Scopes = request.scope?.Split(' ') ?? [],
-            Code = request.code,
             RefreshToken = request.refresh_token,
             Username = request.username,
             Password = request.password,
-            RedirectUri = request.redirect_uri,
         };
     }
 }

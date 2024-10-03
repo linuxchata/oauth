@@ -12,6 +12,8 @@ public sealed class QueryParam
 
     public const string Code = "code";
 
+    public const string CodeVerifier = "code_verifier";
+
     public const string RefreshToken = "refresh_token";
 
     public const string RedirectUri = "redirect_uri";

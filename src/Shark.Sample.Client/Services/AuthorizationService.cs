@@ -52,10 +52,16 @@ public sealed class AuthorizationService(
         return loginPageUriBuilder.ToString();
     }
 
-    public async Task<SecureToken> RequestAccessToken(string code, string? scope, string? state, string? expectedState)
+    /// <summary>
+    /// Request access token for authorization_code flow
+    /// </summary>
+    public async Task<SecureToken> RequestAccessToken(
+        string code,
+        string? scope,
+        string? state,
+        string? expectedState,
+        string? codeVerifier)
     {
-        // authorization_code
-
         ArgumentNullException.ThrowIfNullOrWhiteSpace(code);
 
         if (!string.Equals(state, expectedState, StringComparison.Ordinal))
@@ -78,13 +84,19 @@ public sealed class AuthorizationService(
             formData.Add(new(QueryParam.Scope, scope));
         }
 
+        if (!string.IsNullOrWhiteSpace(codeVerifier))
+        {
+            formData.Add(new(QueryParam.CodeVerifier, codeVerifier));
+        }
+
         return await RequestAccessTokenInternal(formData);
     }
 
+    /// <summary>
+    /// Request access token for refresh_token flow
+    /// </summary>
     public async Task<SecureToken> RequestAccessToken(string refreshToken, string? scope)
     {
-        // refresh_token
-
         ArgumentNullException.ThrowIfNullOrWhiteSpace(refreshToken);
 
         var formData = new List<KeyValuePair<string, string>>
@@ -104,10 +116,11 @@ public sealed class AuthorizationService(
         return await RequestAccessTokenInternal(formData);
     }
 
+    /// <summary>
+    /// Request access token for client_credentials flow
+    /// </summary>
     public async Task<SecureToken> RequestAccessToken(string? scope)
     {
-        // client_credentials
-
         var formData = new List<KeyValuePair<string, string>>
         {
             new(QueryParam.ClientId, _configuration.ClientId),
@@ -123,10 +136,11 @@ public sealed class AuthorizationService(
         return await RequestAccessTokenInternal(formData);
     }
 
+    /// <summary>
+    /// Request access token for password flow
+    /// </summary>
     public async Task<SecureToken> RequestAccessToken(string username, string password, string? scope)
     {
-        // password
-
         var formData = new List<KeyValuePair<string, string>>
         {
             new(QueryParam.ClientId, _configuration.ClientId),

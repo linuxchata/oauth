@@ -6,7 +6,7 @@ public interface IAuthorizationService
 {
     string BuildLoginPageUrl(string responseType, string? state, ProofKeyForCodeExchange? pkce = null);
 
-    Task<SecureToken> RequestAccessToken(string code, string? scope, string? actualState, string? expectedState);
+    Task<SecureToken> RequestAccessToken(string code, string? scope, string? actualState, string? expectedState, string? codeVerifier);
 
     Task<SecureToken> RequestAccessToken(string refreshToken, string? scope);
 

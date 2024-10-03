@@ -34,6 +34,7 @@ builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>
 
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
 builder.Services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
+builder.Services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
 
 builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();
