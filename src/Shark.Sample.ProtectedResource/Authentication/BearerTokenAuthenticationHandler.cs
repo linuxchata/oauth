@@ -24,7 +24,7 @@ public sealed class BearerTokenAuthenticationHandler(
             return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
         }
 
-        if (!_bearerTokenHandlingService.ParseAccessToken(accessToken, out TokenIdentity tokenIdentity))
+        if (!_bearerTokenHandlingService.ParseAndValidateAccessToken(accessToken, out TokenIdentity tokenIdentity))
         {
             return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
         }

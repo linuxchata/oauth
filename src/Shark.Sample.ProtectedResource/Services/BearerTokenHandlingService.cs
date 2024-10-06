@@ -1,6 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens;
 using Shark.Sample.ProtectedResource.Constants;
 using Shark.Sample.ProtectedResource.Models;
 
@@ -34,12 +36,12 @@ public sealed class BearerTokenHandlingService(
         }
 
         var startIndexOfAccessToken = authorization.IndexOf(BearerTokenName) + 1;
-        var accessToken = authorization.Substring(startIndexOfAccessToken + BearerTokenName.Length);
+        var accessToken = authorization[(startIndexOfAccessToken + BearerTokenName.Length)..];
 
         return accessToken;
     }
 
-    public bool ParseAccessToken(string accessToken, out TokenIdentity tokenIdentity)
+    public bool ParseAndValidateAccessToken(string accessToken, out TokenIdentity tokenIdentity)
     {
         tokenIdentity = new TokenIdentity();
 
@@ -47,46 +49,49 @@ public sealed class BearerTokenHandlingService(
         if (handler.CanReadToken(accessToken))
         {
             var jwtToken = handler.ReadJwtToken(accessToken);
-            return ValidateAccessToken(jwtToken, out tokenIdentity);
+            return ValidateAccessToken(jwtToken, accessToken, out tokenIdentity);
         }
 
         return true;
     }
 
-    private bool ValidateAccessToken(JwtSecurityToken jwtToken, out TokenIdentity tokenIdentity)
+    private bool ValidateAccessToken(JwtSecurityToken jwtToken, string accessToken, out TokenIdentity tokenIdentity)
     {
         tokenIdentity = new TokenIdentity();
 
-        // Validate subject
+        var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
+
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidIssuer = _configuration.Issuer,
+            ValidateAudience = false,
+            ValidAudiences = [_configuration.Audience],
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+        };
+        try
+        {
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            jwtSecurityTokenHandler.ValidateToken(
+                accessToken,
+                validationParameters,
+                out SecurityToken validatedToken);
+
+            if (validatedToken is not JwtSecurityToken)
+            {
+                return false;
+            }
+        }
+        catch (SecurityTokenException)
+        {
+            return false;
+        }
+
         var userId = jwtToken.Subject;
-
-        // Validate issuer
-        var issuer = jwtToken.Issuer;
-        if (!string.Equals(issuer, _configuration.Issuer, StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        // Validate audience
-        var audiences = jwtToken.Audiences.ToHashSet();
-        if (!audiences.Contains(_configuration.Audience))
-        {
-            return false;
-        }
-
-        // Validate time
-        var currentTime = DateTime.UtcNow;
-        if (currentTime < jwtToken.ValidFrom)
-        {
-            return false;
-        }
-        else if (currentTime > jwtToken.ValidTo)
-        {
-            return false;
-        }
-
-        var claims = jwtToken.Claims;
-        var scopes = claims.FirstOrDefault(c => c.Type == ClaimType.Scope)?.Value?.Split(' ');
+        var scopes = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimType.Scope)?.Value?.Split(' ');
 
         tokenIdentity.UserId = userId;
         tokenIdentity.Scopes = scopes!;

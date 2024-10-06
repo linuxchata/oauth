@@ -27,7 +27,7 @@ public sealed class WeatherForecastController : ControllerBase
     }
 
     [HttpGet]
-    // [Authorize(Scope.Read)]
+    [Authorize(Scope.Read)]
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult Get()
     {

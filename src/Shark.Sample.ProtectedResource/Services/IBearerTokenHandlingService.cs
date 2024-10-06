@@ -6,5 +6,5 @@ public interface IBearerTokenHandlingService
 {
     string? GetAccessToken(IHeaderDictionary headers);
 
-    bool ParseAccessToken(string accessToken, out TokenIdentity tokenIdentity);
+    bool ParseAndValidateAccessToken(string accessToken, out TokenIdentity tokenIdentity);
 }
