@@ -1,3 +1,4 @@
+using Prometheus;
 using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Abstractions.Services;
 using Shark.AuthorizationServer.ApplicationServices;
@@ -51,6 +52,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMetricServer();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
