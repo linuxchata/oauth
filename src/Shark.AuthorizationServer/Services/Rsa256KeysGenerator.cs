@@ -18,13 +18,15 @@ public static class Rsa256KeysGenerator
     private static string ExportRsaPrivateKeyPem(RSA rsa)
     {
         var privateKey = rsa.ExportRSAPrivateKey();
+        // var privateKeyPem = rsa.ExportRSAPrivateKeyPem();
         return ConvertToPem(privateKey, "RSA PRIVATE KEY");
     }
 
     private static string ExportRsaPublicKeyPem(RSA rsa)
     {
         var publicKey = rsa.ExportRSAPublicKey();
-        return ConvertToPem(publicKey, "PUBLIC KEY");
+        // var publicKeyPem = rsa.ExportRSAPublicKeyPem();
+        return ConvertToPem(publicKey, "RSA PUBLIC KEY");
     }
 
     private static string ConvertToPem(byte[] keyData, string keyType)

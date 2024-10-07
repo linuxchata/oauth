@@ -22,7 +22,7 @@ public sealed class AccessTokenGeneratorService(
 
         var claims = CreateClaims(userId, userName, scopes);
 
-        using var disposibleObject = GenerateSigningCredentials(out SigningCredentials signingCredentials);
+        using var _ = GenerateSigningCredentials(out SigningCredentials signingCredentials);
 
         var token = GenerateToken(claims, audience, signingCredentials);
 
@@ -51,7 +51,7 @@ public sealed class AccessTokenGeneratorService(
         return claims;
     }
 
-    private IDisposable GenerateSigningCredentials(out SigningCredentials signingCredentials)
+    private IDisposable? GenerateSigningCredentials(out SigningCredentials signingCredentials)
     {
         if (_configuration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
         {
@@ -65,16 +65,16 @@ public sealed class AccessTokenGeneratorService(
         throw new InvalidOperationException($"Unsupported security algorithms {_configuration.SecurityAlgorithms}");
     }
 
-    private IDisposable GenerateSigningCredentialsHs256(out SigningCredentials signingCredentials)
+    private IDisposable? GenerateSigningCredentialsHs256(out SigningCredentials signingCredentials)
     {
         var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
         var securityKey = new SymmetricSecurityKey(key);
         signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        return null!;
+        return null;
     }
 
-    private IDisposable GenerateSigningCredentialsRsa256(out SigningCredentials signingCredentials)
+    private IDisposable? GenerateSigningCredentialsRsa256(out SigningCredentials signingCredentials)
     {
         var rsa = RSA.Create();
         rsa.ImportFromPem(ReadRsa256PrivateKey());

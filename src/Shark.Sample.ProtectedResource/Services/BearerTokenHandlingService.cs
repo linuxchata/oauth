@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -59,6 +60,8 @@ public sealed class BearerTokenHandlingService(
     {
         tokenIdentity = new TokenIdentity();
 
+        using var _ = GetIssuerSigningKey(jwtToken.SignatureAlgorithm, out var securityKey);
+
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
@@ -66,7 +69,7 @@ public sealed class BearerTokenHandlingService(
             ValidateAudience = false,
             ValidAudiences = [_configuration.Audience],
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = GetIssuerSigningKey(jwtToken.SignatureAlgorithm),
+            IssuerSigningKey = securityKey,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero,
         };
@@ -97,13 +100,26 @@ public sealed class BearerTokenHandlingService(
         return true;
     }
 
-    private SecurityKey GetIssuerSigningKey(string signatureAlgorithm)
+    private IDisposable? GetIssuerSigningKey(string signatureAlgorithm, out SecurityKey securityKey)
     {
         if (signatureAlgorithm == SecurityAlgorithms.HmacSha256)
         {
             var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
 
-            return new SymmetricSecurityKey(key);
+            securityKey = new SymmetricSecurityKey(key);
+
+            return null;
+        }
+        else if (signatureAlgorithm == SecurityAlgorithms.RsaSha256)
+        {
+            var publicKey = File.ReadAllText("Keys/RS256.Public.pem");
+
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(publicKey.ToCharArray());
+
+            securityKey = new RsaSecurityKey(rsa);
+
+            return rsa;
         }
 
         throw new InvalidOperationException($"Unsupported security algorithms {signatureAlgorithm}");
