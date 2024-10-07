@@ -141,7 +141,7 @@ public sealed class TokenApplicationService(
             request.RefreshToken,
             GrantType.RefreshToken);
 
-        var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
+        var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, persistedGrant!.Scopes, persistedGrant!.UserName);
         return new TokenInternalResponse(JsonConvert.SerializeObject(token));
     }
 
