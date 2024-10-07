@@ -293,6 +293,7 @@ public sealed class TokenApplicationService(
             RedirectUri = redirectUri,
             Scopes = scopes,
             Value = refreshToken,
+            UserName = userName,
             ExpiredIn = _configuration.AccessTokenExpirationInSeconds * 24,
         };
 

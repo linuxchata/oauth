@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
@@ -10,12 +11,14 @@ using Shark.Sample.ProtectedResource.Models;
 namespace Shark.Sample.ProtectedResource.Services;
 
 public sealed class BearerTokenHandlingService(
-    IOptions<BearerTokenAuthenticationOptions> options) : IBearerTokenHandlingService
+    IOptions<BearerTokenAuthenticationOptions> options,
+    ILogger<BearerTokenHandlingService> logger) : IBearerTokenHandlingService
 {
     private const string HeaderKeyName = "Authorization";
     private const string BearerTokenName = "Bearer";
 
     private readonly BearerTokenAuthenticationOptions _configuration = options.Value;
+    private readonly ILogger<BearerTokenHandlingService> _logger = logger;
 
     public string? GetAccessToken(IHeaderDictionary headers)
     {
@@ -50,13 +53,13 @@ public sealed class BearerTokenHandlingService(
         if (handler.CanReadToken(accessToken))
         {
             var jwtToken = handler.ReadJwtToken(accessToken);
-            return ValidateAccessToken(jwtToken, accessToken, out tokenIdentity);
+            return ValidateAccessToken(handler, jwtToken, accessToken, out tokenIdentity);
         }
 
         return true;
     }
 
-    private bool ValidateAccessToken(JwtSecurityToken jwtToken, string accessToken, out TokenIdentity tokenIdentity)
+    private bool ValidateAccessToken(JwtSecurityTokenHandler handler, JwtSecurityToken jwtToken, string accessToken, out TokenIdentity tokenIdentity)
     {
         tokenIdentity = new TokenIdentity();
 
@@ -73,10 +76,10 @@ public sealed class BearerTokenHandlingService(
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero,
         };
+
         try
         {
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            jwtSecurityTokenHandler.ValidateToken(
+            handler.ValidateToken(
                 accessToken,
                 validationParameters,
                 out SecurityToken validatedToken);
@@ -86,8 +89,9 @@ public sealed class BearerTokenHandlingService(
                 return false;
             }
         }
-        catch (SecurityTokenException)
+        catch (SecurityTokenException ex)
         {
+            _logger.LogError(ex, ex.Message);
             return false;
         }
 
@@ -106,7 +110,10 @@ public sealed class BearerTokenHandlingService(
         {
             var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
 
-            securityKey = new SymmetricSecurityKey(key);
+            securityKey = new SymmetricSecurityKey(key)
+            {
+                KeyId = _configuration.KeyId
+            };
 
             return null;
         }
@@ -117,7 +124,10 @@ public sealed class BearerTokenHandlingService(
             var rsa = RSA.Create();
             rsa.ImportFromPem(publicKey.ToCharArray());
 
-            securityKey = new RsaSecurityKey(rsa);
+            securityKey = new RsaSecurityKey(rsa)
+            {
+                KeyId = _configuration.KeyId
+            };
 
             return rsa;
         }

@@ -10,5 +10,7 @@ public sealed class BearerTokenAuthenticationOptions : AuthenticationSchemeOptio
 
     public string Audience { get; set; } = null!;
 
+    public string KeyId { get; set; } = null!;
+
     public string SymmetricSecurityKey { get; set; } = null!;
 }
