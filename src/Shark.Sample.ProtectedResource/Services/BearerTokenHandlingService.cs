@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
@@ -50,11 +49,22 @@ public sealed class BearerTokenHandlingService(
         tokenIdentity = new TokenIdentity();
 
         var handler = new JwtSecurityTokenHandler();
-        if (handler.CanReadToken(accessToken))
+        if (!handler.CanReadToken(accessToken))
         {
-            var jwtToken = handler.ReadJwtToken(accessToken);
-            return ValidateAccessToken(handler, jwtToken, accessToken, out tokenIdentity);
+            return false;
         }
+
+        var jwtToken = handler.ReadJwtToken(accessToken);
+        if (!ValidateAccessToken(handler, jwtToken, accessToken, out tokenIdentity))
+        {
+            return false;
+        }
+
+        var userId = jwtToken.Subject;
+        var scopes = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimType.Scope)?.Value?.Split(' ');
+
+        tokenIdentity.UserId = userId;
+        tokenIdentity.Scopes = scopes!;
 
         return true;
     }
@@ -94,12 +104,11 @@ public sealed class BearerTokenHandlingService(
             _logger.LogError(ex, ex.Message);
             return false;
         }
-
-        var userId = jwtToken.Subject;
-        var scopes = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimType.Scope)?.Value?.Split(' ');
-
-        tokenIdentity.UserId = userId;
-        tokenIdentity.Scopes = scopes!;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return false;
+        }
 
         return true;
     }
