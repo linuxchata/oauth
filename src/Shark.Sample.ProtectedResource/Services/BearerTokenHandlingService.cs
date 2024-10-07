@@ -59,8 +59,6 @@ public sealed class BearerTokenHandlingService(
     {
         tokenIdentity = new TokenIdentity();
 
-        var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
-
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
@@ -68,7 +66,7 @@ public sealed class BearerTokenHandlingService(
             ValidateAudience = false,
             ValidAudiences = [_configuration.Audience],
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
+            IssuerSigningKey = GetIssuerSigningKey(jwtToken.SignatureAlgorithm),
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero,
         };
@@ -97,5 +95,17 @@ public sealed class BearerTokenHandlingService(
         tokenIdentity.Scopes = scopes!;
 
         return true;
+    }
+
+    private SecurityKey GetIssuerSigningKey(string signatureAlgorithm)
+    {
+        if (signatureAlgorithm == SecurityAlgorithms.HmacSha256)
+        {
+            var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
+
+            return new SymmetricSecurityKey(key);
+        }
+
+        throw new InvalidOperationException($"Unsupported security algorithms {signatureAlgorithm}");
     }
 }

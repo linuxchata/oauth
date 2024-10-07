@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +22,7 @@ public sealed class AccessTokenGeneratorService(
 
         var claims = CreateClaims(userId, userName, scopes);
 
-        var signingCredentials = GenerateSigningCredentials();
+        using var disposibleObject = GenerateSigningCredentials(out SigningCredentials signingCredentials);
 
         var token = GenerateToken(claims, audience, signingCredentials);
 
@@ -50,14 +51,46 @@ public sealed class AccessTokenGeneratorService(
         return claims;
     }
 
-    private SigningCredentials GenerateSigningCredentials()
+    private IDisposable GenerateSigningCredentials(out SigningCredentials signingCredentials)
+    {
+        if (_configuration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
+        {
+            return GenerateSigningCredentialsHs256(out signingCredentials);
+        }
+        else if (_configuration.SecurityAlgorithms == SecurityAlgorithms.RsaSha256)
+        {
+            return GenerateSigningCredentialsRsa256(out signingCredentials);
+        }
+
+        throw new InvalidOperationException($"Unsupported security algorithms {_configuration.SecurityAlgorithms}");
+    }
+
+    private IDisposable GenerateSigningCredentialsHs256(out SigningCredentials signingCredentials)
     {
         var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
         var securityKey = new SymmetricSecurityKey(key);
-        var securityAlgorithms = _configuration.SecurityAlgorithms ?? SecurityAlgorithms.HmacSha256;
-        var signingCredentials = new SigningCredentials(securityKey, securityAlgorithms);
+        signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        return signingCredentials;
+        return null!;
+    }
+
+    private IDisposable GenerateSigningCredentialsRsa256(out SigningCredentials signingCredentials)
+    {
+        var rsa = RSA.Create();
+        rsa.ImportFromPem(ReadRsa256PrivateKey());
+
+        var securityKey = new RsaSecurityKey(rsa);
+        signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256)
+        {
+            CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
+        };
+
+        return rsa;
+    }
+
+    private string ReadRsa256PrivateKey()
+    {
+        return File.ReadAllText("Keys/RS256.Private.pem");
     }
 
     private string GenerateToken(List<Claim> claims, string audience, SigningCredentials signingCredentials)
