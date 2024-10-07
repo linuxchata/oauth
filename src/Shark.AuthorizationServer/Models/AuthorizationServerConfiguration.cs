@@ -4,13 +4,13 @@ public sealed class AuthorizationServerConfiguration
 {
     public const string Name = nameof(AuthorizationServerConfiguration);
 
-    public required string Issuer { get; set; }
+    public string Issuer { get; set; } = null!;
 
-    public required string SymmetricSecurityKey { get; set; }
+    public string SymmetricSecurityKey { get; set; } = null!;
 
-    public required string KeyId { get; set; }
+    public string KeyId { get; set; } = null!;
 
-    public required string SecurityAlgorithms { get; set; }
+    public string SecurityAlgorithms { get; set; } = null!;
 
     public int AccessTokenExpirationInSeconds { get; set; }
 }

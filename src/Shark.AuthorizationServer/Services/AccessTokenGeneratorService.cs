@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -11,8 +10,10 @@ using Shark.AuthorizationServer.Models;
 namespace Shark.AuthorizationServer.Services;
 
 public sealed class AccessTokenGeneratorService(
+    RsaSecurityKey rsaSecurityKey,
     IOptions<AuthorizationServerConfiguration> options) : IAccessTokenGeneratorService
 {
+    private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
     public string Generate(string? userId, string? userName, string[] scopes, string audience)
@@ -22,7 +23,7 @@ public sealed class AccessTokenGeneratorService(
 
         var claims = CreateClaims(userId, userName, scopes);
 
-        using var _ = GenerateSigningCredentials(out SigningCredentials signingCredentials);
+        var signingCredentials = GenerateSigningCredentials();
 
         var token = GenerateToken(claims, audience, signingCredentials);
 
@@ -51,46 +52,33 @@ public sealed class AccessTokenGeneratorService(
         return claims;
     }
 
-    private IDisposable? GenerateSigningCredentials(out SigningCredentials signingCredentials)
+    private SigningCredentials GenerateSigningCredentials()
     {
         if (_configuration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
         {
-            return GenerateSigningCredentialsHs256(out signingCredentials);
+            return GenerateSigningCredentialsHs256();
         }
         else if (_configuration.SecurityAlgorithms == SecurityAlgorithms.RsaSha256)
         {
-            return GenerateSigningCredentialsRsa256(out signingCredentials);
+            return GenerateSigningCredentialsRsa256();
         }
 
-        throw new InvalidOperationException($"Unsupported security algorithms {_configuration.SecurityAlgorithms}");
+        throw new InvalidOperationException($"Unsupported signature algorithms {_configuration.SecurityAlgorithms}");
     }
 
-    private IDisposable? GenerateSigningCredentialsHs256(out SigningCredentials signingCredentials)
+    private SigningCredentials GenerateSigningCredentialsHs256()
     {
         var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
         var securityKey = new SymmetricSecurityKey(key);
-        signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        return null;
+        return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
     }
 
-    private IDisposable? GenerateSigningCredentialsRsa256(out SigningCredentials signingCredentials)
+    private SigningCredentials GenerateSigningCredentialsRsa256()
     {
-        var rsa = RSA.Create();
-        rsa.ImportFromPem(ReadRsa256PrivateKey());
-
-        var securityKey = new RsaSecurityKey(rsa);
-        signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256)
+        return new SigningCredentials(_rsaSecurityKey, SecurityAlgorithms.RsaSha256)
         {
             CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
         };
-
-        return rsa;
-    }
-
-    private string ReadRsa256PrivateKey()
-    {
-        return File.ReadAllText("Keys/RS256.Private.pem");
     }
 
     private string GenerateToken(List<Claim> claims, string audience, SigningCredentials signingCredentials)

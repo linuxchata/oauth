@@ -1,4 +1,6 @@
-﻿using Shark.Sample.ProtectedResource.Authentication;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using Shark.Sample.ProtectedResource.Authentication;
 using Shark.Sample.ProtectedResource.Constants;
 using Shark.Sample.ProtectedResource.Models;
 using Shark.Sample.ProtectedResource.Services;
@@ -24,6 +26,9 @@ public static class ApplicationBuilderExtentions
         var bearerTokenAuthenticationOptions = new BearerTokenAuthenticationOptions();
         configuration.GetSection(BearerTokenAuthenticationOptions.Name).Bind(bearerTokenAuthenticationOptions);
 
+        var rsaSecurityKey = GetRsaSecurityKey(bearerTokenAuthenticationOptions.KeyId);
+        services.AddSingleton(rsaSecurityKey);
+
         services.AddTransient<IBearerTokenHandlingService, BearerTokenHandlingService>();
 
         services
@@ -46,7 +51,21 @@ public static class ApplicationBuilderExtentions
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim(ClaimType.Scope, Scope.Delete);
             });
-
         return services;
+    }
+
+    private static RsaSecurityKey GetRsaSecurityKey(string keyId)
+    {
+        var publicKey = File.ReadAllText("Keys/RS256.Public.pem");
+
+        var rsa = RSA.Create();
+        rsa.ImportFromPem(publicKey);
+
+        var securityKey = new RsaSecurityKey(rsa)
+        {
+            KeyId = keyId
+        };
+
+        return securityKey;
     }
 }

@@ -1,3 +1,5 @@
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 using Prometheus;
 using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Abstractions.Services;
@@ -14,16 +16,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<AuthorizationServerConfiguration>(
     builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
 
+var authorizationServerConfiguration = new AuthorizationServerConfiguration();
+builder.Configuration.GetSection(AuthorizationServerConfiguration.Name).Bind(authorizationServerConfiguration);
+var rsaSecurityKey = Rsa256KeysGenerator.GetRsaSecurityKey();
+builder.Services.AddSingleton(rsaSecurityKey);
+
 var basicAuthenticationOptions = new BasicAuthenticationOptions();
 builder.Configuration.GetSection(BasicAuthenticationOptions.Name).Bind(basicAuthenticationOptions);
 
 builder.Services.AddHttpClient();
 builder.Services.AddDistributedMemoryCache();
 
+// Authentication session
 builder.Services
     .AddAuthentication(Scheme.Cookies)
     .AddCookie();
 
+// Basic authentication
 builder.Services
     .AddAuthentication(Scheme.Basic)
     .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(

@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -10,12 +9,14 @@ using Shark.Sample.ProtectedResource.Models;
 namespace Shark.Sample.ProtectedResource.Services;
 
 public sealed class BearerTokenHandlingService(
+    RsaSecurityKey rsaSecurityKey,
     IOptions<BearerTokenAuthenticationOptions> options,
     ILogger<BearerTokenHandlingService> logger) : IBearerTokenHandlingService
 {
     private const string HeaderKeyName = "Authorization";
     private const string BearerTokenName = "Bearer";
 
+    private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
     private readonly BearerTokenAuthenticationOptions _configuration = options.Value;
     private readonly ILogger<BearerTokenHandlingService> _logger = logger;
 
@@ -55,7 +56,7 @@ public sealed class BearerTokenHandlingService(
         }
 
         var jwtToken = handler.ReadJwtToken(accessToken);
-        if (!ValidateAccessToken(handler, jwtToken, accessToken, out tokenIdentity))
+        if (!ValidateAccessToken(handler, jwtToken, accessToken, ref tokenIdentity))
         {
             return false;
         }
@@ -69,11 +70,15 @@ public sealed class BearerTokenHandlingService(
         return true;
     }
 
-    private bool ValidateAccessToken(JwtSecurityTokenHandler handler, JwtSecurityToken jwtToken, string accessToken, out TokenIdentity tokenIdentity)
+    private bool ValidateAccessToken(
+        JwtSecurityTokenHandler handler,
+        JwtSecurityToken jwtToken,
+        string accessToken,
+        ref TokenIdentity tokenIdentity)
     {
         tokenIdentity = new TokenIdentity();
 
-        using var _ = GetIssuerSigningKey(jwtToken.SignatureAlgorithm, out var securityKey);
+        var securityKey = GetIssuerSigningKey(jwtToken.SignatureAlgorithm);
 
         var validationParameters = new TokenValidationParameters
         {
@@ -84,25 +89,16 @@ public sealed class BearerTokenHandlingService(
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = securityKey,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,
+            ClockSkew = TimeSpan.FromSeconds(10),
         };
 
         try
         {
-            handler.ValidateToken(
-                accessToken,
-                validationParameters,
-                out SecurityToken validatedToken);
-
+            handler.ValidateToken(accessToken, validationParameters, out SecurityToken validatedToken);
             if (validatedToken is not JwtSecurityToken)
             {
                 return false;
             }
-        }
-        catch (SecurityTokenException ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return false;
         }
         catch (Exception ex)
         {
@@ -113,34 +109,22 @@ public sealed class BearerTokenHandlingService(
         return true;
     }
 
-    private IDisposable? GetIssuerSigningKey(string signatureAlgorithm, out SecurityKey securityKey)
+    private SecurityKey GetIssuerSigningKey(string signatureAlgorithm)
     {
         if (signatureAlgorithm == SecurityAlgorithms.HmacSha256)
         {
             var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
 
-            securityKey = new SymmetricSecurityKey(key)
+            return new SymmetricSecurityKey(key)
             {
                 KeyId = _configuration.KeyId
             };
-
-            return null;
         }
         else if (signatureAlgorithm == SecurityAlgorithms.RsaSha256)
         {
-            var publicKey = File.ReadAllText("Keys/RS256.Public.pem");
-
-            var rsa = RSA.Create();
-            rsa.ImportFromPem(publicKey.ToCharArray());
-
-            securityKey = new RsaSecurityKey(rsa)
-            {
-                KeyId = _configuration.KeyId
-            };
-
-            return rsa;
+            return _rsaSecurityKey;
         }
 
-        throw new InvalidOperationException($"Unsupported security algorithms {signatureAlgorithm}");
+        throw new InvalidOperationException($"Unsupported signature algorithms {signatureAlgorithm}");
     }
 }
