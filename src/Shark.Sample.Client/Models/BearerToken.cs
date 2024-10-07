@@ -1,18 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Shark.Sample.Client.Models;
 
 public sealed class BearerToken
 {
-    [JsonProperty(PropertyName = "access_token")]
+    [JsonPropertyName("access_token")]
     public string AccessToken { get; set; } = null!;
 
-    [JsonProperty(PropertyName = "refresh_token")]
+    [JsonPropertyName("refresh_token")]
     public string RefreshToken { get; set; } = null!;
 
-    [JsonProperty(PropertyName = "token_type")]
+    [JsonPropertyName("token_type")]
     public string TokenType { get; set; } = null!;
 
-    [JsonProperty(PropertyName = "expires_in")]
+    [JsonPropertyName("expires_in")]
     public int ExpiresIn { get; set; }
 }

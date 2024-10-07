@@ -41,6 +41,7 @@ builder.Services
 
 builder.Services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
 builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>();
+builder.Services.AddTransient<IConfigurationApplicationService, ConfigurationApplicationService>();
 
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
 builder.Services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
@@ -57,6 +58,7 @@ builder.Services.AddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
