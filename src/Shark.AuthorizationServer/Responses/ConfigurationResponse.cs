@@ -18,4 +18,7 @@ public sealed class ConfigurationResponse
 
     [JsonPropertyName("grant_types_supported")]
     public required string[] GrantTypesSupported { get; set; }
+
+    [JsonPropertyName("security_algorithm")]
+    public required string[] SecurityAlgorithms { get; set; }
 }

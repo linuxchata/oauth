@@ -23,6 +23,7 @@ public sealed class ConfigurationApplicationService(
             Issuer = _configuration.Issuer,
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],
             GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ResourceOwnerCredentials, GrantType.ClientCredentials],
+            SecurityAlgorithms = [_configuration.SecurityAlgorithms]
         };
     }
 }
