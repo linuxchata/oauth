@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Shark.AuthorizationServer.ApplicationServices;
+using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 
 namespace Shark.AuthorizationServer.Controllers;
 

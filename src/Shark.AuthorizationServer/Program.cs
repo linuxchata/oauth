@@ -1,6 +1,5 @@
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
 using Prometheus;
+using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Abstractions.Services;
 using Shark.AuthorizationServer.ApplicationServices;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Responses;

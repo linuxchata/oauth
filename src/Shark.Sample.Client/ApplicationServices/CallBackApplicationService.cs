@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using Shark.Sample.Client.Abstractions.Services;
+﻿using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
 

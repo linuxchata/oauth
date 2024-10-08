@@ -1,4 +1,5 @@
-﻿using Shark.AuthorizationServer.Requests;
+﻿using Shark.AuthorizationServer.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Responses;
 
 namespace Shark.AuthorizationServer.ApplicationServices;

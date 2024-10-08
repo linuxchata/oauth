@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shark.AuthorizationServer.ApplicationServices;
+using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
