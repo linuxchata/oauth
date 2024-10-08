@@ -5,14 +5,10 @@ namespace Shark.AuthorizationServer.Controllers;
 
 [Route(".well-known/openid-configuration")]
 [ApiController]
-public class ConfigurationController : ControllerBase
+public class ConfigurationController(
+    IConfigurationApplicationService configurationApplicationService) : ControllerBase
 {
-    private readonly IConfigurationApplicationService _configurationApplicationService;
-
-    public ConfigurationController(IConfigurationApplicationService configurationApplicationService)
-    {
-        _configurationApplicationService = configurationApplicationService;
-    }
+    private readonly IConfigurationApplicationService _configurationApplicationService = configurationApplicationService;
 
     [HttpGet]
     public IActionResult Get()
@@ -22,6 +18,18 @@ public class ConfigurationController : ControllerBase
             request.Scheme,
             request.Host.Host.ToString(),
             request.Host.Port ?? 443);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Gets set of keys containing the public keys used to verify
+    /// JSON Web Token (JWT) issued by the Authorization Server
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("jwks")]
+    public IActionResult GetJsonWebKeySet()
+    {
+        var response = _configurationApplicationService.GetJsonWebKeySet();
         return Ok(response);
     }
 }
