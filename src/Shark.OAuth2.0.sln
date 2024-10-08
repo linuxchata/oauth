@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.Sample.ProtectedResou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.Sample.Client", "Shark.Sample.Client\Shark.Sample.Client.csproj", "{9F07AE1E-40A0-432E-9EC7-D5BC9B6129D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.ProtectedResource.Client", "Shark.ProtectedResource.Client\Shark.ProtectedResource.Client.csproj", "{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{9F07AE1E-40A0-432E-9EC7-D5BC9B6129D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F07AE1E-40A0-432E-9EC7-D5BC9B6129D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F07AE1E-40A0-432E-9EC7-D5BC9B6129D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

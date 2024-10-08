@@ -11,4 +11,8 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Shark.ProtectedResource.Client\Shark.ProtectedResource.Client.csproj" />
+  </ItemGroup>
+
 </Project>

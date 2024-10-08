@@ -1,9 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
-using Shark.Sample.ProtectedResource.Authentication;
-using Shark.Sample.ProtectedResource.Constants;
-using Shark.Sample.ProtectedResource.Models;
-using Shark.Sample.ProtectedResource.Services;
+﻿using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using Shark.ProtectedResource.Client.Authentication;
+using Shark.ProtectedResource.Client.Constants;
+using Shark.ProtectedResource.Client.Models;
+using Shark.ProtectedResource.Client.Services;
 
 namespace Shark.Sample.ProtectedResource.Extensions;
 
@@ -51,6 +51,7 @@ public static class ApplicationBuilderExtentions
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim(ClaimType.Scope, Scope.Delete);
             });
+
         return services;
     }
 

@@ -1,7 +1,7 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shark.Sample.ProtectedResource.Constants;
+using Shark.ProtectedResource.Client.Constants;
 
 namespace Shark.Sample.ProtectedResource.Controllers;
 
