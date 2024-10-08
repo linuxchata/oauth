@@ -41,6 +41,7 @@ builder.Services
 
 builder.Services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
 builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>();
+builder.Services.AddTransient<IIntrospectApplicationService, IntrospectApplicationService>();
 builder.Services.AddTransient<IConfigurationApplicationService, ConfigurationApplicationService>();
 
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
