@@ -3,6 +3,13 @@ using Shark.Sample.ProtectedResource.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = false;
+    options.TimestampFormat = "dd-MM-yyyy HH:mm:ss ";
+    options.SingleLine = true;
+});
+
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

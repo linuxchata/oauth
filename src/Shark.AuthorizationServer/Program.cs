@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Prometheus;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Abstractions.Repositories;
@@ -12,6 +13,13 @@ using Shark.AuthorizationServer.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = false;
+    options.TimestampFormat = "dd-MM-yyyy HH:mm:ss ";
+    options.SingleLine = true;
+});
+
 builder.Services.Configure<AuthorizationServerConfiguration>(
     builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
 
