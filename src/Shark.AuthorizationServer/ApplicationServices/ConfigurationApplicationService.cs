@@ -16,6 +16,9 @@ public sealed class ConfigurationApplicationService(
 
     public ConfigurationResponse Get(string scheme, string host, int port)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(scheme, nameof(scheme));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(host, nameof(host));
+
         var baseUrl = new UriBuilder(scheme, host, port);
         var authorizeEndpointUri = new Uri(baseUrl.Uri, "authorize");
         var tokenEndpointUri = new Uri(baseUrl.Uri, "token");

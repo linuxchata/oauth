@@ -32,6 +32,8 @@ public sealed class AuthorizeApplicationService(
 
     public AuthorizeInternalBaseResponse Execute(AuthorizeInternalRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
         var client = _clientRepository.GetById(request.ClientId);
 
         var response = ValidateRequest(request, client);

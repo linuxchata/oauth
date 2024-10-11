@@ -31,6 +31,8 @@ public sealed class TokenApplicationService(
 
     public TokenInternalBaseResponse Execute(TokenInternalRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
         var client = _clientRepository.GetById(request.ClientId);
 
         var response = ValidateClient(client, request);

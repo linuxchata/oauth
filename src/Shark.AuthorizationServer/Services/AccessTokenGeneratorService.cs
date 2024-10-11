@@ -18,8 +18,8 @@ public sealed class AccessTokenGeneratorService(
 
     public string Generate(string? userId, string? userName, string[] scopes, string audience)
     {
-        ArgumentNullException.ThrowIfNull(nameof(scopes));
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(nameof(audience));
+        ArgumentNullException.ThrowIfNull(scopes, nameof(scopes));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(audience, nameof(audience));
 
         var currentTime = DateTime.UtcNow;
 
