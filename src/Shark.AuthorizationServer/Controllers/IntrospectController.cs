@@ -14,7 +14,10 @@ public class IntrospectController(
     [HttpPost]
     public IActionResult Post([FromForm] IntrospectRequest request)
     {
-        var internalRequest = new IntrospectInternalRequest();
+        var internalRequest = new IntrospectInternalRequest
+        {
+            Token = request.Token,
+        };
 
         var internalResponse = _introspectApplicationService.Execute(internalRequest);
 

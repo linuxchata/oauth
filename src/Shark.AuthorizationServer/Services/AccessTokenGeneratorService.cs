@@ -21,18 +21,23 @@ public sealed class AccessTokenGeneratorService(
         ArgumentNullException.ThrowIfNull(nameof(scopes));
         ArgumentNullException.ThrowIfNullOrWhiteSpace(nameof(audience));
 
-        var claims = CreateClaims(userId, userName, scopes);
+        var currentTime = DateTime.UtcNow;
+
+        var claims = CreateClaims(userId, userName, scopes, currentTime);
 
         var signingCredentials = GenerateSigningCredentials();
 
-        var token = GenerateToken(claims, audience, signingCredentials);
+        var token = GenerateToken(claims, audience, signingCredentials, currentTime);
 
         return token;
     }
 
-    private List<Claim> CreateClaims(string? userId, string? userName, string[] scopes)
+    private List<Claim> CreateClaims(string? userId, string? userName, string[] scopes, DateTime currentTime)
     {
         var claims = new List<Claim>();
+
+        var issuedAt = EpochTime.GetIntDate(currentTime.ToUniversalTime()).ToString();
+        claims.Add(new Claim(JwtRegisteredClaimNames.Iat, issuedAt, ClaimValueTypes.Integer64));
 
         if (!string.IsNullOrWhiteSpace(userId))
         {
@@ -81,10 +86,8 @@ public sealed class AccessTokenGeneratorService(
         };
     }
 
-    private string GenerateToken(List<Claim> claims, string audience, SigningCredentials signingCredentials)
+    private string GenerateToken(List<Claim> claims, string audience, SigningCredentials signingCredentials, DateTime currentTime)
     {
-        var currentTime = DateTime.UtcNow;
-
         var token = new JwtSecurityToken(
             issuer: _configuration.Issuer ?? "Issuer",
             audience: audience,

@@ -10,6 +10,9 @@ public sealed class ConfigurationResponse
     [JsonPropertyName("token_endpoint")]
     public required string TokenEndpoint { get; set; }
 
+    [JsonPropertyName("introspect_endpoint")]
+    public required string IntrospectEndpoint { get; set; }
+
     [JsonPropertyName("jwks_endpoint")]
     public required string JsonWebKeySetEndpoint { get; set; }
 

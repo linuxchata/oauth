@@ -19,12 +19,14 @@ public sealed class ConfigurationApplicationService(
         var baseUrl = new UriBuilder(scheme, host, port);
         var authorizeEndpointUri = new Uri(baseUrl.Uri, "authorize");
         var tokenEndpointUri = new Uri(baseUrl.Uri, "token");
+        var introspectEndpointUri = new Uri(baseUrl.Uri, "introspect");
         var jsonWebKeySetEndpoint = new Uri(baseUrl.Uri, ".well-known/openid-configuration/jwks");
 
         return new ConfigurationResponse
         {
             AuthorizeEndpoint = authorizeEndpointUri.ToString(),
             TokenEndpoint = tokenEndpointUri.ToString(),
+            IntrospectEndpoint = introspectEndpointUri.ToString(),
             JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
             Issuer = _configuration.Issuer,
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],
