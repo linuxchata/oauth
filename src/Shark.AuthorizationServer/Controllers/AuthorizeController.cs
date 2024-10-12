@@ -19,6 +19,9 @@ public sealed class AuthorizeController(
 
     [Authorize(AuthenticationSchemes = Scheme.Cookies)]
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status302Found)]
     public IActionResult Get(
         [FromQuery] string response_type,
         [FromQuery] string client_id,

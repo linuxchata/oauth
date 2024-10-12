@@ -36,9 +36,6 @@ public sealed class AccessTokenGeneratorService(
     {
         var claims = new List<Claim>();
 
-        var issuedAt = EpochTime.GetIntDate(currentTime.ToUniversalTime()).ToString();
-        claims.Add(new Claim(JwtRegisteredClaimNames.Iat, issuedAt, ClaimValueTypes.Integer64));
-
         if (!string.IsNullOrWhiteSpace(userId))
         {
             claims.Add(new(JwtRegisteredClaimNames.Sub, userId));
@@ -53,6 +50,12 @@ public sealed class AccessTokenGeneratorService(
         {
             claims.Add(new(ClaimType.Scope, string.Join(" ", scopes)));
         }
+
+        var issuedAt = EpochTime.GetIntDate(currentTime.ToUniversalTime()).ToString();
+        claims.Add(new Claim(JwtRegisteredClaimNames.Iat, issuedAt, ClaimValueTypes.Integer64));
+
+        var jwtId = Guid.NewGuid().ToString().ToLower();
+        claims.Add(new Claim(JwtRegisteredClaimNames.Jti, jwtId));
 
         return claims;
     }

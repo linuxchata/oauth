@@ -2,6 +2,9 @@
 
 namespace Shark.AuthorizationServer.Abstractions.Services;
 
-public interface IPersistedGrantStore : IStore<PersistedGrant>
+public interface IPersistedGrantStore :
+    IStoreGet<PersistedGrant>,
+    IStoreAdd<PersistedGrant>,
+    IStoreRemove<PersistedGrant>
 {
 }

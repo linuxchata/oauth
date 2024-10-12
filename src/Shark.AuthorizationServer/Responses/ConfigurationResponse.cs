@@ -13,6 +13,9 @@ public sealed class ConfigurationResponse
     [JsonPropertyName("introspect_endpoint")]
     public required string IntrospectEndpoint { get; set; }
 
+    [JsonPropertyName("revoke_endpoint")]
+    public required string RevokeEndpoint { get; set; }
+
     [JsonPropertyName("jwks_endpoint")]
     public required string JsonWebKeySetEndpoint { get; set; }
 

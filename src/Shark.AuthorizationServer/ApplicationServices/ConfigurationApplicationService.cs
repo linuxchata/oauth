@@ -23,6 +23,7 @@ public sealed class ConfigurationApplicationService(
         var authorizeEndpointUri = new Uri(baseUrl.Uri, "authorize");
         var tokenEndpointUri = new Uri(baseUrl.Uri, "token");
         var introspectEndpointUri = new Uri(baseUrl.Uri, "introspect");
+        var revokeEndpointUri = new Uri(baseUrl.Uri, "revoke");
         var jsonWebKeySetEndpoint = new Uri(baseUrl.Uri, ".well-known/openid-configuration/jwks");
 
         return new ConfigurationResponse
@@ -30,6 +31,7 @@ public sealed class ConfigurationApplicationService(
             AuthorizeEndpoint = authorizeEndpointUri.ToString(),
             TokenEndpoint = tokenEndpointUri.ToString(),
             IntrospectEndpoint = introspectEndpointUri.ToString(),
+            RevokeEndpoint = revokeEndpointUri.ToString(),
             JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
             Issuer = _configuration.Issuer,
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],

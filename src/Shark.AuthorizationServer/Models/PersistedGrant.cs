@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Models;
 
-public record class PersistedGrant
+public record PersistedGrant
 {
     public required string Type { get; set; }
 

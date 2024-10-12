@@ -18,6 +18,9 @@ public sealed class TokenController(
 
     [Authorize(AuthenticationSchemes = Scheme.Basic)]
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Post([FromForm] TokenRequest request)
     {
         var internalResponse = _tokenApplicationService.Execute(request.ToInternalRequest());

@@ -10,7 +10,11 @@ public class ConfigurationController(
 {
     private readonly IConfigurationApplicationService _configurationApplicationService = configurationApplicationService;
 
+    /// <summary>
+    /// Gets well known OpenID configuration
+    /// </summary>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Get()
     {
         var request = HttpContext.Request;
@@ -25,8 +29,8 @@ public class ConfigurationController(
     /// Gets set of keys containing the public keys used to verify
     /// JSON Web Token (JWT) issued by the Authorization Server
     /// </summary>
-    /// <returns></returns>
     [HttpGet("jwks")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetJsonWebKeySet()
     {
         var response = _configurationApplicationService.GetJsonWebKeySet();

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
+using Newtonsoft.Json.Linq;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Requests;
 
@@ -11,12 +13,17 @@ public class IntrospectController(
 {
     private readonly IIntrospectApplicationService _introspectApplicationService = introspectApplicationService;
 
+    /// <summary>
+    /// Determine the active state of an OAuth 2.0 token and to determine meta-information about this token.
+    /// </summary>
+    /// <param name="request">Introspect request</param>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Post([FromForm] IntrospectRequest request)
     {
         var internalRequest = new IntrospectInternalRequest
         {
-            Token = request.Token,
+            Token = request.token,
         };
 
         var internalResponse = _introspectApplicationService.Execute(internalRequest);

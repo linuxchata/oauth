@@ -49,6 +49,7 @@ builder.Services
 builder.Services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
 builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>();
 builder.Services.AddTransient<IIntrospectApplicationService, IntrospectApplicationService>();
+builder.Services.AddTransient<IRevokeApplicationService, RevokeApplicationService>();
 builder.Services.AddTransient<IConfigurationApplicationService, ConfigurationApplicationService>();
 
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
@@ -63,6 +64,7 @@ builder.Services.AddTransient<IRedirectionService, RedirectionService>();
 
 builder.Services.AddSingleton<IClientRepository, ClientRepository>();
 builder.Services.AddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
+builder.Services.AddSingleton<IRevokeTokenStore, InMemoryRevokeTokenStore>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
