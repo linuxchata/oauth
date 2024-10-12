@@ -12,7 +12,7 @@ namespace Shark.AuthorizationServer.Controllers;
 [ApiController]
 public class RevokeController(IRevokeApplicationService revokeApplicationService) : ControllerBase
 {
-    private IRevokeApplicationService _revokeApplicationService = revokeApplicationService;
+    private readonly IRevokeApplicationService _revokeApplicationService = revokeApplicationService;
 
     /// <summary>
     /// Invalidate the actual token and, if applicable, other tokens based

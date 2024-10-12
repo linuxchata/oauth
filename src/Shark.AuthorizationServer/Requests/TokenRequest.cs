@@ -1,4 +1,6 @@
-﻿namespace Shark.AuthorizationServer.Requests;
+﻿using System.ComponentModel;
+
+namespace Shark.AuthorizationServer.Requests;
 
 public sealed class TokenRequest
 {
@@ -18,7 +20,9 @@ public sealed class TokenRequest
 
     public string? refresh_token { get; set; }
 
+    [DefaultValue("")]
     public string? username { get; set; }
 
+    [DefaultValue("")]
     public string? password { get; set; }
 }

@@ -51,6 +51,7 @@ builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>
 builder.Services.AddTransient<IIntrospectApplicationService, IntrospectApplicationService>();
 builder.Services.AddTransient<IRevokeApplicationService, RevokeApplicationService>();
 builder.Services.AddTransient<IConfigurationApplicationService, ConfigurationApplicationService>();
+builder.Services.AddTransient<IRegisterApplicationService, RegisterApplicationService>();
 
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
 builder.Services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();

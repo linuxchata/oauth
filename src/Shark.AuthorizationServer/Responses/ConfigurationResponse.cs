@@ -16,6 +16,9 @@ public sealed class ConfigurationResponse
     [JsonPropertyName("revoke_endpoint")]
     public required string RevokeEndpoint { get; set; }
 
+    [JsonPropertyName("register_endpointUri")]
+    public required string RegisterEndpointUri { get; set; }
+
     [JsonPropertyName("jwks_endpoint")]
     public required string JsonWebKeySetEndpoint { get; set; }
 
