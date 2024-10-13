@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Constants;
+using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Responses;
 
@@ -27,13 +28,7 @@ public class RevokeController(IRevokeApplicationService revokeApplicationService
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Post([FromForm] RevokeRequest request)
     {
-        var internalRequest = new RevokeInternalRequest
-        {
-            Token = request.token,
-            TokenHint = request.token_hint,
-        };
-
-        var internalResponse = _revokeApplicationService.Execute(internalRequest);
+        var internalResponse = _revokeApplicationService.Execute(request.ToInternalRequest());
 
         switch (internalResponse)
         {

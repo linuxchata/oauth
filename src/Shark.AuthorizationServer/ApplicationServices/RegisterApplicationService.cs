@@ -4,6 +4,7 @@ using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Abstractions.Services;
 using Shark.AuthorizationServer.Constants;
+using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Responses;
@@ -42,19 +43,7 @@ public sealed class RegisterApplicationService(
             return new RegisterInternalNotFoundResponse();
         }
 
-        return new RegisterInternalResponse
-        {
-            ClientName = client.ClientName,
-            ClientId = client.ClientId,
-            ClientSecret = client.ClientSecret,
-            ClientIdIssuedAt = client.ClientIdIssuedAt,
-            ClientSecretExpiresAt = client.ClientSecretExpiresAt,
-            RedirectUris = client.RedirectUris,
-            GrantTypes = client.GrantTypes,
-            TokenEndpointAuthMethod = client.TokenEndpointAuthMethod,
-            RegistrationAccessToken = client.RegistrationAccessToken,
-            RegistrationClientUri = client.RegistrationClientUri,
-        };
+        return client.ToInternalResponse();
     }
 
     public RegisterInternalBaseResponse Post(RegisterInternalRequest request)
@@ -69,19 +58,7 @@ public sealed class RegisterApplicationService(
 
         var client = CreateAndStoreClient(request);
 
-        return new RegisterInternalResponse
-        {
-            ClientName = client.ClientName,
-            ClientId = client.ClientId,
-            ClientSecret = client.ClientSecret,
-            ClientIdIssuedAt = client.ClientIdIssuedAt,
-            ClientSecretExpiresAt = client.ClientSecretExpiresAt,
-            RedirectUris = client.RedirectUris,
-            GrantTypes = client.GrantTypes,
-            TokenEndpointAuthMethod = client.TokenEndpointAuthMethod,
-            RegistrationAccessToken = client.RegistrationAccessToken,
-            RegistrationClientUri = client.RegistrationClientUri,
-        };
+        return client.ToInternalResponse();
     }
 
     public RegisterInternalBaseResponse Delete(string clientId)

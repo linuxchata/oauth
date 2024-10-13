@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
 
 namespace Shark.AuthorizationServer.Controllers;
@@ -20,12 +21,7 @@ public class IntrospectController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Post([FromForm] IntrospectRequest request)
     {
-        var internalRequest = new IntrospectInternalRequest
-        {
-            Token = request.token,
-        };
-
-        var internalResponse = _introspectApplicationService.Execute(internalRequest);
+        var internalResponse = _introspectApplicationService.Execute(request.ToInternalRequest());
 
         return Ok(internalResponse);
     }

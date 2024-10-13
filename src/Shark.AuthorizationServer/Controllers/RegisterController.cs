@@ -2,6 +2,7 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Responses;
 
@@ -27,7 +28,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
 
         switch (internalResponse)
         {
-            case RegisterInternalNotFoundResponse notFoundResponse:
+            case RegisterInternalNotFoundResponse:
                 return Unauthorized();
             case RegisterInternalResponse response:
                 return Ok(response);
@@ -48,20 +49,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult Post([FromBody] RegisterRequest request)
     {
-        var internalRequest = new RegisterInternalRequest
-        {
-            RedirectUris = request.redirect_uris,
-            TokenEndpointAuthMethod = request.token_endpoint_auth_method,
-            GrandTypes = request.grand_types,
-            ResponseTypes = request.response_types,
-            ClientName = request.client_name,
-            ClientUri = request.client_uri,
-            LogoUri = request.logo_uri,
-            Scope = request.scope,
-            Audience = request.audience,
-        };
-
-        var internalResponse = _registerApplicationService.Post(internalRequest);
+        var internalResponse = _registerApplicationService.Post(request.ToInternalRequest());
 
         switch (internalResponse)
         {
