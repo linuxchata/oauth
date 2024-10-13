@@ -33,7 +33,7 @@ public sealed class ConfigurationApplicationService(
             TokenEndpoint = tokenEndpointUri.ToString(),
             IntrospectEndpoint = introspectEndpointUri.ToString(),
             RevokeEndpoint = revokeEndpointUri.ToString(),
-            RegisterEndpointUri = registerEndpointUri.ToString(),
+            RegisterEndpoint = registerEndpointUri.ToString(),
             JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
             Issuer = _configuration.Issuer,
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],

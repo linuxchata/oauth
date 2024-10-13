@@ -68,7 +68,7 @@ public sealed class AuthorizeApplicationService(
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
-        var allowedClientScopes = client.AllowedScopes.ToHashSet();
+        var allowedClientScopes = client.Scope.ToHashSet();
         var scopes = request.Scopes;
         foreach (var scope in scopes)
         {

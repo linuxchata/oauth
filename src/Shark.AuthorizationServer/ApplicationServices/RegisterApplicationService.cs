@@ -1,18 +1,24 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Abstractions.Services;
 using Shark.AuthorizationServer.Constants;
+using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Responses;
 
 namespace Shark.AuthorizationServer.ApplicationServices;
 
 public sealed class RegisterApplicationService(
-    IStringGeneratorService stringGeneratorService) : IRegisterApplicationService
+    IStringGeneratorService stringGeneratorService,
+    IClientRepository clientRepository) : IRegisterApplicationService
 {
     private const string ClientSecretBasicAuthMethod = "client_secret_basic";
+    private const int DefaultAccessTokenLifetimeInSeconds = 3600;
+    private const int DefaultRefreshTokenLifetimeInSeconds = 3600 * 24;
 
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
+    private readonly IClientRepository _clientRepository = clientRepository;
 
     private readonly HashSet<string> allowedGrandTypes =
     [
@@ -35,16 +41,38 @@ public sealed class RegisterApplicationService(
 
         var currentDate = DateTime.UtcNow;
 
-        return new RegisterInternalResponse
+        var client = new Client
         {
             ClientName = request.ClientName,
+            Enabled = true,
             ClientId = Guid.NewGuid().ToString(),
             ClientSecret = _stringGeneratorService.GenerateClientSecret(),
             ClientIdIssuedAt = EpochTime.GetIntDate(currentDate),
             ClientSecretExpiresAt = EpochTime.GetIntDate(currentDate.AddYears(1)),
             RedirectUris = request.RedirectUris,
             GrantTypes = request.GrandTypes.Split(' '),
+            ResponseTypes = request.ResponseTypes.Split(' '),
             TokenEndpointAuthMethod = ClientSecretBasicAuthMethod,
+            ClientUri = request.ClientUri,
+            LogoUri = request.LogoUri,
+            Scope = request.Scope.Split(' '),
+            Audience = request.Audience,
+            AccessTokenLifetimeInSeconds = DefaultAccessTokenLifetimeInSeconds,
+            RefreshTokenLifetimeInSeconds = DefaultRefreshTokenLifetimeInSeconds,
+        };
+
+        _clientRepository.Add(client);
+
+        return new RegisterInternalResponse
+        {
+            ClientName = client.ClientName,
+            ClientId = client.ClientId,
+            ClientSecret = client.ClientSecret,
+            ClientIdIssuedAt = client.ClientIdIssuedAt,
+            ClientSecretExpiresAt = client.ClientSecretExpiresAt,
+            RedirectUris = client.RedirectUris,
+            GrantTypes = client.GrantTypes,
+            TokenEndpointAuthMethod = client.TokenEndpointAuthMethod,
         };
     }
 
@@ -53,14 +81,14 @@ public sealed class RegisterApplicationService(
         // Validate redirect URIs
         if (request.RedirectUris is null || request.RedirectUris.Length == 0)
         {
-            return new RegisterInternalBadRequestResponse("invalid_redirect_uri");
+            return new RegisterInternalBadRequestResponse(Error.InvalidRedirectUri);
         }
 
         foreach (var redirectUri in request.RedirectUris)
         {
             if (!Uri.IsWellFormedUriString(redirectUri, UriKind.Absolute))
             {
-                return new RegisterInternalBadRequestResponse("invalid_redirect_uri");
+                return new RegisterInternalBadRequestResponse(Error.InvalidRedirectUri);
             }
         }
 
@@ -68,18 +96,18 @@ public sealed class RegisterApplicationService(
         if (!string.IsNullOrWhiteSpace(request.TokenEndpointAuthMethod) &&
             !string.Equals(request.TokenEndpointAuthMethod, ClientSecretBasicAuthMethod, StringComparison.OrdinalIgnoreCase))
         {
-            return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
         // Validate grand types and response types
         if (string.IsNullOrWhiteSpace(request.GrandTypes))
         {
-            return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
         if (string.IsNullOrWhiteSpace(request.ResponseTypes))
         {
-            return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
         var grandTypes = request.GrandTypes.Split(' ');
@@ -88,7 +116,7 @@ public sealed class RegisterApplicationService(
         {
             if (!allowedGrandTypes.Contains(grandType))
             {
-                return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+                return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
             }
 
             if (string.Equals(grandType, GrantType.AuthorizationCode, StringComparison.OrdinalIgnoreCase))
@@ -98,7 +126,7 @@ public sealed class RegisterApplicationService(
 
                 if (codeResponseType is null)
                 {
-                    return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+                    return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
                 }
             }
             else if (string.Equals(grandType, GrantType.Implicit, StringComparison.OrdinalIgnoreCase))
@@ -108,7 +136,7 @@ public sealed class RegisterApplicationService(
 
                 if (tokenResponseType is null)
                 {
-                    return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+                    return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
                 }
             }
         }
@@ -116,7 +144,7 @@ public sealed class RegisterApplicationService(
         // Validate client name
         if (string.IsNullOrWhiteSpace(request.ClientName))
         {
-            return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
         // Validate client URI
@@ -124,17 +152,24 @@ public sealed class RegisterApplicationService(
         {
             if (!Uri.IsWellFormedUriString(request.ClientUri, UriKind.Absolute))
             {
-                return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+                return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
             }
         }
 
         // Validate logo URI
-        if (string.IsNullOrWhiteSpace(request.LogoUri))
+        if (!string.IsNullOrWhiteSpace(request.LogoUri))
         {
             if (!Uri.IsWellFormedUriString(request.LogoUri, UriKind.Absolute))
             {
-                return new RegisterInternalBadRequestResponse("invalid_client_metadata");
+                return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
             }
+        }
+
+        // Validate audience
+        if (string.IsNullOrWhiteSpace(request.Audience) ||
+            !Uri.IsWellFormedUriString(request.Audience, UriKind.Absolute))
+        {
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
         return null;

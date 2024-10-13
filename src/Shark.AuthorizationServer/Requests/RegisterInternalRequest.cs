@@ -17,4 +17,6 @@ public sealed class RegisterInternalRequest
     public string? LogoUri { get; set; }
 
     public required string Scope { get; set; }
+
+    public required string Audience { get; set; }
 }

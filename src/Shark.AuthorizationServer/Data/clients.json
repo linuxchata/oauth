@@ -1,11 +1,18 @@
 [
   {
-    "ClientId": "client-1",
     "ClientName": "The first client",
     "Enabled": true,
+    "ClientId": "client-1",
     "ClientSecret": "client-secret-01",
-    "AllowedScopes": [ "read", "add", "update", "delete" ],
+    "ClientIdIssuedAt": 1728814710,
+    "ClientSecretExpiresAt": 0,
     "RedirectUris": [ "https://localhost:9001", "https://localhost:9001/callback" ],
+    "GrantTypes": [ "authorization_code" ],
+    "ResponseTypes": [ "code" ],
+    "TokenEndpointAuthMethod": "client_secret_basic",
+    "ClientUri": null,
+    "LogoUri": null,
+    "Scope": [ "read", "add", "update", "delete" ],
     "Audience": "http://protected-resource-dev.com",
     "AccessTokenLifetimeInSeconds": 3600,
     "RefreshTokenLifetimeInSeconds": 86400

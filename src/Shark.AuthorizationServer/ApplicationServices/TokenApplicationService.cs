@@ -84,7 +84,7 @@ public sealed class TokenApplicationService(
         }
 
         // Validate requested scopes against client's allowed scopes
-        var allowedClientScopes = client.AllowedScopes.ToHashSet();
+        var allowedClientScopes = client.Scope.ToHashSet();
         foreach (var scope in request.Scopes)
         {
             if (!allowedClientScopes.Contains(scope))

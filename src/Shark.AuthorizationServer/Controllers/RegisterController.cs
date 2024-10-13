@@ -31,6 +31,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
             ClientUri = request.client_uri,
             LogoUri = request.logo_uri,
             Scope = request.scope,
+            Audience = request.audience,
         };
 
         var internalResponse = _registerApplicationService.Execute(internalRequest);

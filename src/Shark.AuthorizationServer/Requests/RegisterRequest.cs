@@ -24,4 +24,7 @@ public sealed class RegisterRequest
     public string? logo_uri { get; set; }
 
     public required string scope { get; set; }
+
+    [DefaultValue("")]
+    public required string audience { get; set; }
 }

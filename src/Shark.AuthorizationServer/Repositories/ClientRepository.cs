@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
 using Shark.AuthorizationServer.Abstractions.Repositories;
+using Shark.AuthorizationServer.Abstractions.Services;
 
 namespace Shark.AuthorizationServer.Repositories;
 
-public sealed class ClientRepository : IClientRepository
+public sealed class ClientRepository(IClientStore clientStore) : IClientRepository
 {
+    private readonly IClientStore _clientStore = clientStore;
+
     public Models.Client? GetById(string? id)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -23,5 +26,10 @@ public sealed class ClientRepository : IClientRepository
         }
 
         throw new Exception($"Client with identifier {id} cannot be found");
+    }
+
+    public void Add(Models.Client client)
+    {
+        _clientStore.Add(client);
     }
 }
