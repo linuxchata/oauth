@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 
-namespace Shark.AuthorizationServer.Core.Configurations;
+namespace Shark.AuthorizationServer.Configurations;
 
 public sealed class BasicAuthenticationOptions : AuthenticationSchemeOptions
 {
