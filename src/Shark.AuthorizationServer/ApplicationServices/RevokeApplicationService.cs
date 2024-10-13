@@ -2,7 +2,7 @@
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Constants;
-using Shark.AuthorizationServer.Models;
+using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Responses;
 

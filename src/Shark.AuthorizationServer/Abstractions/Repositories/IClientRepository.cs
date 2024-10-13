@@ -1,4 +1,4 @@
-﻿using Shark.AuthorizationServer.Models;
+﻿using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Abstractions.Repositories;
 

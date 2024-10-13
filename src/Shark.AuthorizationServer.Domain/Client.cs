@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Shark.AuthorizationServer.Models;
+﻿namespace Shark.AuthorizationServer.Domain;
 
 public record Client
 {

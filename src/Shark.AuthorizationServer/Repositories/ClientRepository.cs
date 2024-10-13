@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Shark.AuthorizationServer.Abstractions.Repositories;
-using Shark.AuthorizationServer.Models;
+using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Repositories;
 
@@ -38,7 +38,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
         throw new InvalidOperationException($"Client with identifier {value} cannot be found");
     }
 
-    public void Add(Models.Client client)
+    public void Add(Client client)
     {
         var serializedItem = JsonConvert.SerializeObject(client);
         _cache.SetString(client.ClientId, serializedItem);

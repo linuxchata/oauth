@@ -25,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="Data\clients.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.Sample.Client", "Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.ProtectedResource.Client", "Shark.ProtectedResource.Client\Shark.ProtectedResource.Client.csproj", "{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.AuthorizationServer.Core", "Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj", "{968D7017-2893-49FB-900C-6A73C9B748BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.AuthorizationServer.Domain", "Shark.AuthorizationServer.Domain\Shark.AuthorizationServer.Domain.csproj", "{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{968D7017-2893-49FB-900C-6A73C9B748BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{968D7017-2893-49FB-900C-6A73C9B748BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{968D7017-2893-49FB-900C-6A73C9B748BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{968D7017-2893-49FB-900C-6A73C9B748BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
