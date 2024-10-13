@@ -1,6 +1,5 @@
 ﻿namespace Shark.AuthorizationServer.Responses;
 
-public sealed class RegisterInternalBadRequestResponse(string message) : RegisterInternalBaseResponse
+public sealed class RegisterInternalNotFoundResponse() : RegisterInternalBaseResponse
 {
-    public string Message { get; init; } = message;
 }

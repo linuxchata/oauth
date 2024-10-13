@@ -5,5 +5,9 @@ namespace Shark.AuthorizationServer.Abstractions.ApplicationServices;
 
 public interface IRegisterApplicationService
 {
-    RegisterInternalBaseResponse Execute(RegisterInternalRequest request);
+    RegisterInternalBaseResponse Read(string clientId);
+
+    RegisterInternalBaseResponse Post(RegisterInternalRequest request);
+
+    RegisterInternalBaseResponse Delete(string clientId);
 }

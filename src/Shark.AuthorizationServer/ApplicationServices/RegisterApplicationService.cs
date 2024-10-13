@@ -32,7 +32,32 @@ public sealed class RegisterApplicationService(
         GrantType.ClientCredentials
     ];
 
-    public RegisterInternalBaseResponse Execute(RegisterInternalRequest request)
+    public RegisterInternalBaseResponse Read(string clientId)
+    {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
+
+        var client = _clientRepository.Get(clientId);
+        if (client is null)
+        {
+            return new RegisterInternalNotFoundResponse();
+        }
+
+        return new RegisterInternalResponse
+        {
+            ClientName = client.ClientName,
+            ClientId = client.ClientId,
+            ClientSecret = client.ClientSecret,
+            ClientIdIssuedAt = client.ClientIdIssuedAt,
+            ClientSecretExpiresAt = client.ClientSecretExpiresAt,
+            RedirectUris = client.RedirectUris,
+            GrantTypes = client.GrantTypes,
+            TokenEndpointAuthMethod = client.TokenEndpointAuthMethod,
+            RegistrationAccessToken = client.RegistrationAccessToken,
+            RegistrationClientUri = client.RegistrationClientUri,
+        };
+    }
+
+    public RegisterInternalBaseResponse Post(RegisterInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -57,6 +82,21 @@ public sealed class RegisterApplicationService(
             RegistrationAccessToken = client.RegistrationAccessToken,
             RegistrationClientUri = client.RegistrationClientUri,
         };
+    }
+
+    public RegisterInternalBaseResponse Delete(string clientId)
+    {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
+
+        var client = _clientRepository.Get(clientId);
+        if (client is null)
+        {
+            return new RegisterInternalNotFoundResponse();
+        }
+
+        _clientRepository.Remove(clientId);
+
+        return new RegisterInternalNoContentResponse();
     }
 
     private RegisterInternalBadRequestResponse? ValidateRequest(RegisterInternalRequest request)

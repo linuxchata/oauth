@@ -14,12 +14,36 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     private readonly IRegisterApplicationService _registerApplicationService = registerApplicationService;
 
     /// <summary>
-    /// Dynamically register clients
+    /// Read register client.
     /// </summary>
-    /// <param name="request">Register request</param>
+    /// <param name="clientId">Client identifier.</param>
+    /// <returns>HTTP response.</returns>
+    [HttpGet("{clientId}")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult Read([FromRoute] string clientId)
+    {
+        var internalResponse = _registerApplicationService.Read(clientId);
+
+        switch (internalResponse)
+        {
+            case RegisterInternalNotFoundResponse notFoundResponse:
+                return Unauthorized();
+            case RegisterInternalResponse response:
+                return Ok(response);
+            default:
+                return new StatusCodeResult((int)HttpStatusCode.NotImplemented);
+        }
+    }
+
+    /// <summary>
+    /// Dynamically register client.
+    /// </summary>
+    /// <param name="request">Register request.</param>
+    /// <returns>HTTP response.</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult Post([FromBody] RegisterRequest request)
@@ -37,14 +61,37 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
             Audience = request.audience,
         };
 
-        var internalResponse = _registerApplicationService.Execute(internalRequest);
+        var internalResponse = _registerApplicationService.Post(internalRequest);
 
         switch (internalResponse)
         {
             case RegisterInternalBadRequestResponse badRequestResponse:
                 return BadRequest(badRequestResponse.Message);
             case RegisterInternalResponse response:
-                return Ok(response);
+                return Created(response.RegistrationClientUri, response);
+            default:
+                return new StatusCodeResult((int)HttpStatusCode.NotImplemented);
+        }
+    }
+
+    /// <summary>
+    /// Delete register client.
+    /// </summary>
+    /// <param name="clientId">Client identifier.</param>
+    /// <returns>HTTP response.</returns>
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult Delete([FromRoute] string clientId)
+    {
+        var internalResponse = _registerApplicationService.Delete(clientId);
+
+        switch (internalResponse)
+        {
+            case RegisterInternalNotFoundResponse:
+                return Unauthorized();
+            case RegisterInternalNoContentResponse:
+                return NoContent();
             default:
                 return new StatusCodeResult((int)HttpStatusCode.NotImplemented);
         }

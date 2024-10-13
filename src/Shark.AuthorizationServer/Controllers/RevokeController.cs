@@ -18,7 +18,8 @@ public class RevokeController(IRevokeApplicationService revokeApplicationService
     /// Invalidate the actual token and, if applicable, other tokens based
     /// on the same authorization grant and the authorization grant itself.
     /// </summary>
-    /// <param name="request">Revocation request</param>
+    /// <param name="request">Revocation request,</param>
+    /// <returns>HTTP response.</returns>
     [Authorize(AuthenticationSchemes = Scheme.Basic)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

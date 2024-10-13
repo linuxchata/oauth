@@ -2,6 +2,6 @@
 
 namespace Shark.AuthorizationServer.Abstractions.Repositories;
 
-public interface IClientRepository : IRepositoryGet<Client>, IRepositoryAdd<Client>
+public interface IClientRepository : IRepositoryGet<Client>, IRepositoryAdd<Client>, IRepositoryRemove<Client>
 {
 }
