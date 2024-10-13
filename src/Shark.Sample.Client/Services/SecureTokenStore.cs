@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Models;
 
@@ -12,7 +11,7 @@ public sealed class SecureTokenStore(IDistributedCache cache) : ISecureTokenStor
 
     public string? GetAccessToken(string key)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key, nameof(key));
 
         var secureToken = GetSecureToken(key);
 
@@ -21,7 +20,7 @@ public sealed class SecureTokenStore(IDistributedCache cache) : ISecureTokenStor
 
     public string? GetRefreshToken(string key)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key, nameof(key));
 
         var secureToken = GetSecureToken(key);
 
@@ -30,16 +29,16 @@ public sealed class SecureTokenStore(IDistributedCache cache) : ISecureTokenStor
 
     public void Add(string key, SecureToken secureToken)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
-        ArgumentNullException.ThrowIfNull(secureToken);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key, nameof(key));
+        ArgumentNullException.ThrowIfNull(secureToken, nameof(secureToken));
 
-        var serializedItem = JsonConvert.SerializeObject(secureToken);
+        var serializedItem = JsonSerializer.Serialize(secureToken);
         _cache.SetString(key, serializedItem);
     }
 
     public void RemoveAccessToken(string key)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key, nameof(key));
 
         var secureToken = GetSecureToken(key);
 
@@ -56,7 +55,7 @@ public sealed class SecureTokenStore(IDistributedCache cache) : ISecureTokenStor
         var serializedItem = _cache.GetString(key);
         if(serializedItem != null)
         {
-            return JsonConvert.DeserializeObject<SecureToken>(serializedItem!);
+            return JsonSerializer.Deserialize<SecureToken>(serializedItem!);
         }
 
         return null;

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
@@ -56,7 +56,7 @@ public sealed class WeatherForecastService(
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<List<WeatherForecast>>(content);
+            var result = JsonSerializer.Deserialize<List<WeatherForecast>>(content);
 
             return result ?? [];
         }

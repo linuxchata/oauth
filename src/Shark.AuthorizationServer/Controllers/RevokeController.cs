@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Constants;
+using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Core.Responses;
 using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
-using Shark.AuthorizationServer.Responses;
 
 namespace Shark.AuthorizationServer.Controllers;
 
@@ -16,10 +16,10 @@ public class RevokeController(IRevokeApplicationService revokeApplicationService
     private readonly IRevokeApplicationService _revokeApplicationService = revokeApplicationService;
 
     /// <summary>
-    /// Invalidate the actual token and, if applicable, other tokens based
+    /// Invalidates the actual token and, if applicable, other tokens based
     /// on the same authorization grant and the authorization grant itself.
     /// </summary>
-    /// <param name="request">Revocation request,</param>
+    /// <param name="request">Revocation request.</param>
     /// <returns>HTTP response.</returns>
     [Authorize(AuthenticationSchemes = Scheme.Basic)]
     [HttpPost]

@@ -1,4 +1,5 @@
-﻿using Shark.AuthorizationServer.Requests;
+﻿using Shark.AuthorizationServer.Core.Requests;
+using Shark.AuthorizationServer.Requests;
 
 namespace Shark.AuthorizationServer.Mappers;
 

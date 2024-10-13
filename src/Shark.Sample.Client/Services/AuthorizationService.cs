@@ -1,8 +1,8 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
@@ -172,7 +172,7 @@ public sealed class AuthorizationService(
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadAsStringAsync();
-            var bearerToken = JsonConvert.DeserializeObject<BearerToken>(result);
+            var bearerToken = JsonSerializer.Deserialize<BearerToken>(result);
 
             _logger.LogInformation("Bearer token has been fetched from authorization server");
 

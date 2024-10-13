@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Models;
 
@@ -35,7 +35,7 @@ public sealed class ProofKeyForCodeExchangeService(
         {
             AbsoluteExpiration = DateTime.Now.AddSeconds(ExpirationInSeconds),
         };
-        var serializedPkce = JsonConvert.SerializeObject(pkce);
+        var serializedPkce = JsonSerializer.Serialize(pkce);
         _cache.SetString(GetKey(state), serializedPkce, cacheEntryOptions);
 
         return pkce;
@@ -49,7 +49,7 @@ public sealed class ProofKeyForCodeExchangeService(
 
         if (!string.IsNullOrWhiteSpace(serializedPkce))
         {
-            return JsonConvert.DeserializeObject<ProofKeyForCodeExchange>(serializedPkce);
+            return JsonSerializer.Deserialize<ProofKeyForCodeExchange>(serializedPkce);
         }
 
         return null;

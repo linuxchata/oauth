@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shark.AuthorizationServer.Abstractions.Repositories;
-using Shark.AuthorizationServer.Abstractions.Services;
+using Shark.AuthorizationServer.Core.Abstractions.Repositories;
+using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.Helpers;
 
 namespace Shark.AuthorizationServer.Pages;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Shark.AuthorizationServer.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
 

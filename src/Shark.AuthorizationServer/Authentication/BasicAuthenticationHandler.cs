@@ -3,8 +3,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
-using Shark.AuthorizationServer.Abstractions.Repositories;
-using Shark.AuthorizationServer.Models;
+using Shark.AuthorizationServer.Core.Abstractions.Repositories;
+using Shark.AuthorizationServer.Core.Configurations;
 
 namespace Shark.AuthorizationServer.Authentication;
 

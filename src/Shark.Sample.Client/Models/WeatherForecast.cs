@@ -1,18 +1,18 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Shark.Sample.Client.Models;
 
 public sealed class WeatherForecast
 {
-    [JsonProperty(PropertyName = "date")]
+    [JsonPropertyName("date")]
     public DateOnly Date { get; set; }
 
-    [JsonProperty(PropertyName = "temperatureC")]
+    [JsonPropertyName("temperatureC")]
     public int TemperatureC { get; set; }
 
-    [JsonProperty(PropertyName = "temperatureF")]
+    [JsonPropertyName("temperatureF")]
     public int TemperatureF { get; set; }
 
-    [JsonProperty(PropertyName = "summary")]
+    [JsonPropertyName("summary")]
     public string? Summary { get; set; }
 }

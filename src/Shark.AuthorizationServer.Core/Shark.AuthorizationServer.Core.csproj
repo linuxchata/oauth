@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\Shark.AuthorizationServer.Domain\Shark.AuthorizationServer.Domain.csproj" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.DomainServices\Shark.AuthorizationServer.DomainServices.csproj" />
   </ItemGroup>
 </Project>

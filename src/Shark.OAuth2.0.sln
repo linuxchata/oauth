@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.AuthorizationServer.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.AuthorizationServer.Domain", "Shark.AuthorizationServer.Domain\Shark.AuthorizationServer.Domain.csproj", "{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.AuthorizationServer.DomainServices", "Shark.AuthorizationServer.DomainServices\Shark.AuthorizationServer.DomainServices.csproj", "{270CCBB0-65BA-4F5D-85E3-0A39718FC464}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.AuthorizationServer.Repositories", "Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.csproj", "{00BD7CAA-805A-430D-8B25-C0AAAB336499}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE369929-2A5E-4F63-8935-A9D9DCD6F9F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{270CCBB0-65BA-4F5D-85E3-0A39718FC464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270CCBB0-65BA-4F5D-85E3-0A39718FC464}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270CCBB0-65BA-4F5D-85E3-0A39718FC464}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270CCBB0-65BA-4F5D-85E3-0A39718FC464}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00BD7CAA-805A-430D-8B25-C0AAAB336499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00BD7CAA-805A-430D-8B25-C0AAAB336499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00BD7CAA-805A-430D-8B25-C0AAAB336499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00BD7CAA-805A-430D-8B25-C0AAAB336499}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

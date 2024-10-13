@@ -1,13 +1,14 @@
 using Prometheus;
-using Shark.AuthorizationServer.Abstractions.ApplicationServices;
-using Shark.AuthorizationServer.Abstractions.Repositories;
-using Shark.AuthorizationServer.Abstractions.Services;
-using Shark.AuthorizationServer.ApplicationServices;
 using Shark.AuthorizationServer.Authentication;
 using Shark.AuthorizationServer.Constants;
-using Shark.AuthorizationServer.Models;
+using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Core.Abstractions.Repositories;
+using Shark.AuthorizationServer.Core.ApplicationServices;
+using Shark.AuthorizationServer.Core.Configurations;
+using Shark.AuthorizationServer.DomainServices;
+using Shark.AuthorizationServer.DomainServices.Abstractions;
+using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.Repositories;
-using Shark.AuthorizationServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

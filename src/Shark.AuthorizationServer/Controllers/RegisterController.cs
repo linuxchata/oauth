@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
-using Shark.AuthorizationServer.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Core.Responses;
 using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
-using Shark.AuthorizationServer.Responses;
 
 namespace Shark.AuthorizationServer.Controllers;
 
