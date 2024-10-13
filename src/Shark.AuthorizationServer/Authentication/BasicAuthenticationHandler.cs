@@ -69,7 +69,7 @@ public sealed class BasicAuthenticationHandler(
             var clientId = decodedCredentials[..delimiterIndex];
             var clientSecret = decodedCredentials[(delimiterIndex + 1)..];
 
-            var client = _clientRepository.GetById(clientId);
+            var client = _clientRepository.Get(clientId);
             if (client is null || !string.Equals(client.ClientSecret, clientSecret, StringComparison.Ordinal))
             {
                 return false;

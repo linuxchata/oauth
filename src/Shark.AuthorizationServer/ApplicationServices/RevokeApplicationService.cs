@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
-using Shark.AuthorizationServer.Abstractions.Services;
+using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Models;
 using Shark.AuthorizationServer.Requests;
@@ -9,12 +9,12 @@ using Shark.AuthorizationServer.Responses;
 namespace Shark.AuthorizationServer.ApplicationServices;
 
 public sealed class RevokeApplicationService(
-    IPersistedGrantStore persistedGrantStore,
-    IRevokeTokenStore revokeTokenStore,
+    IPersistedGrantRepository persistedGrantStore,
+    IRevokeTokenRepository revokeTokenStore,
     ILogger<TokenApplicationService> logger) : IRevokeApplicationService
 {
-    private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
-    private readonly IRevokeTokenStore _revokeTokenStore = revokeTokenStore;
+    private readonly IPersistedGrantRepository _persistedGrantStore = persistedGrantStore;
+    private readonly IRevokeTokenRepository _revokeTokenStore = revokeTokenStore;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
     public RevokeInternalBaseResponse Execute(RevokeInternalRequest request)

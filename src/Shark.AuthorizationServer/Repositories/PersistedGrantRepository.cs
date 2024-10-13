@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Shark.AuthorizationServer.Abstractions.Services;
+using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Models;
 
-namespace Shark.AuthorizationServer.Services;
+namespace Shark.AuthorizationServer.Repositories;
 
-public sealed class InMemoryPersistedGrantStore(IDistributedCache cache) : IPersistedGrantStore
+public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersistedGrantRepository
 {
     private readonly IDistributedCache _cache = cache;
 

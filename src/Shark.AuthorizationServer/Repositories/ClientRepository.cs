@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using Shark.AuthorizationServer.Abstractions.Repositories;
-using Shark.AuthorizationServer.Abstractions.Services;
 
 namespace Shark.AuthorizationServer.Repositories;
 
-public sealed class ClientRepository(IClientStore clientStore) : IClientRepository
+public sealed class ClientRepository(IDistributedCache cache) : IClientRepository
 {
-    private readonly IClientStore _clientStore = clientStore;
+    private readonly IDistributedCache _cache = cache;
 
-    public Models.Client? GetById(string? id)
+    public Models.Client? Get(string? id)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -30,6 +30,7 @@ public sealed class ClientRepository(IClientStore clientStore) : IClientReposito
 
     public void Add(Models.Client client)
     {
-        _clientStore.Add(client);
+        var serializedItem = JsonConvert.SerializeObject(client);
+        _cache.SetString(client.ClientId, serializedItem);
     }
 }

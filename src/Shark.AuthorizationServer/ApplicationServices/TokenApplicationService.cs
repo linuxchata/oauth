@@ -14,7 +14,7 @@ public sealed class TokenApplicationService(
     IClientRepository clientRepository,
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
-    IPersistedGrantStore persistedGrantStore,
+    IPersistedGrantRepository persistedGrantStore,
     IResourceOwnerCredentialsValidationService resourceOwnerCredentialsValidationService,
     IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
     IOptions<AuthorizationServerConfiguration> options,
@@ -23,7 +23,7 @@ public sealed class TokenApplicationService(
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
-    private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
+    private readonly IPersistedGrantRepository _persistedGrantStore = persistedGrantStore;
     private readonly IResourceOwnerCredentialsValidationService _resourceOwnerCredentialsValidationService = resourceOwnerCredentialsValidationService;
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
@@ -33,7 +33,7 @@ public sealed class TokenApplicationService(
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        var client = _clientRepository.GetById(request.ClientId);
+        var client = _clientRepository.Get(request.ClientId);
 
         var response = ValidateClient(client, request);
         if (response != null)

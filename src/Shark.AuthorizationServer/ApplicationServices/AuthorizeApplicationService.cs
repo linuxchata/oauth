@@ -13,7 +13,7 @@ public sealed class AuthorizeApplicationService(
     IClientRepository clientRepository,
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
-    IPersistedGrantStore persistedGrantStore,
+    IPersistedGrantRepository persistedGrantStore,
     IRedirectionService redirectionService,
     IHttpContextAccessor httpContextAccessor,
     IOptions<AuthorizationServerConfiguration> options,
@@ -24,7 +24,7 @@ public sealed class AuthorizeApplicationService(
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
-    private readonly IPersistedGrantStore _persistedGrantStore = persistedGrantStore;
+    private readonly IPersistedGrantRepository _persistedGrantStore = persistedGrantStore;
     private readonly IRedirectionService _redirectionService = redirectionService;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
@@ -34,7 +34,7 @@ public sealed class AuthorizeApplicationService(
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        var client = _clientRepository.GetById(request.ClientId);
+        var client = _clientRepository.Get(request.ClientId);
 
         var response = ValidateRequest(request, client);
         if (response != null)

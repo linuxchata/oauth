@@ -63,9 +63,8 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IRedirectionService, RedirectionService>();
 
 builder.Services.AddSingleton<IClientRepository, ClientRepository>();
-builder.Services.AddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
-builder.Services.AddSingleton<IRevokeTokenStore, InMemoryRevokeTokenStore>();
-builder.Services.AddSingleton<IClientStore, InMemoryClientStore>();
+builder.Services.AddSingleton<IPersistedGrantRepository, PersistedGrantRepository>();
+builder.Services.AddSingleton<IRevokeTokenRepository, RevokeTokenRepository>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();

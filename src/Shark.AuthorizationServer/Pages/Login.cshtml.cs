@@ -25,7 +25,7 @@ public sealed class LoginModel(
     {
         ClientId = _redirectionService.GetClientId(returnUrl);
 
-        var client = _clientRepository.GetById(ClientId);
+        var client = _clientRepository.Get(ClientId);
         if (client is null)
         {
             return RedirectToPage("/Error");

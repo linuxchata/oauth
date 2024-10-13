@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
-using Shark.AuthorizationServer.Abstractions.Services;
+using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Requests;
 using Shark.AuthorizationServer.Responses;
@@ -9,10 +9,10 @@ using Shark.AuthorizationServer.Responses;
 namespace Shark.AuthorizationServer.ApplicationServices;
 
 public sealed class IntrospectApplicationService(
-    IRevokeTokenStore revokeTokenStore,
+    IRevokeTokenRepository revokeTokenStore,
     ILogger<IntrospectApplicationService> logger) : IIntrospectApplicationService
 {
-    private readonly IRevokeTokenStore _revokeTokenStore = revokeTokenStore;
+    private readonly IRevokeTokenRepository _revokeTokenStore = revokeTokenStore;
     private readonly ILogger<IntrospectApplicationService> _logger = logger;
 
     public IntrospectInternalBaseResponse Execute(IntrospectInternalRequest request)
