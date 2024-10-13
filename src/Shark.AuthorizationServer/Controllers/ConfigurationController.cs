@@ -17,11 +17,7 @@ public class ConfigurationController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Get()
     {
-        var request = HttpContext.Request;
-        var response = _configurationApplicationService.Get(
-            request.Scheme,
-            request.Host.Host.ToString(),
-            request.Host.Port ?? 443);
+        var response = _configurationApplicationService.Get();
         return Ok(response);
     }
 

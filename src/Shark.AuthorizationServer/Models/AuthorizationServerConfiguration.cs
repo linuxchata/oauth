@@ -4,7 +4,9 @@ public sealed class AuthorizationServerConfiguration
 {
     public const string Name = nameof(AuthorizationServerConfiguration);
 
-    public string Issuer { get; set; } = null!;
+    public string AuthorizationServerUri { get; set; } = null!;
+
+    public string IssuerUri { get; set; } = null!;
 
     public string SymmetricSecurityKey { get; set; } = null!;
 

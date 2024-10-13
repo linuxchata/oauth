@@ -92,7 +92,7 @@ public sealed class AccessTokenGeneratorService(
     private string GenerateToken(List<Claim> claims, string audience, SigningCredentials signingCredentials, DateTime currentTime)
     {
         var token = new JwtSecurityToken(
-            issuer: _configuration.Issuer ?? "Issuer",
+            issuer: _configuration.IssuerUri ?? "Issuer",
             audience: audience,
             claims: claims,
             notBefore: currentTime,

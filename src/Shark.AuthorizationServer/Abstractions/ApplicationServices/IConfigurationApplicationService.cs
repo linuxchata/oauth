@@ -4,7 +4,7 @@ namespace Shark.AuthorizationServer.Abstractions.ApplicationServices;
 
 public interface IConfigurationApplicationService
 {
-    ConfigurationResponse Get(string scheme, string host, int port);
+    ConfigurationResponse Get();
 
     ConfigurationJwksResponse GetJsonWebKeySet();
 }

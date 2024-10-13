@@ -14,18 +14,15 @@ public sealed class ConfigurationApplicationService(
     private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public ConfigurationResponse Get(string scheme, string host, int port)
+    public ConfigurationResponse Get()
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(scheme, nameof(scheme));
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(host, nameof(host));
-
-        var baseUrl = new UriBuilder(scheme, host, port);
-        var authorizeEndpointUri = new Uri(baseUrl.Uri, "authorize");
-        var tokenEndpointUri = new Uri(baseUrl.Uri, "token");
-        var introspectEndpointUri = new Uri(baseUrl.Uri, "introspect");
-        var revokeEndpointUri = new Uri(baseUrl.Uri, "revoke");
-        var registerEndpointUri = new Uri(baseUrl.Uri, "register");
-        var jsonWebKeySetEndpoint = new Uri(baseUrl.Uri, ".well-known/openid-configuration/jwks");
+        var baseUrl = new Uri(_configuration.AuthorizationServerUri);
+        var authorizeEndpointUri = new Uri(baseUrl, "authorize");
+        var tokenEndpointUri = new Uri(baseUrl, "token");
+        var introspectEndpointUri = new Uri(baseUrl, "introspect");
+        var revokeEndpointUri = new Uri(baseUrl, "revoke");
+        var registerEndpointUri = new Uri(baseUrl, "register");
+        var jsonWebKeySetEndpoint = new Uri(baseUrl, ".well-known/openid-configuration/jwks");
 
         return new ConfigurationResponse
         {
@@ -35,7 +32,7 @@ public sealed class ConfigurationApplicationService(
             RevokeEndpoint = revokeEndpointUri.ToString(),
             RegisterEndpoint = registerEndpointUri.ToString(),
             JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
-            Issuer = _configuration.Issuer,
+            Issuer = _configuration.IssuerUri,
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],
             GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ResourceOwnerCredentials, GrantType.ClientCredentials],
             SecurityAlgorithms = [_configuration.SecurityAlgorithms]
