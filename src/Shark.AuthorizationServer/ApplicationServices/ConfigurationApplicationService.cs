@@ -11,6 +11,9 @@ public sealed class ConfigurationApplicationService(
     RsaSecurityKey rsaSecurityKey,
     IOptions<AuthorizationServerConfiguration> options) : IConfigurationApplicationService
 {
+    private const string SigPublicKeyUse = "sig";
+    private const string RsaKeyType = "RSA";
+
     private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
@@ -42,18 +45,18 @@ public sealed class ConfigurationApplicationService(
     public ConfigurationJwksResponse GetJsonWebKeySet()
     {
         // Danger zone - do not expose private key
-        var exponent = _rsaSecurityKey.Rsa.ExportParameters(false).Exponent;
-        //// var modulus = _rsaSecurityKey.Rsa.ExportSubjectPublicKeyInfo();
-        var modulus = _rsaSecurityKey.Rsa.ExportParameters(false).Modulus;
+        var parameters = _rsaSecurityKey.Rsa.ExportParameters(false);
+        var exponent = parameters.Exponent ?? [];
+        var modulus = parameters.Modulus ?? [];
 
         return new ConfigurationJwksResponse
         {
-            Exponent = Convert.ToBase64String(exponent!),
-            PublicKeyUse = "sig",
+            Exponent = Convert.ToBase64String(exponent),
+            PublicKeyUse = SigPublicKeyUse,
             Algorithm = SecurityAlgorithms.RsaSha256,
-            KeyType = "RSA",
+            KeyType = RsaKeyType,
             KeyId = _configuration.KeyId,
-            Modulus = Convert.ToBase64String(modulus!),
+            Modulus = Convert.ToBase64String(modulus),
         };
     }
 }
