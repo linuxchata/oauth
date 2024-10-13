@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Abstractions.Repositories;
 using Shark.AuthorizationServer.Abstractions.Services;
@@ -11,7 +12,8 @@ namespace Shark.AuthorizationServer.ApplicationServices;
 
 public sealed class RegisterApplicationService(
     IStringGeneratorService stringGeneratorService,
-    IClientRepository clientRepository) : IRegisterApplicationService
+    IClientRepository clientRepository,
+    IOptions<AuthorizationServerConfiguration> options) : IRegisterApplicationService
 {
     private const string ClientSecretBasicAuthMethod = "client_secret_basic";
     private const int DefaultAccessTokenLifetimeInSeconds = 3600;
@@ -19,6 +21,7 @@ public sealed class RegisterApplicationService(
 
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
     private readonly HashSet<string> allowedGrandTypes =
     [
@@ -39,29 +42,7 @@ public sealed class RegisterApplicationService(
             return response;
         }
 
-        var currentDate = DateTime.UtcNow;
-
-        var client = new Client
-        {
-            ClientName = request.ClientName,
-            Enabled = true,
-            ClientId = Guid.NewGuid().ToString(),
-            ClientSecret = _stringGeneratorService.GenerateClientSecret(),
-            ClientIdIssuedAt = EpochTime.GetIntDate(currentDate),
-            ClientSecretExpiresAt = EpochTime.GetIntDate(currentDate.AddYears(1)),
-            RedirectUris = request.RedirectUris,
-            GrantTypes = request.GrandTypes.Split(' '),
-            ResponseTypes = request.ResponseTypes.Split(' '),
-            TokenEndpointAuthMethod = ClientSecretBasicAuthMethod,
-            ClientUri = request.ClientUri,
-            LogoUri = request.LogoUri,
-            Scope = request.Scope.Split(' '),
-            Audience = request.Audience,
-            AccessTokenLifetimeInSeconds = DefaultAccessTokenLifetimeInSeconds,
-            RefreshTokenLifetimeInSeconds = DefaultRefreshTokenLifetimeInSeconds,
-        };
-
-        _clientRepository.Add(client);
+        var client = CreateAndStoreClient(request);
 
         return new RegisterInternalResponse
         {
@@ -73,6 +54,8 @@ public sealed class RegisterApplicationService(
             RedirectUris = client.RedirectUris,
             GrantTypes = client.GrantTypes,
             TokenEndpointAuthMethod = client.TokenEndpointAuthMethod,
+            RegistrationAccessToken = client.RegistrationAccessToken,
+            RegistrationClientUri = client.RegistrationClientUri,
         };
     }
 
@@ -173,5 +156,41 @@ public sealed class RegisterApplicationService(
         }
 
         return null;
+    }
+
+    private Client CreateAndStoreClient(RegisterInternalRequest request)
+    {
+        var clientId = Guid.NewGuid().ToString();
+
+        var baseUri = new Uri(_configuration.AuthorizationServerUri);
+        var registerEndpointUri = new Uri(baseUri, $"{AuthorizationServerEndpoint.Register}/{clientId}");
+
+        var currentDate = DateTime.UtcNow;
+
+        var client = new Client
+        {
+            ClientName = request.ClientName,
+            Enabled = true,
+            ClientId = clientId,
+            ClientSecret = _stringGeneratorService.GenerateClientSecret(),
+            ClientIdIssuedAt = EpochTime.GetIntDate(currentDate),
+            ClientSecretExpiresAt = EpochTime.GetIntDate(currentDate.AddYears(1)),
+            RedirectUris = request.RedirectUris,
+            GrantTypes = request.GrandTypes.Split(' '),
+            ResponseTypes = request.ResponseTypes.Split(' '),
+            TokenEndpointAuthMethod = ClientSecretBasicAuthMethod,
+            ClientUri = request.ClientUri,
+            LogoUri = request.LogoUri,
+            Scope = request.Scope.Split(' '),
+            Audience = request.Audience,
+            AccessTokenLifetimeInSeconds = DefaultAccessTokenLifetimeInSeconds,
+            RefreshTokenLifetimeInSeconds = DefaultRefreshTokenLifetimeInSeconds,
+            RegistrationAccessToken = _stringGeneratorService.GenerateClientAccessToken(),
+            RegistrationClientUri = registerEndpointUri.ToString(),
+        };
+
+        _clientRepository.Add(client);
+
+        return client;
     }
 }

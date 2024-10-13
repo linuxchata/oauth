@@ -7,4 +7,6 @@ public interface IStringGeneratorService
     string GenerateRefreshToken(byte length = 64);
 
     string GenerateClientSecret(byte length = 18);
+
+    string GenerateClientAccessToken(byte length = 42);
 }

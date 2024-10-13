@@ -1,4 +1,6 @@
-﻿namespace Shark.AuthorizationServer.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace Shark.AuthorizationServer.Models;
 
 public record Client
 {
@@ -33,4 +35,8 @@ public record Client
     public required int AccessTokenLifetimeInSeconds { get; set; }
 
     public required int RefreshTokenLifetimeInSeconds { get; set; }
+
+    public required string RegistrationAccessToken { get; set; }
+
+    public required string RegistrationClientUri { get; set; }
 }

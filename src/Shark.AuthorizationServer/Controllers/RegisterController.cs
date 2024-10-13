@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Requests;
@@ -19,7 +20,9 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Post([FromForm] RegisterRequest request)
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public IActionResult Post([FromBody] RegisterRequest request)
     {
         var internalRequest = new RegisterInternalRequest
         {

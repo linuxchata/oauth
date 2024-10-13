@@ -27,4 +27,10 @@ public sealed class RegisterInternalResponse : RegisterInternalBaseResponse
 
     [JsonPropertyName("token_endpoint_auth_method")]
     public required string TokenEndpointAuthMethod { get; set; }
+
+    [JsonPropertyName("registration_access_token")]
+    public required string RegistrationAccessToken { get; set; }
+
+    [JsonPropertyName("registration_client_uri")]
+    public required string RegistrationClientUri { get; set; }
 }

@@ -20,12 +20,12 @@ public sealed class ConfigurationApplicationService(
     public ConfigurationResponse Get()
     {
         var baseUrl = new Uri(_configuration.AuthorizationServerUri);
-        var authorizeEndpointUri = new Uri(baseUrl, "authorize");
-        var tokenEndpointUri = new Uri(baseUrl, "token");
-        var introspectEndpointUri = new Uri(baseUrl, "introspect");
-        var revokeEndpointUri = new Uri(baseUrl, "revoke");
-        var registerEndpointUri = new Uri(baseUrl, "register");
-        var jsonWebKeySetEndpoint = new Uri(baseUrl, ".well-known/openid-configuration/jwks");
+        var authorizeEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Authorize);
+        var tokenEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Token);
+        var introspectEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Introspect);
+        var revokeEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Revoke);
+        var registerEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Register);
+        var jsonWebKeySetEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.ConfigurationJwks);
 
         return new ConfigurationResponse
         {
