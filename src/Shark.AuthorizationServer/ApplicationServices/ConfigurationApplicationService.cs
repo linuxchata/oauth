@@ -43,7 +43,8 @@ public sealed class ConfigurationApplicationService(
     {
         // Danger zone - do not expose private key
         var exponent = _rsaSecurityKey.Rsa.ExportParameters(false).Exponent;
-        var modulus = _rsaSecurityKey.Rsa.ExportSubjectPublicKeyInfo();
+        //// var modulus = _rsaSecurityKey.Rsa.ExportSubjectPublicKeyInfo();
+        var modulus = _rsaSecurityKey.Rsa.ExportParameters(false).Modulus;
 
         return new ConfigurationJwksResponse
         {
@@ -52,7 +53,7 @@ public sealed class ConfigurationApplicationService(
             Algorithm = SecurityAlgorithms.RsaSha256,
             KeyType = "RSA",
             KeyId = _configuration.KeyId,
-            Modulus = Convert.ToBase64String(modulus),
+            Modulus = Convert.ToBase64String(modulus!),
         };
     }
 }

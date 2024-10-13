@@ -1,13 +1,12 @@
-﻿namespace Shark.ProtectedResource.Client.Constants
+﻿namespace Shark.ProtectedResource.Client.Constants;
+
+public sealed class Scope
 {
-    public sealed class Scope
-    {
-        public const string Read = "read";
+    public const string Read = "read";
 
-        public const string Add = "add";
+    public const string Add = "add";
 
-        public const string Update = "update";
+    public const string Update = "update";
 
-        public const string Delete = "delete";
-    }
+    public const string Delete = "delete";
 }

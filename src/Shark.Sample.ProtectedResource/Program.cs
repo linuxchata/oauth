@@ -1,3 +1,4 @@
+using Shark.ProtectedResource.Client.Extensions;
 using Shark.Sample.ProtectedResource.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,7 @@ builder.Logging.AddSimpleConsole(options =>
     options.SingleLine = true;
 });
 
-builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddSharkAuthentication(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

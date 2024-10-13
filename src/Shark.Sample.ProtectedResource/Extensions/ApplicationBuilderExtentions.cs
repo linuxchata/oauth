@@ -1,11 +1,4 @@
-﻿using System.Security.Cryptography;
-using Microsoft.IdentityModel.Tokens;
-using Shark.ProtectedResource.Client.Authentication;
-using Shark.ProtectedResource.Client.Constants;
-using Shark.ProtectedResource.Client.Models;
-using Shark.ProtectedResource.Client.Services;
-
-namespace Shark.Sample.ProtectedResource.Extensions;
+﻿namespace Shark.Sample.ProtectedResource.Extensions;
 
 public static class ApplicationBuilderExtentions
 {
@@ -16,57 +9,5 @@ public static class ApplicationBuilderExtentions
             context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
             await next();
         });
-    }
-
-    public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<BearerTokenAuthenticationOptions>(
-        configuration.GetSection(BearerTokenAuthenticationOptions.Name));
-
-        var bearerTokenAuthenticationOptions = new BearerTokenAuthenticationOptions();
-        configuration.GetSection(BearerTokenAuthenticationOptions.Name).Bind(bearerTokenAuthenticationOptions);
-
-        var rsaSecurityKey = GetRsaSecurityKey(bearerTokenAuthenticationOptions.KeyId);
-        services.AddSingleton(rsaSecurityKey);
-
-        services.AddTransient<IBearerTokenHandlingService, BearerTokenHandlingService>();
-
-        services
-            .AddAuthentication(Scheme.Bearer)
-            .AddScheme<BearerTokenAuthenticationOptions, BearerTokenAuthenticationHandler>(
-                Scheme.Bearer,
-                options => options = bearerTokenAuthenticationOptions);
-
-        services
-            .AddAuthorizationBuilder()
-            .AddPolicy(Scope.Read, policy =>
-            {
-                policy.AddAuthenticationSchemes(Scheme.Bearer);
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim(ClaimType.Scope, Scope.Read);
-            })
-            .AddPolicy(Scope.Delete, policy =>
-            {
-                policy.AddAuthenticationSchemes(Scheme.Bearer);
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim(ClaimType.Scope, Scope.Delete);
-            });
-
-        return services;
-    }
-
-    private static RsaSecurityKey GetRsaSecurityKey(string keyId)
-    {
-        var publicKey = File.ReadAllText("Keys/RS256.Public.pem");
-
-        var rsa = RSA.Create();
-        rsa.ImportFromPem(publicKey);
-
-        var securityKey = new RsaSecurityKey(rsa)
-        {
-            KeyId = keyId
-        };
-
-        return securityKey;
     }
 }

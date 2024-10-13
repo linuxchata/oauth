@@ -1,9 +1,8 @@
-﻿namespace Shark.ProtectedResource.Client.Constants
-{
-    public sealed class ClaimType
-    {
-        public const string Subject = "sub";
+﻿namespace Shark.ProtectedResource.Client.Constants;
 
-        public const string Scope = "scope";
-    }
+public sealed class ClaimType
+{
+    public const string Subject = "sub";
+
+    public const string Scope = "scope";
 }

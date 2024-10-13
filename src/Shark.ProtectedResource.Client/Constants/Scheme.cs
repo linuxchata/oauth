@@ -1,7 +1,6 @@
-﻿namespace Shark.ProtectedResource.Client.Constants
+﻿namespace Shark.ProtectedResource.Client.Constants;
+
+public sealed class Scheme
 {
-    public sealed class Scheme
-    {
-        public const string Bearer = nameof(Bearer);
-    }
+    public const string Bearer = nameof(Bearer);
 }
