@@ -73,6 +73,7 @@ public sealed class RevokeApplicationService(
                     "Access token [{token}] has already been revoked",
                     token);
             }
+
             return true;
         }
         else
@@ -80,7 +81,7 @@ public sealed class RevokeApplicationService(
             _logger.LogWarning(
                 "Access token [{token}] does not have identfier. Access token cannot be revoked",
                 token);
-            // If token was read, so it is a access token. Marked it as handled
+            //// If token was read, so it is a access token. Marked it as handled
             return true;
         }
     }
@@ -91,7 +92,7 @@ public sealed class RevokeApplicationService(
         if (refreshToken is not null)
         {
             _persistedGrantStore.Remove(token);
-            // Do not log refresh token value
+            //// Do not log refresh token value
             _logger.LogInformation("Refresh token has been removed");
         }
     }

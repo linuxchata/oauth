@@ -8,7 +8,7 @@ public sealed class StringGeneratorService : IStringGeneratorService
     private const string RefreshTokenChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private const string ClientSecretChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    private static readonly Random random = new();
+    private static readonly Random Random = new();
 
     public string GenerateCode(byte length = 40)
     {
@@ -28,6 +28,6 @@ public sealed class StringGeneratorService : IStringGeneratorService
     private string GenerateInternal(string chars, byte length)
     {
         return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
+            .Select(s => s[Random.Next(s.Length)]).ToArray());
     }
 }

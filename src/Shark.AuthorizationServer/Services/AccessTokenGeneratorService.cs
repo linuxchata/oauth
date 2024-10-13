@@ -85,7 +85,7 @@ public sealed class AccessTokenGeneratorService(
     {
         return new SigningCredentials(_rsaSecurityKey, SecurityAlgorithms.RsaSha256)
         {
-            CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
+            CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false },
         };
     }
 
@@ -97,8 +97,7 @@ public sealed class AccessTokenGeneratorService(
             claims: claims,
             notBefore: currentTime,
             expires: currentTime.AddSeconds(_configuration.AccessTokenExpirationInSeconds),
-            signingCredentials: signingCredentials
-        );
+            signingCredentials: signingCredentials);
 
         if (!string.IsNullOrWhiteSpace(_configuration.KeyId))
         {
