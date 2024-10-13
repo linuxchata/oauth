@@ -15,7 +15,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     private readonly IRegisterApplicationService _registerApplicationService = registerApplicationService;
 
     /// <summary>
-    /// Read register client.
+    /// Reads a register client.
     /// </summary>
     /// <param name="clientId">Client identifier.</param>
     /// <returns>HTTP response.</returns>
@@ -38,7 +38,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     }
 
     /// <summary>
-    /// Dynamically register client.
+    /// Dynamically registers a client.
     /// </summary>
     /// <param name="request">Register request.</param>
     /// <returns>HTTP response.</returns>
@@ -63,13 +63,13 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     }
 
     /// <summary>
-    /// Delete register client.
+    /// Deletes register a client.
     /// </summary>
     /// <param name="clientId">Client identifier.</param>
     /// <returns>HTTP response.</returns>
-    [HttpDelete]
+    [HttpDelete("{clientId}")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult Delete([FromRoute] string clientId)
     {
         var internalResponse = _registerApplicationService.Delete(clientId);
