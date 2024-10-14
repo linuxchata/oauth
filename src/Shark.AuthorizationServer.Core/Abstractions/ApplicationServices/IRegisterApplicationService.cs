@@ -9,5 +9,7 @@ public interface IRegisterApplicationService
 
     RegisterInternalBaseResponse Post(RegisterInternalRequest request);
 
+    RegisterInternalBaseResponse Put(string clientId, RegisterUpdateInternalRequest request);
+
     RegisterInternalBaseResponse Delete(string clientId);
 }

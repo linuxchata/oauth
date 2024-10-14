@@ -63,6 +63,20 @@ public sealed class RegisterApplicationService(
         return client.ToInternalResponse();
     }
 
+    public RegisterInternalBaseResponse Put(string clientId, RegisterUpdateInternalRequest request)
+    {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        // Validate client id
+        if (string.Equals(clientId, request.ClientId, StringComparison.OrdinalIgnoreCase))
+        {
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
+        }
+
+        return null!;
+    }
+
     public RegisterInternalBaseResponse Delete(string clientId)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
@@ -102,7 +116,7 @@ public sealed class RegisterApplicationService(
         }
 
         // Validate grand types and response types
-        if (string.IsNullOrWhiteSpace(request.GrandTypes))
+        if (string.IsNullOrWhiteSpace(request.GrantTypes))
         {
             return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
@@ -112,7 +126,7 @@ public sealed class RegisterApplicationService(
             return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
-        var grandTypes = request.GrandTypes.Split(' ');
+        var grandTypes = request.GrantTypes.Split(' ');
         var responseTypes = request.ResponseTypes.Split(' ');
         foreach (var grandType in grandTypes)
         {
@@ -195,7 +209,7 @@ public sealed class RegisterApplicationService(
             ClientIdIssuedAt = EpochTime.GetIntDate(currentDate),
             ClientSecretExpiresAt = EpochTime.GetIntDate(currentDate.AddYears(1)),
             RedirectUris = request.RedirectUris,
-            GrantTypes = request.GrandTypes.Split(' '),
+            GrantTypes = request.GrantTypes.Split(' '),
             ResponseTypes = request.ResponseTypes.Split(' '),
             TokenEndpointAuthMethod = ClientSecretBasicAuthMethod,
             ClientUri = request.ClientUri,

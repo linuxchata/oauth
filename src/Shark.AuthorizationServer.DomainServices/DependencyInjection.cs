@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
+using Shark.AuthorizationServer.DomainServices.Services;
 
 namespace Shark.AuthorizationServer.DomainServices;
 

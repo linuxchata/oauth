@@ -66,6 +66,31 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     }
 
     /// <summary>
+    /// Updates a registered client.
+    /// </summary>
+    /// <param name="clientId">Client identifier.</param>
+    /// <param name="request">Register request.</param>
+    /// <returns>HTTP response.</returns>
+    [Authorize(AuthenticationSchemes = Scheme.ClientToken)]
+    [HttpPut("{clientId}")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult Put(string clientId, [FromBody] RegisterUpdateRequest request)
+    {
+        var internalResponse = _registerApplicationService.Put(clientId, request.ToInternalRequest());
+
+        switch (internalResponse)
+        {
+            case RegisterInternalNotFoundResponse:
+                return Unauthorized();
+            case RegisterInternalResponse response:
+                return Ok(response);
+            default:
+                return new StatusCodeResult((int)HttpStatusCode.NotImplemented);
+        }
+    }
+
+    /// <summary>
     /// Deletes registered a client.
     /// </summary>
     /// <param name="clientId">Client identifier.</param>

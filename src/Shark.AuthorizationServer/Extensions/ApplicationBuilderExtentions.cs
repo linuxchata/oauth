@@ -1,8 +1,8 @@
 ﻿using Shark.AuthorizationServer.Authentication;
 using Shark.AuthorizationServer.Configurations;
 using Shark.AuthorizationServer.Constants;
-using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.DomainServices.Configurations;
+using Shark.AuthorizationServer.DomainServices.Services;
 
 namespace Shark.AuthorizationServer.Extensions;
 

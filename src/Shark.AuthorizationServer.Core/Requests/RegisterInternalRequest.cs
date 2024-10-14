@@ -6,7 +6,7 @@ public sealed class RegisterInternalRequest
 
     public string? TokenEndpointAuthMethod { get; set; }
 
-    public required string GrandTypes { get; set; }
+    public required string GrantTypes { get; set; }
 
     public required string ResponseTypes { get; set; }
 

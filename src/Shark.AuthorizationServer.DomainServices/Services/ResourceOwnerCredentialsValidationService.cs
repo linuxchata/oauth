@@ -1,6 +1,6 @@
 ﻿using Shark.AuthorizationServer.DomainServices.Abstractions;
 
-namespace Shark.AuthorizationServer.DomainServices;
+namespace Shark.AuthorizationServer.DomainServices.Services;
 
 public sealed class ResourceOwnerCredentialsValidationService : IResourceOwnerCredentialsValidationService
 {

@@ -3,7 +3,7 @@ using System.Text;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Constants;
 
-namespace Shark.AuthorizationServer.DomainServices;
+namespace Shark.AuthorizationServer.DomainServices.Services;
 
 public sealed class ProofKeyForCodeExchangeService : IProofKeyForCodeExchangeService
 {

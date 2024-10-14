@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Shark.AuthorizationServer.DomainServices;
+namespace Shark.AuthorizationServer.DomainServices.Services;
 
 public static class Rsa256KeysGenerator
 {

@@ -3,17 +3,19 @@ using Shark.AuthorizationServer.Requests;
 
 namespace Shark.AuthorizationServer.Mappers;
 
-public static class RegisterRequestMapper
+public static class RegisterUpdateRequestMapper
 {
-    public static RegisterInternalRequest ToInternalRequest(this RegisterRequest request)
+    public static RegisterUpdateInternalRequest ToInternalRequest(this RegisterUpdateRequest request)
     {
-        return new RegisterInternalRequest
+        return new RegisterUpdateInternalRequest
         {
+            ClientName = request.client_name,
+            ClientId = request.client_id,
+            ClientSecret = request.client_secret,
             RedirectUris = request.redirect_uris,
-            TokenEndpointAuthMethod = request.token_endpoint_auth_method,
             GrantTypes = request.grant_types,
             ResponseTypes = request.response_types,
-            ClientName = request.client_name,
+            TokenEndpointAuthMethod = request.token_endpoint_auth_method,
             ClientUri = request.client_uri,
             LogoUri = request.logo_uri,
             Scope = request.scope,
