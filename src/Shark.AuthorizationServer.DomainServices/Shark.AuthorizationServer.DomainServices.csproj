@@ -5,11 +5,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.1.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shark.AuthorizationServer.Domain\Shark.AuthorizationServer.Domain.csproj" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Domain\Shark.AuthorizationServer.Domain.csproj">
+      <TreatAsUsed>true</TreatAsUsed>
+    </ProjectReference>
   </ItemGroup>
 </Project>
