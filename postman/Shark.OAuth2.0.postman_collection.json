@@ -1,0 +1,204 @@
+{
+	"info": {
+		"_postman_id": "bd5b3dbc-6421-4d88-97a9-bdf689434283",
+		"name": "Shark.OAuth2.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3431366"
+	},
+	"item": [
+		{
+			"name": "OpenID Configuration",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:9000/.well-known/openid-configuration",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						".well-known",
+						"openid-configuration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OpenID Configuration JWKS",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:9000/.well-known/openid-configuration/jwks",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						".well-known",
+						"openid-configuration",
+						"jwks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the JSON response body\r",
+							"let responseData = pm.response.json();\r",
+							"\r",
+							"// Set the 'ClientId' from the response as a collection variable\r",
+							"pm.collectionVariables.set(\"ClientId\", responseData.client_id);\r",
+							"\r",
+							"// Set the 'ClientId' from the response as a collection variable\r",
+							"pm.collectionVariables.set(\"RegistrationAccessToken\", responseData.registration_access_token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"redirect_uris\": [\r\n    \"https://localhost:9001/callback\"\r\n  ],\r\n  \"token_endpoint_auth_method\": \"client_secret_basic\",\r\n  \"grand_types\": \"authorization_code\",\r\n  \"response_types\": \"code\",\r\n  \"client_name\": \"client-2\",\r\n  \"scope\": \"read\",\r\n  \"audience\": \"http://protected-resource-dev.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:9000/register",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client Read",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{RegistrationAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:9000/register/{{ClientId}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"register",
+						"{{ClientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client Delete",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{RegistrationAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:9000/register/{{ClientId}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"register",
+						"{{ClientId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ClientId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "RegistrationAccessToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

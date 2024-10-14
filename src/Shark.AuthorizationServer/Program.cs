@@ -1,13 +1,10 @@
 using Prometheus;
-using Shark.AuthorizationServer.Authentication;
-using Shark.AuthorizationServer.Configurations;
-using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.ApplicationServices;
 using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
-using Shark.AuthorizationServer.DomainServices.Configurations;
+using Shark.AuthorizationServer.Extensions;
 using Shark.AuthorizationServer.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,31 +17,12 @@ builder.Logging.AddSimpleConsole(options =>
     options.SingleLine = true;
 });
 
-builder.Services.Configure<AuthorizationServerConfiguration>(
-    builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
-
-var authorizationServerConfiguration = new AuthorizationServerConfiguration();
-builder.Configuration.GetSection(AuthorizationServerConfiguration.Name).Bind(authorizationServerConfiguration);
-var rsaSecurityKey = Rsa256KeysGenerator.GetRsaSecurityKey();
-builder.Services.AddSingleton(rsaSecurityKey);
-
-var basicAuthenticationOptions = new BasicAuthenticationOptions();
-builder.Configuration.GetSection(BasicAuthenticationOptions.Name).Bind(basicAuthenticationOptions);
-
 builder.Services.AddHttpClient();
 builder.Services.AddDistributedMemoryCache();
 
-// Authentication session
-builder.Services
-    .AddAuthentication(Scheme.Cookies)
-    .AddCookie();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-// Basic authentication
-builder.Services
-    .AddAuthentication(Scheme.Basic)
-    .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(
-        Scheme.Basic,
-        options => options = basicAuthenticationOptions);
+builder.Services.AddCustomAuthentication(builder.Configuration);
 
 builder.Services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
 builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>();
@@ -56,11 +34,8 @@ builder.Services.AddTransient<IRegisterApplicationService, RegisterApplicationSe
 builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
 builder.Services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
 builder.Services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
-
 builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();
-
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IRedirectionService, RedirectionService>();
 
 builder.Services.AddSingleton<IClientRepository, ClientRepository>();

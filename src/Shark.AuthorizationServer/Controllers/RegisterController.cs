@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Responses;
 using Shark.AuthorizationServer.Mappers;
@@ -15,10 +17,11 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     private readonly IRegisterApplicationService _registerApplicationService = registerApplicationService;
 
     /// <summary>
-    /// Reads a register client.
+    /// Reads a registered client.
     /// </summary>
     /// <param name="clientId">Client identifier.</param>
     /// <returns>HTTP response.</returns>
+    [Authorize(AuthenticationSchemes = Scheme.ClientToken)]
     [HttpGet("{clientId}")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -63,10 +66,11 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     }
 
     /// <summary>
-    /// Deletes register a client.
+    /// Deletes registered a client.
     /// </summary>
     /// <param name="clientId">Client identifier.</param>
     /// <returns>HTTP response.</returns>
+    [Authorize(AuthenticationSchemes = Scheme.ClientToken)]
     [HttpDelete("{clientId}")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
