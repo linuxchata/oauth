@@ -1,9 +1,7 @@
 using Prometheus;
-using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
+using Shark.AuthorizationServer.Core;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
-using Shark.AuthorizationServer.Core.ApplicationServices;
 using Shark.AuthorizationServer.DomainServices;
-using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.Extensions;
 using Shark.AuthorizationServer.Repositories;
 
@@ -19,28 +17,13 @@ builder.Logging.AddSimpleConsole(options =>
 
 builder.Services.AddHttpClient();
 builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddCustomAuthentication(builder.Configuration);
 
-builder.Services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
-builder.Services.AddTransient<ITokenApplicationService, TokenApplicationService>();
-builder.Services.AddTransient<IIntrospectApplicationService, IntrospectApplicationService>();
-builder.Services.AddTransient<IRevokeApplicationService, RevokeApplicationService>();
-builder.Services.AddTransient<IConfigurationApplicationService, ConfigurationApplicationService>();
-builder.Services.AddTransient<IRegisterApplicationService, RegisterApplicationService>();
-
-builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
-builder.Services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
-builder.Services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
-builder.Services.AddTransient<ILoginService, LoginService>();
-builder.Services.AddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();
-builder.Services.AddTransient<IRedirectionService, RedirectionService>();
-
-builder.Services.AddSingleton<IClientRepository, ClientRepository>();
-builder.Services.AddSingleton<IPersistedGrantRepository, PersistedGrantRepository>();
-builder.Services.AddSingleton<IRevokeTokenRepository, RevokeTokenRepository>();
+builder.Services.RegisterApplicationServices();
+builder.Services.RegisterDomainServices();
+builder.Services.RegisterRepositories();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
