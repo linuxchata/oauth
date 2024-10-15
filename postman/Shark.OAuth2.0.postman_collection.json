@@ -85,7 +85,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"redirect_uris\": [\r\n    \"https://localhost:9001/callback\"\r\n  ],\r\n  \"token_endpoint_auth_method\": \"client_secret_basic\",\r\n  \"grand_types\": \"authorization_code\",\r\n  \"response_types\": \"code\",\r\n  \"client_name\": \"client-2\",\r\n  \"scope\": \"read\",\r\n  \"audience\": \"http://protected-resource-dev.com\"\r\n}",
+					"raw": "{\r\n  \"redirect_uris\": [\r\n    \"https://localhost:9001/callback\"\r\n  ],\r\n  \"token_endpoint_auth_method\": \"client_secret_basic\",\r\n  \"grant_types\": \"authorization_code\",\r\n  \"response_types\": \"code\",\r\n  \"client_name\": \"client-2\",\r\n  \"scope\": \"read\",\r\n  \"audience\": \"http://protected-resource-dev.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -101,6 +101,63 @@
 					"port": "9000",
 					"path": [
 						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client Update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{RegistrationAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"redirect_uris\": [\r\n    \"https://localhost:9001/callback\",\r\n    \"https://localhost:9001/callback_\"\r\n  ],\r\n  \"token_endpoint_auth_method\": \"client_secret_basic\",\r\n  \"grant_types\": \"authorization_code\",\r\n  \"response_types\": \"code\",\r\n  \"client_name\": \"client-2\",\r\n  \"client_id\": \"{{ClientId}}\",\r\n  \"scope\": \"read add update delete\",\r\n  \"audience\": \"http://protected-resource-pp.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:9000/register/{{ClientId}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"register",
+						"{{ClientId}}"
 					]
 				}
 			},

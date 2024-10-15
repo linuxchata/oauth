@@ -69,7 +69,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     /// Updates a registered client.
     /// </summary>
     /// <param name="clientId">Client identifier.</param>
-    /// <param name="request">Register request.</param>
+    /// <param name="request">Register update request.</param>
     /// <returns>HTTP response.</returns>
     [Authorize(AuthenticationSchemes = Scheme.ClientToken)]
     [HttpPut("{clientId}")]
