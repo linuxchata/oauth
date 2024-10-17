@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddTransient<IRevokeApplicationService, RevokeApplicationService>();
         services.AddTransient<IConfigurationApplicationService, ConfigurationApplicationService>();
         services.AddTransient<IRegisterApplicationService, RegisterApplicationService>();
+        services.AddTransient<IUserInfoApplicationService, UserInfoApplicationService>();
 
         return services;
     }

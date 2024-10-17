@@ -9,7 +9,9 @@ public static class DependencyInjection
     public static IServiceCollection RegisterDomainServices(this IServiceCollection services)
     {
         services.AddTransient<IStringGeneratorService, StringGeneratorService>();
+        services.AddTransient<ISigningCredentialsService, SigningCredentialsService>();
         services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
+        services.AddTransient<IIdTokenGeneratorService, IdTokenGeneratorService>();
         services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
         services.AddTransient<ILoginService, LoginService>();
         services.AddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();

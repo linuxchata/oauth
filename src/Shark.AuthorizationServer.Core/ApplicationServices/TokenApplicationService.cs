@@ -17,6 +17,7 @@ public sealed class TokenApplicationService(
     IClientRepository clientRepository,
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
+    IIdTokenGeneratorService idTokenGeneratorService,
     IPersistedGrantRepository persistedGrantStore,
     IResourceOwnerCredentialsValidationService resourceOwnerCredentialsValidationService,
     IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
@@ -26,6 +27,7 @@ public sealed class TokenApplicationService(
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
+    private readonly IIdTokenGeneratorService _idTokenGeneratorService = idTokenGeneratorService;
     private readonly IPersistedGrantRepository _persistedGrantStore = persistedGrantStore;
     private readonly IResourceOwnerCredentialsValidationService _resourceOwnerCredentialsValidationService = resourceOwnerCredentialsValidationService;
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
@@ -153,9 +155,7 @@ public sealed class TokenApplicationService(
 
     private TokenInternalResponse HandleClientCredentialsGrantType(TokenInternalRequest request, Client client)
     {
-        _logger.LogInformation(
-            "Issuing access token for {grantType}",
-            GrantType.ClientCredentials);
+        _logger.LogInformation("Issuing access token for {grantType}", GrantType.ClientCredentials);
 
         var token = GenerateBearerToken(client!, request.Scopes);
         return new TokenInternalResponse(JsonSerializer.Serialize(token));
@@ -168,9 +168,7 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
-        _logger.LogInformation(
-            "Issuing access token for {grantType}",
-            GrantType.ResourceOwnerCredentials);
+        _logger.LogInformation("Issuing access token for {grantType}", GrantType.ResourceOwnerCredentials);
 
         var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, request.Username);
         return new TokenInternalResponse(JsonSerializer.Serialize(token));
@@ -282,12 +280,14 @@ public sealed class TokenApplicationService(
     {
         var userId = Guid.NewGuid().ToString();
         var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, client.Audience);
+        var idToken = _idTokenGeneratorService.Generate(userId, client.Audience, scopes);
         var refreshToken = _stringGeneratorService.GenerateRefreshToken();
 
         var token = new TokenResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
+            IdToken = idToken,
             TokenType = AccessTokenType.Bearer,
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };

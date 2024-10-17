@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
@@ -10,10 +9,10 @@ using Shark.AuthorizationServer.DomainServices.Constants;
 namespace Shark.AuthorizationServer.DomainServices.Services;
 
 public sealed class AccessTokenGeneratorService(
-    RsaSecurityKey rsaSecurityKey,
+    ISigningCredentialsService signingCredentialsService,
     IOptions<AuthorizationServerConfiguration> options) : IAccessTokenGeneratorService
 {
-    private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
+    private readonly ISigningCredentialsService _signingCredentialsService = signingCredentialsService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
     public string Generate(string? userId, string? userName, string[] scopes, string audience)
@@ -25,9 +24,7 @@ public sealed class AccessTokenGeneratorService(
 
         var claims = CreateClaims(userId, userName, scopes, currentTime);
 
-        var signingCredentials = GenerateSigningCredentials();
-
-        var token = GenerateToken(claims, audience, signingCredentials, currentTime);
+        var token = GenerateToken(claims, audience, currentTime);
 
         return token;
     }
@@ -60,37 +57,10 @@ public sealed class AccessTokenGeneratorService(
         return claims;
     }
 
-    private SigningCredentials GenerateSigningCredentials()
+    private string GenerateToken(List<Claim> claims, string audience, DateTime currentTime)
     {
-        if (_configuration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
-        {
-            return GenerateSigningCredentialsHs256();
-        }
-        else if (_configuration.SecurityAlgorithms == SecurityAlgorithms.RsaSha256)
-        {
-            return GenerateSigningCredentialsRsa256();
-        }
+        var signingCredentials = _signingCredentialsService.GenerateSigningCredentials();
 
-        throw new InvalidOperationException($"Unsupported signature algorithms {_configuration.SecurityAlgorithms}");
-    }
-
-    private SigningCredentials GenerateSigningCredentialsHs256()
-    {
-        var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
-        var securityKey = new SymmetricSecurityKey(key);
-        return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-    }
-
-    private SigningCredentials GenerateSigningCredentialsRsa256()
-    {
-        return new SigningCredentials(_rsaSecurityKey, SecurityAlgorithms.RsaSha256)
-        {
-            CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false },
-        };
-    }
-
-    private string GenerateToken(List<Claim> claims, string audience, SigningCredentials signingCredentials, DateTime currentTime)
-    {
         var token = new JwtSecurityToken(
             issuer: _configuration.IssuerUri ?? "Issuer",
             audience: audience,

@@ -12,7 +12,7 @@
     "TokenEndpointAuthMethod": "client_secret_basic",
     "ClientUri": null,
     "LogoUri": null,
-    "Scope": [ "read", "add", "update", "delete" ],
+    "Scope": [ "read", "add", "update", "delete", "openid" ],
     "Audience": "http://protected-resource-dev.com",
     "RegistrationAccessToken": "client-secret-01",
     "RegistrationClientUri": "client-1",
