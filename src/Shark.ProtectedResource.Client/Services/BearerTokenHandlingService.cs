@@ -84,9 +84,9 @@ public sealed class BearerTokenHandlingService(
 
         var validationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
+            ValidateIssuer = _configuration.ValidateIssuer,
             ValidIssuer = _configuration.Issuer,
-            ValidateAudience = true,
+            ValidateAudience = _configuration.ValidateAudience,
             ValidAudiences = new List<string> { _configuration.Audience },
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = securityKey,

@@ -10,7 +10,11 @@ public sealed class BearerTokenAuthenticationOptions : AuthenticationSchemeOptio
 
     public string Issuer { get; set; } = null!;
 
+    public bool ValidateIssuer { get; set; }
+
     public string Audience { get; set; } = null!;
+
+    public bool ValidateAudience { get; set; }
 
     public string KeyId { get; set; } = null!;
 
