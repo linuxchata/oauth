@@ -16,9 +16,9 @@ public class ConfigurationController(
     /// <returns>HTTP response.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        var response = _configurationApplicationService.Get();
+        var response = await _configurationApplicationService.Get();
         return Ok(response);
     }
 
@@ -29,9 +29,9 @@ public class ConfigurationController(
     /// <returns>HTTP response.</returns>
     [HttpGet("jwks")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetJsonWebKeySet()
+    public async Task<IActionResult> GetJsonWebKeySet()
     {
-        var response = _configurationApplicationService.GetJsonWebKeySet();
+        var response = await _configurationApplicationService.GetJsonWebKeySet();
         return Ok(response);
     }
 }

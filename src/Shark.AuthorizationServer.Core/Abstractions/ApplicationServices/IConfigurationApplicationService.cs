@@ -4,7 +4,7 @@ namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 public interface IConfigurationApplicationService
 {
-    ConfigurationResponse Get();
+    Task<ConfigurationResponse> Get();
 
-    ConfigurationJwksResponse GetJsonWebKeySet();
+    Task<ConfigurationJwksResponse> GetJsonWebKeySet();
 }

@@ -18,7 +18,7 @@ public sealed class ConfigurationApplicationService(
     private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public ConfigurationResponse Get()
+    public Task<ConfigurationResponse> Get()
     {
         var baseUrl = new Uri(_configuration.AuthorizationServerUri);
         var authorizeEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Authorize);
@@ -28,7 +28,7 @@ public sealed class ConfigurationApplicationService(
         var registerEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Register);
         var jsonWebKeySetEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.ConfigurationJwks);
 
-        return new ConfigurationResponse
+        var response = new ConfigurationResponse
         {
             AuthorizeEndpoint = authorizeEndpointUri.ToString(),
             TokenEndpoint = tokenEndpointUri.ToString(),
@@ -41,16 +41,18 @@ public sealed class ConfigurationApplicationService(
             GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ResourceOwnerCredentials, GrantType.ClientCredentials],
             SecurityAlgorithms = [_configuration.SecurityAlgorithms],
         };
+
+        return Task.FromResult(response);
     }
 
-    public ConfigurationJwksResponse GetJsonWebKeySet()
+    public Task<ConfigurationJwksResponse> GetJsonWebKeySet()
     {
         // Danger zone - do not expose private key
         var parameters = _rsaSecurityKey.Rsa.ExportParameters(false);
         var exponent = parameters.Exponent ?? [];
         var modulus = parameters.Modulus ?? [];
 
-        return new ConfigurationJwksResponse
+        var response = new ConfigurationJwksResponse
         {
             Exponent = Convert.ToBase64String(exponent),
             PublicKeyUse = SigPublicKeyUse,
@@ -59,5 +61,7 @@ public sealed class ConfigurationApplicationService(
             KeyId = _configuration.KeyId,
             Modulus = Convert.ToBase64String(modulus),
         };
+
+        return Task.FromResult(response);
     }
 }
