@@ -42,8 +42,8 @@ public class UserInfoController(
         {
             case UserInfoForbiddenResponse:
                 return Forbid();
-            case UserInfoResponse:
-                return Ok();
+            case UserInfoResponse response:
+                return Ok(response);
             default:
                 return new StatusCodeResult((int)HttpStatusCode.NotImplemented);
         }
