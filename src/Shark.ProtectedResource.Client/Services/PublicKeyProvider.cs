@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Shark.ProtectedResource.Client.Models;
+using Shark.AuthorizationServer.Client.Models;
 
-namespace Shark.ProtectedResource.Client.Services;
+namespace Shark.AuthorizationServer.Client.Services;
 
 public sealed class PublicKeyProvider(
     IHttpClientFactory httpClientFactory,

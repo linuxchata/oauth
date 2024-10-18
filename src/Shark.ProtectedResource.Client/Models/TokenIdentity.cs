@@ -1,4 +1,4 @@
-﻿namespace Shark.ProtectedResource.Client.Models;
+﻿namespace Shark.AuthorizationServer.Client.Models;
 
 public sealed class TokenIdentity
 {

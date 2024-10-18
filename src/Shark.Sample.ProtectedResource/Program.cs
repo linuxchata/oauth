@@ -1,4 +1,4 @@
-using Shark.ProtectedResource.Client.Extensions;
+using Shark.AuthorizationServer.Client.Extensions;
 using Shark.Sample.ProtectedResource.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

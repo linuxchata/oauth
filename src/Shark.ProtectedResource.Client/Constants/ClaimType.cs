@@ -1,4 +1,4 @@
-﻿namespace Shark.ProtectedResource.Client.Constants;
+﻿namespace Shark.AuthorizationServer.Client.Constants;
 
 public sealed class ClaimType
 {

@@ -1,6 +1,6 @@
-﻿using Shark.ProtectedResource.Client.Models;
+﻿using Shark.AuthorizationServer.Client.Models;
 
-namespace Shark.ProtectedResource.Client.Services;
+namespace Shark.AuthorizationServer.Client.Services;
 
 public interface IPublicKeyProvider
 {

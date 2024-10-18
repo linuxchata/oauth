@@ -3,11 +3,11 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shark.ProtectedResource.Client.Constants;
-using Shark.ProtectedResource.Client.Models;
-using Shark.ProtectedResource.Client.Services;
+using Shark.AuthorizationServer.Client.Constants;
+using Shark.AuthorizationServer.Client.Models;
+using Shark.AuthorizationServer.Client.Services;
 
-namespace Shark.ProtectedResource.Client.Authentication;
+namespace Shark.AuthorizationServer.Client.Authentication;
 
 public sealed class BearerTokenAuthenticationHandler : AuthenticationHandler<BearerTokenAuthenticationOptions>
 {

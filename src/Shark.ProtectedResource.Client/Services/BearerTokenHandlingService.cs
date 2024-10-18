@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
-using Shark.ProtectedResource.Client.Constants;
-using Shark.ProtectedResource.Client.Models;
+using Shark.AuthorizationServer.Client.Constants;
+using Shark.AuthorizationServer.Client.Models;
 
-namespace Shark.ProtectedResource.Client.Services;
+namespace Shark.AuthorizationServer.Client.Services;
 
 public sealed class BearerTokenHandlingService(
     RsaSecurityKey rsaSecurityKey,
