@@ -18,30 +18,32 @@ public class UserInfoController(
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        return Execute();
+        return await Execute();
     }
 
     [Authorize(AuthenticationSchemes = Scheme.Bearer)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Post()
+    public async Task<IActionResult> Post()
     {
-        return Execute();
+        return await Execute();
     }
 
-    private IActionResult Execute()
+    private async Task<IActionResult> Execute()
     {
         var claimsPrincipal = HttpContext.User;
 
-        var internalResponse = _userInfoApplicationService.Execute(claimsPrincipal);
+        var internalResponse = await _userInfoApplicationService.Execute(claimsPrincipal);
 
         switch (internalResponse)
         {
             case UserInfoForbiddenResponse:
                 return Forbid();
+            case UserInfoBadRequestResponse:
+                return BadRequest();
             case UserInfoResponse response:
                 return Ok(response);
             default:

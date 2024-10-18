@@ -5,5 +5,5 @@ namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 public interface IUserInfoApplicationService
 {
-    UserInfoBaseResponse Execute(ClaimsPrincipal claimsPrincipal);
+    Task<UserInfoBaseResponse> Execute(ClaimsPrincipal claimsPrincipal);
 }

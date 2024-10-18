@@ -3,14 +3,17 @@ using System.Security.Claims;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Extensions;
-using Shark.AuthorizationServer.Core.Responses;
 using Shark.AuthorizationServer.Core.Responses.UserInfo;
+using Shark.AuthorizationServer.DomainServices.Abstractions;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
-public sealed class UserInfoApplicationService : IUserInfoApplicationService
+public sealed class UserInfoApplicationService(
+    IProfileService profileService) : IUserInfoApplicationService
 {
-    public UserInfoBaseResponse Execute(ClaimsPrincipal claimsPrincipal)
+    private readonly IProfileService _profileService = profileService;
+
+    public async Task<UserInfoBaseResponse> Execute(ClaimsPrincipal claimsPrincipal)
     {
         ArgumentNullException.ThrowIfNull(claimsPrincipal, nameof(claimsPrincipal));
 
@@ -19,28 +22,40 @@ public sealed class UserInfoApplicationService : IUserInfoApplicationService
             return new UserInfoForbiddenResponse();
         }
 
+        var subject = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        if (string.IsNullOrEmpty(subject))
+        {
+            return new UserInfoBadRequestResponse();
+        }
+
         var response = new UserInfoResponse();
+
+        var profileData = await _profileService.Get(subject);
 
         if (claimsPrincipal.HasScope(Scope.Profile))
         {
-            response.Subject = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            response.Subject = subject;
+            response.Name = profileData.Name;
+            response.GivenName = profileData.GivenName;
+            response.FamilyName = profileData.FamilyName;
         }
 
         if (claimsPrincipal.HasScope(Scope.Email))
         {
-            response.Email = "username@example";
-            response.EmailVerified = true;
+            response.Email = profileData.Email;
+            response.EmailVerified = profileData.EmailVerified;
         }
 
         if (claimsPrincipal.HasScope(Scope.Address))
         {
-            response.Address = "23 Union Square W, New York, NY 10003, USA";
+            response.Address = profileData.Address;
         }
 
         if (claimsPrincipal.HasScope(Scope.Phone))
         {
-            response.PhoneNumber = "555443126";
-            response.PhoneNumberVerified = true;
+            response.PhoneNumber = profileData.PhoneNumber;
+            response.PhoneNumberVerified = profileData.PhoneNumberVerified;
         }
 
         return response;

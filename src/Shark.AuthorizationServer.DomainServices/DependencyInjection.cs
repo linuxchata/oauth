@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddTransient<ILoginService, LoginService>();
         services.AddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();
         services.AddTransient<IRedirectionService, RedirectionService>();
+        services.AddTransient<IProfileService, DefaultProfileService>();
 
         return services;
     }
