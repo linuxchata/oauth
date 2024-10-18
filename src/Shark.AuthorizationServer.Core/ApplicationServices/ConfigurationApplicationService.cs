@@ -36,7 +36,7 @@ public sealed class ConfigurationApplicationService(
             RevokeEndpoint = revokeEndpointUri.ToString(),
             RegisterEndpoint = registerEndpointUri.ToString(),
             JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
-            Issuer = _configuration.IssuerUri,
+            Issuer = _configuration.Issuer,
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],
             GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ResourceOwnerCredentials, GrantType.ClientCredentials],
             SecurityAlgorithms = [_configuration.SecurityAlgorithms],

@@ -17,6 +17,10 @@ public sealed class ClientTokenAuthenticationHandler(
 
     private readonly IClientRepository _clientRepository = clientRepository;
 
+    /// <summary>
+    /// Handle authentication with client's RegistrationAccessToken.
+    /// </summary>
+    /// <returns>Authenticate result.</returns>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var authorizationHeaderValue = GetAndValidateAuthorizationHeader();

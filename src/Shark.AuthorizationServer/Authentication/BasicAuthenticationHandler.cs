@@ -18,6 +18,10 @@ public sealed class BasicAuthenticationHandler(
 
     private readonly IClientRepository _clientRepository = clientRepository;
 
+    /// <summary>
+    /// Handle authentication with client's identified and client's secret.
+    /// </summary>
+    /// <returns>Authenticate result.</returns>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var authorizationHeaderValue = GetAndValidateAuthorizationHeader();

@@ -6,11 +6,11 @@ public sealed class AuthorizationServerConfiguration
 
     public string AuthorizationServerUri { get; set; } = null!;
 
-    public string IssuerUri { get; set; } = null!;
-
-    public string SymmetricSecurityKey { get; set; } = null!;
+    public string Issuer { get; set; } = null!;
 
     public string KeyId { get; set; } = null!;
+
+    public string SymmetricSecurityKey { get; set; } = null!;
 
     public string SecurityAlgorithms { get; set; } = null!;
 
