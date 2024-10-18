@@ -1,6 +1,9 @@
-﻿namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
+﻿using System.Security.Claims;
+using Shark.AuthorizationServer.Core.Responses;
+
+namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 public interface IUserInfoApplicationService
 {
-    void Execute();
+    UserInfoBaseResponse Execute(ClaimsPrincipal claimsPrincipal);
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Client.Authentication;
 using Shark.AuthorizationServer.Client.Constants;
@@ -54,8 +55,8 @@ public static class ApplicationBuilderExtentions
     private static async Task<RsaSecurityKey> GetRsaSecurityKey(IServiceCollection services)
     {
         services.AddHttpClient();
-        services.AddTransient<IPublicKeyProvider, PublicKeyProvider>();
-        services.AddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyProvider>();
+        services.TryAddTransient<IPublicKeyProvider, PublicKeyProvider>();
+        services.TryAddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyProvider>();
 
         var serviceProvider = services.BuildServiceProvider();
         var rsaSecurityKeyProvider =

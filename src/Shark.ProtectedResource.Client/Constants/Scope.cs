@@ -9,4 +9,6 @@ public sealed class Scope
     public const string Update = "update";
 
     public const string Delete = "delete";
+
+    public const string OpenId = "openid";
 }

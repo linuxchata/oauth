@@ -1,4 +1,6 @@
 ﻿using Shark.AuthorizationServer.Authentication;
+using Shark.AuthorizationServer.Client.Extensions;
+using Shark.AuthorizationServer.Client.Services;
 using Shark.AuthorizationServer.Configurations;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.DomainServices.Configurations;
@@ -47,6 +49,10 @@ public static class ApplicationBuilderExtentions
             .AddScheme<ClientTokenAuthenticationOptions, ClientTokenAuthenticationHandler>(
                 Scheme.ClientToken,
                 options => options = clientTokenAuthenticationOptions);
+
+        // Bearer token authentication
+        services.AddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyLocalProvider>();
+        services.AddSharkAuthentication(configuration);
 
         return services;
     }

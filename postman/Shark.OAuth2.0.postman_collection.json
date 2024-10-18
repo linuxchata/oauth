@@ -222,6 +222,64 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "User Info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjgxQ0JBNEFBNjNFMTQwMkFCQjM3N0MxQjM2Q0Q5N0E4In0.eyJzdWIiOiJhNjgwMTZmZi1lMjg4LTRkZmMtOWZlZS1jMmQ4MzhjYWViYTEiLCJuYW1lIjoiUHlseXAgTGViZWRpZXYiLCJzY29wZSI6InJlYWQgYWRkIHVwZGF0ZSBkZWxldGUiLCJpYXQiOjE3MjkyNzk1MDcsImp0aSI6IjM3MzlhYjRlLTNiYzAtNGQxNy05MzcwLTcwODUyMTJjZWY3ZiIsIm5iZiI6MTcyOTI3OTUwNywiZXhwIjoxNzI5MjgzMTA3LCJpc3MiOiJodHRwOi8vYXV0aG9yaXphdGlvbi1zZXJ2ZXItZGV2LmNvbSIsImF1ZCI6Imh0dHA6Ly9wcm90ZWN0ZWQtcmVzb3VyY2UtZGV2LmNvbSJ9.G5SyBfSd_zMgFVcM3LbFM88-kAIJuQE60zzIAg10O0Ve23yU1t25bNSFXEk9FpKCuWgJ1KmrZnsT7u4EYzLu9p9YgyPbOb7Zlrc1vNe5BTYPUaymrb01eaaOkIAqaQeR1BQbEPA9L0TTYpW-5VrZ0fn3-MEO680TBB2BQC4Dh-G_U-cNQw0hWbd828ZGOBFv1QVtSLlBeyqC0LzbxdBoq_V__TOqb6pLcT6Ub6XGv5ARVwPCK1tcbO6ucqrKei5wEtqkrL6r3ZejsOErDb8tqa7_52bVYYfyeqrHNRa9hkAnkdA5YFUw7D3tx8DB7c7Vf8FXpfOm9zw35CLXNJ_ZqA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:9000/userinfo",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"userinfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjgxQ0JBNEFBNjNFMTQwMkFCQjM3N0MxQjM2Q0Q5N0E4In0.eyJzdWIiOiIwMzg5OGM0OS04ODQwLTRlYTEtYWM4MS1mMWZkZDU5ZDViNTQiLCJuYW1lIjoiUHlseXAgTGViZWRpZXYiLCJzY29wZSI6InJlYWQgYWRkIHVwZGF0ZSBkZWxldGUgb3BlbmlkIiwiaWF0IjoxNzI5Mjc4NzkxLCJqdGkiOiJiNDJlNzg3Ny1hNDMyLTRkOTktYTMwYi0xZWY2YjQ0YjljNzEiLCJuYmYiOjE3MjkyNzg3OTEsImV4cCI6MTcyOTI4MjM5MSwiaXNzIjoiaHR0cDovL2F1dGhvcml6YXRpb24tc2VydmVyLWRldi5jb20iLCJhdWQiOiJodHRwOi8vcHJvdGVjdGVkLXJlc291cmNlLWRldi5jb20ifQ.P-gHzxWObM3ZGpCiWdAUYx8d11Wv3eF7L4Bkf_JQoK3OjA_mMJjv1EgSxNwHiJ9xFekzCCzhH4m_b33bJAboblmNEPB3cgZio37SgM-rbZb1z28osHtXlEuwIQM1dVO8lkyddyoXGYnyW1jmS3XmHoV_eAnThcWLVRzslbihvU4QO7-zwlxtW5xfpG43tFSRmNwu8gvGZ_DzpnaGKdVWnvbU382y06plX_WpjmHavRsD-NMUTv0j_iwJz4qYdAudu0pnzEpbAYhCCFfPv2YKQ9JaWrGFu4N8f1tUh8tMCnS-yGFOxU6kKh4TtqeSySxJMjHER7dkHwh8SioPhwz9wQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:9000/userinfo",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"userinfo"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
