@@ -11,14 +11,14 @@ using Shark.AuthorizationServer.Client.Models;
 namespace Shark.AuthorizationServer.Client.Services;
 
 public sealed class BearerTokenHandlingService(
-    RsaSecurityKey rsaSecurityKey,
+    Microsoft.IdentityModel.Tokens.RsaSecurityKey rsaSecurityKey,
     IOptions<BearerTokenAuthenticationOptions> options,
     ILogger<BearerTokenHandlingService> logger) : IBearerTokenHandlingService
 {
     private const string HeaderKeyName = "Authorization";
     private const string BearerTokenName = "Bearer";
 
-    private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
+    private readonly Microsoft.IdentityModel.Tokens.RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
     private readonly BearerTokenAuthenticationOptions _configuration = options.Value;
     private readonly ILogger<BearerTokenHandlingService> _logger = logger;
 

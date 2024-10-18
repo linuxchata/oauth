@@ -1,6 +1,6 @@
 using Prometheus;
+using Shark.AuthorizationServer.Client.Extensions;
 using Shark.AuthorizationServer.Core;
-using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.Extensions;
 using Shark.AuthorizationServer.Repositories;
@@ -20,6 +20,7 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddCustomAuthentication(builder.Configuration);
+//// builder.Services.AddSharkAuthentication(builder.Configuration);
 
 builder.Services.RegisterApplicationServices();
 builder.Services.RegisterDomainServices();

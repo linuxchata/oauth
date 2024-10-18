@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Client.Authentication;
@@ -56,46 +55,13 @@ public static class ApplicationBuilderExtentions
     {
         services.AddHttpClient();
         services.AddTransient<IPublicKeyProvider, PublicKeyProvider>();
+        services.AddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyProvider>();
 
         var serviceProvider = services.BuildServiceProvider();
-        var publicKeyProvider =
-            serviceProvider.GetService(typeof(IPublicKeyProvider)) as IPublicKeyProvider ??
-            throw new InvalidOperationException("Public Key provider cannot be resolved");
+        var rsaSecurityKeyProvider =
+            serviceProvider.GetService(typeof(IRsaSecurityKeyProvider)) as IRsaSecurityKeyProvider ??
+            throw new InvalidOperationException("RSA Security Key provider cannot be resolved");
 
-        var configurationJwksResponse =
-            await publicKeyProvider.Get() ??
-            throw new InvalidOperationException("JSON Web Key Set configuration is empty");
-
-        return GetRsaSecurityKey(configurationJwksResponse);
-    }
-
-    private static RsaSecurityKey GetRsaSecurityKey(ConfigurationJwksResponse configurationJwksResponse)
-    {
-        if (!string.Equals(configurationJwksResponse.KeyType, "RSA", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException($"Unssuported key type {configurationJwksResponse.KeyType}");
-        }
-
-        if (!string.Equals(configurationJwksResponse.Algorithm, SecurityAlgorithms.RsaSha256, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException($"Unssuported algorithm {configurationJwksResponse.Algorithm}");
-        }
-
-        var rsa = RSA.Create();
-
-        var rsaParams = new RSAParameters
-        {
-            Modulus = Convert.FromBase64String(configurationJwksResponse.Modulus),
-            Exponent = Convert.FromBase64String(configurationJwksResponse.Exponent),
-        };
-
-        rsa.ImportParameters(rsaParams);
-
-        var securityKey = new RsaSecurityKey(rsa)
-        {
-            KeyId = configurationJwksResponse.KeyId
-        };
-
-        return securityKey;
+        return await rsaSecurityKeyProvider.GetRsaSecurityKey();
     }
 }

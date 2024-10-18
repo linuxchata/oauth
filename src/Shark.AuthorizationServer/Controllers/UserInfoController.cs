@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 namespace Shark.AuthorizationServer.Controllers;
@@ -10,12 +11,14 @@ public class UserInfoController(
 {
     private readonly IUserInfoApplicationService _userInfoApplicationService = userInfoApplicationService;
 
+    [Authorize]
     [HttpGet]
     public IActionResult Get()
     {
         return Ok();
     }
 
+    [Authorize]
     [HttpPost]
     public IActionResult Post()
     {
