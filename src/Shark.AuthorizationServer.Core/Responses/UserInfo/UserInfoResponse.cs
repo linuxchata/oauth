@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Shark.AuthorizationServer.Core.Responses;
+namespace Shark.AuthorizationServer.Core.Responses.UserInfo;
 
 public sealed class UserInfoResponse : UserInfoBaseResponse
 {

@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Constants;
-using Shark.AuthorizationServer.Core.Responses;
+using Shark.AuthorizationServer.Core.Responses.Configuration;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Constants;
 

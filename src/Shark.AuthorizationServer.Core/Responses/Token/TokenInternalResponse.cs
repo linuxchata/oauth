@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Core.Responses;
+﻿namespace Shark.AuthorizationServer.Core.Responses.Token;
 
 public sealed class TokenInternalResponse(string response) : TokenInternalBaseResponse
 {

@@ -1,4 +1,4 @@
-﻿using Shark.AuthorizationServer.Core.Responses;
+﻿using Shark.AuthorizationServer.Core.Responses.Configuration;
 
 namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 

@@ -4,6 +4,7 @@ using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Extensions;
 using Shark.AuthorizationServer.Core.Responses;
+using Shark.AuthorizationServer.Core.Responses.UserInfo;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 

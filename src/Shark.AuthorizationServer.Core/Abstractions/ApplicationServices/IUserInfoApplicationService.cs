@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Shark.AuthorizationServer.Core.Responses;
+using Shark.AuthorizationServer.Core.Responses.UserInfo;
 
 namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 

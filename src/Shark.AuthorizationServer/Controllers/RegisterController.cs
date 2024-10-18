@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
-using Shark.AuthorizationServer.Core.Responses;
+using Shark.AuthorizationServer.Core.Responses.Register;
 using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
 

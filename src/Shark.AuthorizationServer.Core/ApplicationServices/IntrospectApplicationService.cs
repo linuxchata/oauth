@@ -5,6 +5,7 @@ using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses;
+using Shark.AuthorizationServer.Core.Responses.Introspect;
 using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;

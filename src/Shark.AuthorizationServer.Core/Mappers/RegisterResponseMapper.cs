@@ -1,4 +1,4 @@
-﻿using Shark.AuthorizationServer.Core.Responses;
+﻿using Shark.AuthorizationServer.Core.Responses.Register;
 using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.Mappers;

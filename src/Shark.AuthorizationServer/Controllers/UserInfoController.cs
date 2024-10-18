@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Client.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
-using Shark.AuthorizationServer.Core.Responses;
+using Shark.AuthorizationServer.Core.Responses.UserInfo;
 
 namespace Shark.AuthorizationServer.Controllers;
 
