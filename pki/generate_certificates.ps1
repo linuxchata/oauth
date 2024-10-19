@@ -6,3 +6,5 @@ openssl genpkey -algorithm RSA -out shark-dev.key -pkeyopt rsa_keygen_bits:2048
 openssl req -new -key shark-dev.key -out shark-dev.csr -config shark-dev.cnf
 
 openssl x509 -req -in shark-dev.csr -CA shark-ca.crt -CAkey shark-ca.key -CAcreateserial -sha256 -days 365 -out shark-dev.crt
+
+openssl pkcs12 -export -out shark-dev.pfx -inkey shark-dev.key -in shark-dev.crt -certfile shark-ca.crt
