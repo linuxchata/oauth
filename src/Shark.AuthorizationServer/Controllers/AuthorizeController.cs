@@ -15,7 +15,18 @@ public sealed class AuthorizeController(
     private readonly IAuthorizeApplicationService _authorizeApplicationService = authorizeApplicationService;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-    //// [Authorize(AuthenticationSchemes = Scheme.Cookies)]
+    /// <summary>
+    /// Initiates the authorization process, allowing resource owners to grant access to
+    /// their protected resources by authenticating and authorizing third-party applications.
+    /// </summary>
+    /// <param name="response_type">Resposne type.</param>
+    /// <param name="client_id">Client identifier.</param>
+    /// <param name="redirect_uri">Redirect URI.</param>
+    /// <param name="scope">Scope.</param>
+    /// <param name="state">State.</param>
+    /// <param name="code_challenge">Code challenge.</param>
+    /// <param name="code_challenge_method">Code challenge method.</param>
+    /// <returns>HTTP response.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

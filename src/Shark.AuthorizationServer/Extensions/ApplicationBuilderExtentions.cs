@@ -31,26 +31,28 @@ public static class ApplicationBuilderExtentions
         var clientTokenAuthenticationOptions = new ClientTokenAuthenticationOptions();
         configuration.GetSection(ClientTokenAuthenticationOptions.Name).Bind(clientTokenAuthenticationOptions);
 
-        // Authentication session
+        // Authentication session.
+        // Previously, the Cookies scheme was used to protect the /authorize endpoint.
+        // However, this approach does not support non-browser-based flows.
         services
             .AddAuthentication(Scheme.Cookies)
             .AddCookie();
 
-        // Basic authentication
+        // Basic authentication.
         services
             .AddAuthentication(Scheme.Basic)
             .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(
                 Scheme.Basic,
                 options => options = basicAuthenticationOptions);
 
-        // Client registration authentication
+        // Client registration authentication.
         services
             .AddAuthentication(Scheme.ClientToken)
             .AddScheme<ClientTokenAuthenticationOptions, ClientTokenAuthenticationHandler>(
                 Scheme.ClientToken,
                 options => options = clientTokenAuthenticationOptions);
 
-        // Bearer token authentication
+        // Bearer token authentication.
         services.AddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyLocalProvider>();
         services.AddSharkAuthentication(configuration);
 
