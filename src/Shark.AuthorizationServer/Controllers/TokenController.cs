@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Constants;
@@ -21,16 +22,17 @@ public sealed class TokenController(
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Post([FromForm] TokenRequest request)
     {
-        var internalResponse = await _tokenApplicationService.Execute(request.ToInternalRequest());
+        var internalResponse = await _tokenApplicationService.Execute(request.ToInternalRequest(), HttpContext.User);
 
         switch (internalResponse)
         {
             case TokenInternalBadRequestResponse badRequestResponse:
                 return BadRequest(badRequestResponse.Message);
             case TokenInternalResponse response:
-                return Ok(response.Response);
+                return Ok(response.TokenResponse);
             default:
                 return new StatusCodeResult((int)HttpStatusCode.NotImplemented);
         }

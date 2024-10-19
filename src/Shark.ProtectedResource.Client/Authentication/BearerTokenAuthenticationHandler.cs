@@ -35,8 +35,8 @@ public sealed class BearerTokenAuthenticationHandler : AuthenticationHandler<Bea
             return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
         }
 
-        var authenticationTicket = new AuthenticationTicket(CreateClaimsPrincipal(tokenIdentity), Scheme.Name);
-
+        var claimsPrincipal = CreateClaimsPrincipal(tokenIdentity);
+        var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
         return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
     }
 

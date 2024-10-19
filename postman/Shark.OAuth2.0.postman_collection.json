@@ -7,279 +7,823 @@
 	},
 	"item": [
 		{
-			"name": "OpenID Configuration",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://localhost:9000/.well-known/openid-configuration",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "9000",
-					"path": [
-						".well-known",
-						"openid-configuration"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "OpenID Configuration JWKS",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://localhost:9000/.well-known/openid-configuration/jwks",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "9000",
-					"path": [
-						".well-known",
-						"openid-configuration",
-						"jwks"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Client Register",
-			"event": [
+			"name": "Access Token",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Parse the JSON response body\r",
-							"let responseData = pm.response.json();\r",
-							"\r",
-							"// Set the 'ClientId' from the response as a collection variable\r",
-							"pm.collectionVariables.set(\"ClientId\", responseData.client_id);\r",
-							"\r",
-							"// Set the 'ClientId' from the response as a collection variable\r",
-							"pm.collectionVariables.set(\"RegistrationAccessToken\", responseData.registration_access_token);"
+					"name": "Authorize",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const redirectUrl = pm.response.headers.get('Location');\r",
+									"\r",
+									"var sdk = require('postman-collection'),\r",
+									"      url = new sdk.Url(redirectUrl),\r",
+									"      urlJson = url.toJSON();\r",
+									"\r",
+									"pm.collectionVariables.set(\"AuthorizeCode\", url.query.get('code'));"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HostUri}}/authorize/?response_type=code&client_id={{ClientIdPermanent}}&state={{State}}}&redirect_uri=https%3a%2f%2foauth.pstmn.io%2fv1%2fcallback&scope=read add update delete openid profile email address phone",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"authorize",
+								""
+							],
+							"query": [
+								{
+									"key": "response_type",
+									"value": "code"
+								},
+								{
+									"key": "client_id",
+									"value": "{{ClientIdPermanent}}"
+								},
+								{
+									"key": "state",
+									"value": "{{State}}}"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https%3a%2f%2foauth.pstmn.io%2fv1%2fcallback"
+								},
+								{
+									"key": "scope",
+									"value": "read add update delete openid profile email address phone"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response body\r",
+									"let responseData = pm.response.json();\r",
+									"\r",
+									"// Set the 'RefreshToken' from the response as a collection variable\r",
+									"pm.collectionVariables.set(\"RefreshToken\", responseData.refresh_token);\r",
+									"\r",
+									"// Set the 'AccessToken' from the response as a collection variable\r",
+									"pm.collectionVariables.set(\"AccessToken\", responseData.access_token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecretPermanent}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientIdPermanent}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{ClientIdPermanent}}",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "{{AuthorizeCode}}",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://oauth.pstmn.io/v1/callback",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "read add update delete openid profile email address phone",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/token/",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"token",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token Flow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response body\r",
+									"let responseData = pm.response.json();\r",
+									"\r",
+									"// Set the 'RefreshToken' from the response as a collection variable\r",
+									"pm.collectionVariables.set(\"RefreshToken\", responseData.refresh_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecretPermanent}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientIdPermanent}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{ClientIdPermanent}}",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{RefreshToken}}",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://oauth.pstmn.io/v1/callback",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "read add update delete openid profile email address phone",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/token/",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"token",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Password Flow",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecretPermanent}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientIdPermanent}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
 						],
-						"type": "text/javascript",
-						"packages": {}
-					}
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "client_id",
+									"value": "client-1",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "client-secret-01",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "alice",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "secret",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "read",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/token",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Client Credentials Flow",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecretPermanent}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientIdPermanent}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "client_id",
+									"value": "client-1",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "client-secret-01",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "read",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/token",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Introspect",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "token",
+									"value": "{{AccessToken}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/introspect",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"introspect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{ClientIdPermanent}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{ClientSecretPermanent}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "token",
+									"value": "{{AccessToken}}",
+									"type": "text"
+								},
+								{
+									"key": "token_hint",
+									"value": "access_token",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/revoke",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"revoke"
+							]
+						}
+					},
+					"response": []
 				}
 			],
-			"request": {
-				"method": "POST",
-				"header": [
+			"auth": {
+				"type": "oauth2",
+				"oauth2": [
 					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"key": "clientSecret",
+						"value": "{{ClientSecretPermanent}}",
+						"type": "string"
+					},
+					{
+						"key": "clientId",
+						"value": "{{ClientIdPermanent}}",
+						"type": "string"
+					},
+					{
+						"key": "client_authentication",
+						"value": "header",
+						"type": "string"
+					},
+					{
+						"key": "redirect_uri",
+						"value": "https://localhost:9001/callback",
+						"type": "string"
+					},
+					{
+						"key": "accessTokenUrl",
+						"value": "https://localhost:9000/token",
+						"type": "string"
+					},
+					{
+						"key": "authUrl",
+						"value": "https://localhost:9000/login?returnurl=authorize%2f%3fresponse_type%3dcode%26client_id%3dclient-1%26redirect_uri%3dhttps%253a%252f%252flocalhost%253a9001%252fcallback%26state%3d57b395259fe147aea9527e04830b60b9",
+						"type": "string"
+					},
+					{
+						"key": "useBrowser",
+						"value": false,
+						"type": "boolean"
+					},
+					{
+						"key": "state",
+						"value": "da150dde94be049ee86e8adf876f4b426",
+						"type": "string"
+					},
+					{
+						"key": "grant_type",
+						"value": "authorization_code",
+						"type": "string"
+					},
+					{
+						"key": "addTokenTo",
+						"value": "header",
+						"type": "string"
 					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"redirect_uris\": [\r\n    \"https://localhost:9001/callback\"\r\n  ],\r\n  \"token_endpoint_auth_method\": \"client_secret_basic\",\r\n  \"grant_types\": \"authorization_code\",\r\n  \"response_types\": \"code\",\r\n  \"client_name\": \"client-2\",\r\n  \"scope\": \"read\",\r\n  \"audience\": \"http://protected-resource-dev.com\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://localhost:9000/register",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "9000",
-					"path": [
-						"register"
-					]
-				}
+				]
 			},
-			"response": []
-		},
-		{
-			"name": "Client Update",
 			"event": [
 				{
-					"listen": "test",
+					"listen": "prerequest",
 					"script": {
+						"type": "text/javascript",
+						"packages": {},
 						"exec": [
 							""
-						],
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
 						"type": "text/javascript",
-						"packages": {}
+						"packages": {},
+						"exec": [
+							""
+						]
 					}
 				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{RegistrationAccessToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"redirect_uris\": [\r\n    \"https://localhost:9001/callback\",\r\n    \"https://localhost:9001/callback_\"\r\n  ],\r\n  \"token_endpoint_auth_method\": \"client_secret_basic\",\r\n  \"grant_types\": \"authorization_code\",\r\n  \"response_types\": \"code\",\r\n  \"client_name\": \"client-2\",\r\n  \"client_id\": \"{{ClientId}}\",\r\n  \"scope\": \"read add update delete\",\r\n  \"audience\": \"http://protected-resource-pp.com\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://localhost:9000/register/{{ClientId}}",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "9000",
-					"path": [
-						"register",
-						"{{ClientId}}"
-					]
-				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Client Read",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
+			"name": "Client Registration",
+			"item": [
+				{
+					"name": "Client Register",
+					"event": [
 						{
-							"key": "token",
-							"value": "{{RegistrationAccessToken}}",
-							"type": "string"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response body\r",
+									"let responseData = pm.response.json();\r",
+									"\r",
+									"// Set the 'ClientId' from the response as a collection variable\r",
+									"pm.collectionVariables.set(\"ClientId\", responseData.client_id);\r",
+									"\r",
+									"// Set the 'ClientId' from the response as a collection variable\r",
+									"pm.collectionVariables.set(\"RegistrationAccessToken\", responseData.registration_access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://localhost:9000/register/{{ClientId}}",
-					"protocol": "https",
-					"host": [
-						"localhost"
 					],
-					"port": "9000",
-					"path": [
-						"register",
-						"{{ClientId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Client Delete",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"redirect_uris\": [\r\n    \"https://localhost:9001/callback\"\r\n  ],\r\n  \"token_endpoint_auth_method\": \"client_secret_basic\",\r\n  \"grant_types\": \"authorization_code\",\r\n  \"response_types\": \"code\",\r\n  \"client_name\": \"client-2\",\r\n  \"scope\": \"read\",\r\n  \"audience\": \"http://protected-resource-dev.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HostUri}}/register",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Client Update",
+					"event": [
 						{
-							"key": "token",
-							"value": "{{RegistrationAccessToken}}",
-							"type": "string"
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "https://localhost:9000/register/{{ClientId}}",
-					"protocol": "https",
-					"host": [
-						"localhost"
 					],
-					"port": "9000",
-					"path": [
-						"register",
-						"{{ClientId}}"
-					]
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{RegistrationAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"redirect_uris\": [\r\n    \"https://localhost:9001/callback\",\r\n    \"https://localhost:9001/callback_\"\r\n  ],\r\n  \"token_endpoint_auth_method\": \"client_secret_basic\",\r\n  \"grant_types\": \"authorization_code\",\r\n  \"response_types\": \"code\",\r\n  \"client_name\": \"client-2\",\r\n  \"client_id\": \"{{ClientId}}\",\r\n  \"scope\": \"read add update delete\",\r\n  \"audience\": \"http://protected-resource-pp.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HostUri}}/register/{{ClientId}}",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"register",
+								"{{ClientId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Client Read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{RegistrationAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HostUri}}/register/{{ClientId}}",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"register",
+								"{{ClientId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Client Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{RegistrationAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{HostUri}}/register/{{ClientId}}",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"register",
+								"{{ClientId}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "User Info",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjgxQ0JBNEFBNjNFMTQwMkFCQjM3N0MxQjM2Q0Q5N0E4In0.eyJzdWIiOiJhNjgwMTZmZi1lMjg4LTRkZmMtOWZlZS1jMmQ4MzhjYWViYTEiLCJuYW1lIjoiUHlseXAgTGViZWRpZXYiLCJzY29wZSI6InJlYWQgYWRkIHVwZGF0ZSBkZWxldGUiLCJpYXQiOjE3MjkyNzk1MDcsImp0aSI6IjM3MzlhYjRlLTNiYzAtNGQxNy05MzcwLTcwODUyMTJjZWY3ZiIsIm5iZiI6MTcyOTI3OTUwNywiZXhwIjoxNzI5MjgzMTA3LCJpc3MiOiJodHRwOi8vYXV0aG9yaXphdGlvbi1zZXJ2ZXItZGV2LmNvbSIsImF1ZCI6Imh0dHA6Ly9wcm90ZWN0ZWQtcmVzb3VyY2UtZGV2LmNvbSJ9.G5SyBfSd_zMgFVcM3LbFM88-kAIJuQE60zzIAg10O0Ve23yU1t25bNSFXEk9FpKCuWgJ1KmrZnsT7u4EYzLu9p9YgyPbOb7Zlrc1vNe5BTYPUaymrb01eaaOkIAqaQeR1BQbEPA9L0TTYpW-5VrZ0fn3-MEO680TBB2BQC4Dh-G_U-cNQw0hWbd828ZGOBFv1QVtSLlBeyqC0LzbxdBoq_V__TOqb6pLcT6Ub6XGv5ARVwPCK1tcbO6ucqrKei5wEtqkrL6r3ZejsOErDb8tqa7_52bVYYfyeqrHNRa9hkAnkdA5YFUw7D3tx8DB7c7Vf8FXpfOm9zw35CLXNJ_ZqA",
-							"type": "string"
+			"item": [
+				{
+					"name": "User Info",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjgxQ0JBNEFBNjNFMTQwMkFCQjM3N0MxQjM2Q0Q5N0E4In0.eyJzdWIiOiI4Zjk1N2RjMC1kYTVkLTRlNjEtOGEwOS0yNDM5YzA0YTBmZTQiLCJuYW1lIjoiUHlseXAgTGViZWRpZXYiLCJzY29wZSI6InJlYWQgYWRkIHVwZGF0ZSBkZWxldGUgb3BlbmlkIHByb2ZpbGUgZW1haWwgYWRkcmVzcyBwaG9uZSIsImlhdCI6MTcyOTMxNTcwNSwianRpIjoiMWVhYTA2YjctMmZhNS00MmIyLTgwNzMtN2E3OTYwYTYzYTI0IiwibmJmIjoxNzI5MzE1NzA1LCJleHAiOjE3MjkzMTkzMDUsImlzcyI6Imh0dHA6Ly9hdXRob3JpemF0aW9uLXNlcnZlci1kZXYuY29tIiwiYXVkIjoiaHR0cDovL3Byb3RlY3RlZC1yZXNvdXJjZS1kZXYuY29tIn0.d_RxChAgBLQpYLHS4OYAyvuycrtjhmKtoJ8dADgh3UH3lOTg6ML8m24sX1X_a9A2lEF-vDmpwBW-2KTXfCNc4ks2nlwksiLfDELbh_48BLMQvjSZHHWx-PvLRC6pcHfGRhIs3h6-iKPeFZWP-QXclnB3EblcVHSUR5FYXzcyB-PiDkUwZWxymgRD6dfmmNIn-sTRLdJqf-NOsIvcWOBLxAxsRpt8oxnCvghXkoBF3tz1mI6wutiF47R8dKU42jYr_n8RO6VuQ7wGZSPcMEf6qYHjBymKqhV8C7DxE1xewl1tuz6DC9nMBZlXmkUXs9PoFpwHaXrZrVXHWvN2P1dKng",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HostUri}}/userinfo",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"userinfo"
+							]
 						}
-					]
+					},
+					"response": []
 				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://localhost:9000/userinfo",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "9000",
-					"path": [
-						"userinfo"
-					]
+				{
+					"name": "User Info",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjgxQ0JBNEFBNjNFMTQwMkFCQjM3N0MxQjM2Q0Q5N0E4In0.eyJzdWIiOiI4Zjk1N2RjMC1kYTVkLTRlNjEtOGEwOS0yNDM5YzA0YTBmZTQiLCJuYW1lIjoiUHlseXAgTGViZWRpZXYiLCJzY29wZSI6InJlYWQgYWRkIHVwZGF0ZSBkZWxldGUgb3BlbmlkIHByb2ZpbGUgZW1haWwgYWRkcmVzcyBwaG9uZSIsImlhdCI6MTcyOTMxNTcwNSwianRpIjoiMWVhYTA2YjctMmZhNS00MmIyLTgwNzMtN2E3OTYwYTYzYTI0IiwibmJmIjoxNzI5MzE1NzA1LCJleHAiOjE3MjkzMTkzMDUsImlzcyI6Imh0dHA6Ly9hdXRob3JpemF0aW9uLXNlcnZlci1kZXYuY29tIiwiYXVkIjoiaHR0cDovL3Byb3RlY3RlZC1yZXNvdXJjZS1kZXYuY29tIn0.d_RxChAgBLQpYLHS4OYAyvuycrtjhmKtoJ8dADgh3UH3lOTg6ML8m24sX1X_a9A2lEF-vDmpwBW-2KTXfCNc4ks2nlwksiLfDELbh_48BLMQvjSZHHWx-PvLRC6pcHfGRhIs3h6-iKPeFZWP-QXclnB3EblcVHSUR5FYXzcyB-PiDkUwZWxymgRD6dfmmNIn-sTRLdJqf-NOsIvcWOBLxAxsRpt8oxnCvghXkoBF3tz1mI6wutiF47R8dKU42jYr_n8RO6VuQ7wGZSPcMEf6qYHjBymKqhV8C7DxE1xewl1tuz6DC9nMBZlXmkUXs9PoFpwHaXrZrVXHWvN2P1dKng",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{HostUri}}/userinfo",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"userinfo"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "User Info",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjgxQ0JBNEFBNjNFMTQwMkFCQjM3N0MxQjM2Q0Q5N0E4In0.eyJzdWIiOiIwMzg5OGM0OS04ODQwLTRlYTEtYWM4MS1mMWZkZDU5ZDViNTQiLCJuYW1lIjoiUHlseXAgTGViZWRpZXYiLCJzY29wZSI6InJlYWQgYWRkIHVwZGF0ZSBkZWxldGUgb3BlbmlkIiwiaWF0IjoxNzI5Mjc4NzkxLCJqdGkiOiJiNDJlNzg3Ny1hNDMyLTRkOTktYTMwYi0xZWY2YjQ0YjljNzEiLCJuYmYiOjE3MjkyNzg3OTEsImV4cCI6MTcyOTI4MjM5MSwiaXNzIjoiaHR0cDovL2F1dGhvcml6YXRpb24tc2VydmVyLWRldi5jb20iLCJhdWQiOiJodHRwOi8vcHJvdGVjdGVkLXJlc291cmNlLWRldi5jb20ifQ.P-gHzxWObM3ZGpCiWdAUYx8d11Wv3eF7L4Bkf_JQoK3OjA_mMJjv1EgSxNwHiJ9xFekzCCzhH4m_b33bJAboblmNEPB3cgZio37SgM-rbZb1z28osHtXlEuwIQM1dVO8lkyddyoXGYnyW1jmS3XmHoV_eAnThcWLVRzslbihvU4QO7-zwlxtW5xfpG43tFSRmNwu8gvGZ_DzpnaGKdVWnvbU382y06plX_WpjmHavRsD-NMUTv0j_iwJz4qYdAudu0pnzEpbAYhCCFfPv2YKQ9JaWrGFu4N8f1tUh8tMCnS-yGFOxU6kKh4TtqeSySxJMjHER7dkHwh8SioPhwz9wQ",
-							"type": "string"
+			"name": "Configuration",
+			"item": [
+				{
+					"name": "OpenID Configuration",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HostUri}}/.well-known/openid-configuration",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								".well-known",
+								"openid-configuration"
+							]
 						}
-					]
+					},
+					"response": []
 				},
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "https://localhost:9000/userinfo",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "9000",
-					"path": [
-						"userinfo"
-					]
+				{
+					"name": "OpenID Configuration JWKS",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HostUri}}/.well-known/openid-configuration/jwks",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								".well-known",
+								"openid-configuration",
+								"jwks"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	],
 	"event": [
@@ -306,12 +850,47 @@
 	],
 	"variable": [
 		{
+			"key": "HostUri",
+			"value": "https://localhost:9000",
+			"type": "string"
+		},
+		{
+			"key": "ClientIdPermanent",
+			"value": "client-1",
+			"type": "string"
+		},
+		{
+			"key": "ClientSecretPermanent",
+			"value": "client-secret-01",
+			"type": "string"
+		},
+		{
 			"key": "ClientId",
 			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "RegistrationAccessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "State",
+			"value": "448193cf742745e4a71213d54a11aea1",
+			"type": "string"
+		},
+		{
+			"key": "AuthorizeCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "AccessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "RefreshToken",
 			"value": "",
 			"type": "string"
 		}

@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Client.Constants;
 using Shark.AuthorizationServer.Configurations;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 
@@ -30,12 +31,14 @@ public sealed class BasicAuthenticationHandler(
             return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
-        if (!await ValidateCredentials(authorizationHeaderValue))
+        var credentials = GetCredentials(authorizationHeaderValue);
+
+        if (!await ValidateCredentials(credentials.ClientId, credentials.ClientSecret))
         {
             return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(Scheme.Name));
+        var claimsPrincipal = CreateClaimsPrincipal(credentials.ClientId!);
         var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
         return AuthenticateResult.Success(authenticationTicket);
     }
@@ -56,7 +59,7 @@ public sealed class BasicAuthenticationHandler(
         return authorizationHeaderValue;
     }
 
-    private async Task<bool> ValidateCredentials(string authorizationHeaderValue)
+    private (string? ClientId, string? ClientSecret) GetCredentials(string authorizationHeaderValue)
     {
         try
         {
@@ -67,23 +70,44 @@ public sealed class BasicAuthenticationHandler(
             var delimiterIndex = decodedCredentials.IndexOf(":", StringComparison.OrdinalIgnoreCase);
             if (delimiterIndex == -1)
             {
-                return false;
+                return (null, null);
             }
 
             var clientId = decodedCredentials[..delimiterIndex];
             var clientSecret = decodedCredentials[(delimiterIndex + 1)..];
 
-            var client = await _clientRepository.Get(clientId);
-            if (client is null || !string.Equals(client.ClientSecret, clientSecret, StringComparison.Ordinal))
-            {
-                return false;
-            }
+            return (clientId, clientSecret);
         }
         catch (FormatException)
+        {
+            return (null, null);
+        }
+    }
+
+    private async Task<bool> ValidateCredentials(string? clientId, string? clientSecret)
+    {
+        if (string.IsNullOrWhiteSpace(clientId))
+        {
+            return false;
+        }
+
+        var client = await _clientRepository.Get(clientId);
+        if (client is null || !string.Equals(client.ClientSecret, clientSecret, StringComparison.Ordinal))
         {
             return false;
         }
 
         return true;
+    }
+
+    private ClaimsPrincipal CreateClaimsPrincipal(string clientId)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimType.ClientId, clientId),
+        };
+
+        var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
+        return new ClaimsPrincipal(claimsIdentity);
     }
 }

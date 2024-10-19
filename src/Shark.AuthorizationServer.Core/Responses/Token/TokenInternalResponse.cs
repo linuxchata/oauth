@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Core.Responses.Token;
 
-public sealed class TokenInternalResponse(string response) : TokenInternalBaseResponse
+public sealed class TokenInternalResponse(TokenResponse tokenResponse) : TokenInternalBaseResponse
 {
-    public string Response { get; set; } = response;
+    public TokenResponse TokenResponse { get; set; } = tokenResponse;
 }

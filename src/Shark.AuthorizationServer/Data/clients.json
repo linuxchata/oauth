@@ -6,7 +6,7 @@
     "ClientSecret": "client-secret-01",
     "ClientIdIssuedAt": 1728814710,
     "ClientSecretExpiresAt": 0,
-    "RedirectUris": [ "https://localhost:9001", "https://localhost:9001/callback" ],
+    "RedirectUris": [ "https://localhost:9001", "https://localhost:9001/callback", "https://oauth.pstmn.io/v1/callback" ],
     "GrantTypes": [ "authorization_code" ],
     "ResponseTypes": [ "code" ],
     "TokenEndpointAuthMethod": "client_secret_basic",

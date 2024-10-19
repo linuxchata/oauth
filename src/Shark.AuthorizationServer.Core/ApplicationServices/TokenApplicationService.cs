@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
@@ -34,13 +34,18 @@ public sealed class TokenApplicationService(
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
-    public async Task<TokenInternalBaseResponse> Execute(TokenInternalRequest request)
+    public async Task<TokenInternalBaseResponse> Execute(TokenInternalRequest request, ClaimsPrincipal claimsPrincipal)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
+        if (string.IsNullOrWhiteSpace(request.ClientId))
+        {
+            request.ClientId = claimsPrincipal.FindFirstValue(Scope.ClientId);
+        }
+
         var client = await _clientRepository.Get(request.ClientId);
 
-        var response = ValidateClient(client, request);
+        var response = ValidateClient(client, request, claimsPrincipal);
         if (response != null)
         {
             return response;
@@ -66,7 +71,10 @@ public sealed class TokenApplicationService(
         return HandleUnsupportedGrantType(request);
     }
 
-    private TokenInternalBadRequestResponse? ValidateClient(Client? client, TokenInternalRequest request)
+    private TokenInternalBadRequestResponse? ValidateClient(
+        Client? client,
+        TokenInternalRequest request,
+        ClaimsPrincipal claimsPrincipal)
     {
         // Validate client
         if (client is null)
@@ -75,10 +83,13 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidClient);
         }
 
-        if (!string.Equals(client.ClientSecret, request.ClientSecret, StringComparison.Ordinal))
+        if (!claimsPrincipal.Identity?.IsAuthenticated ?? true)
         {
-            _logger.LogWarning("Invalid client secret");
-            return new TokenInternalBadRequestResponse(Error.InvalidClient);
+            if (!string.Equals(client.ClientSecret, request.ClientSecret, StringComparison.Ordinal))
+            {
+                _logger.LogWarning("Invalid client secret");
+                return new TokenInternalBadRequestResponse(Error.InvalidClient);
+            }
         }
 
         if (!string.IsNullOrWhiteSpace(request.RedirectUri) &&
@@ -127,7 +138,7 @@ public sealed class TokenApplicationService(
             GrantType.AuthorizationCode);
 
         var token = await GenerateAndStoreBearerToken(client, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
-        return new TokenInternalResponse(JsonSerializer.Serialize(token));
+        return new TokenInternalResponse(token);
     }
 
     private async Task<TokenInternalBaseResponse> HandleRefreshTokenGrantType(
@@ -154,7 +165,7 @@ public sealed class TokenApplicationService(
             GrantType.RefreshToken);
 
         var token = await GenerateAndStoreBearerToken(client!, request.RedirectUri, persistedGrant!.Scopes, persistedGrant!.UserName);
-        return new TokenInternalResponse(JsonSerializer.Serialize(token));
+        return new TokenInternalResponse(token);
     }
 
     private TokenInternalResponse HandleClientCredentialsGrantType(TokenInternalRequest request, Client client)
@@ -162,7 +173,7 @@ public sealed class TokenApplicationService(
         _logger.LogInformation("Issuing access token for {grantType}", GrantType.ClientCredentials);
 
         var token = GenerateBearerToken(client!, request.Scopes);
-        return new TokenInternalResponse(JsonSerializer.Serialize(token));
+        return new TokenInternalResponse(token);
     }
 
     private async Task<TokenInternalBaseResponse> HandleResourceOwnerCredentialsGrantType(TokenInternalRequest request, Client client)
@@ -175,7 +186,7 @@ public sealed class TokenApplicationService(
         _logger.LogInformation("Issuing access token for {grantType}", GrantType.ResourceOwnerCredentials);
 
         var token = await GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, request.Username);
-        return new TokenInternalResponse(JsonSerializer.Serialize(token));
+        return new TokenInternalResponse(token);
     }
 
     private TokenInternalBadRequestResponse HandleUnsupportedGrantType(TokenInternalRequest request)

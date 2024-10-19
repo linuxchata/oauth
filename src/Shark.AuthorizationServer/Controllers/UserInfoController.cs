@@ -38,9 +38,7 @@ public class UserInfoController(
 
     private async Task<IActionResult> Execute()
     {
-        var claimsPrincipal = HttpContext.User;
-
-        var internalResponse = await _userInfoApplicationService.Execute(claimsPrincipal);
+        var internalResponse = await _userInfoApplicationService.Execute(HttpContext.User);
 
         switch (internalResponse)
         {

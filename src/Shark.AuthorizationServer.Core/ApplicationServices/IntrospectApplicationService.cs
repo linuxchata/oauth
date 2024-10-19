@@ -64,7 +64,7 @@ public sealed class IntrospectApplicationService(
                 Subject = subject?.Value,
                 Audience = string.Join(" ", jwtToken.Audiences),
                 Issuer = jwtToken.Issuer,
-                JwTId = jwtToken.Id,
+                JwtId = jwtToken.Id,
             };
         }
         catch (Exception)

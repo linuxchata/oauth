@@ -49,5 +49,5 @@ public sealed class IntrospectInternalResponse : IntrospectInternalBaseResponse
 
     [JsonPropertyName("jti")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? JwTId { get; set; }
+    public string? JwtId { get; set; }
 }
