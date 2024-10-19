@@ -35,11 +35,11 @@ public sealed class RegisterApplicationService(
         GrantType.ClientCredentials
     ];
 
-    public RegisterInternalBaseResponse Read(string clientId)
+    public async Task<RegisterInternalBaseResponse> Read(string clientId)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
 
-        var client = _clientRepository.Get(clientId);
+        var client = await _clientRepository.Get(clientId);
         if (client is null)
         {
             return new RegisterInternalNotFoundResponse();
@@ -48,7 +48,7 @@ public sealed class RegisterApplicationService(
         return client.ToInternalResponse();
     }
 
-    public RegisterInternalBaseResponse Post(RegisterInternalRequest request)
+    public async Task<RegisterInternalBaseResponse> Post(RegisterInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -58,12 +58,12 @@ public sealed class RegisterApplicationService(
             return response;
         }
 
-        var client = CreateAndStoreClient(request);
+        var client = await CreateAndStoreClient(request);
 
         return client.ToInternalResponse();
     }
 
-    public RegisterInternalBaseResponse Put(string clientId, RegisterUpdateInternalRequest request)
+    public async Task<RegisterInternalBaseResponse> Put(string clientId, RegisterUpdateInternalRequest request)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
         ArgumentNullException.ThrowIfNull(request, nameof(request));
@@ -74,7 +74,7 @@ public sealed class RegisterApplicationService(
             return response;
         }
 
-        var client = _clientRepository.Get(clientId);
+        var client = await _clientRepository.Get(clientId);
         if (client is null)
         {
             return new RegisterInternalNotFoundResponse();
@@ -92,12 +92,12 @@ public sealed class RegisterApplicationService(
             return response;
         }
 
-        var newClient = CreateAndReplaceClient(request, client);
+        var newClient = await CreateAndReplaceClient(request, client);
 
         return newClient.ToInternalResponse();
     }
 
-    public RegisterInternalBaseResponse Delete(string clientId)
+    public async Task<RegisterInternalBaseResponse> Delete(string clientId)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
 
@@ -107,7 +107,7 @@ public sealed class RegisterApplicationService(
             return new RegisterInternalNotFoundResponse();
         }
 
-        _clientRepository.Remove(clientId);
+        await _clientRepository.Remove(clientId);
 
         return new RegisterInternalNoContentResponse();
     }
@@ -351,7 +351,7 @@ public sealed class RegisterApplicationService(
         return null;
     }
 
-    private Client CreateAndStoreClient(RegisterInternalRequest request)
+    private async Task<Client> CreateAndStoreClient(RegisterInternalRequest request)
     {
         var clientId = Guid.NewGuid().ToString();
 
@@ -382,12 +382,12 @@ public sealed class RegisterApplicationService(
             RegistrationClientUri = registerEndpointUri.ToString(),
         };
 
-        _clientRepository.Add(client);
+        await _clientRepository.Add(client);
 
         return client;
     }
 
-    private Client CreateAndReplaceClient(RegisterUpdateInternalRequest request, Client client)
+    private async Task<Client> CreateAndReplaceClient(RegisterUpdateInternalRequest request, Client client)
     {
         var newClient = new Client
         {
@@ -411,8 +411,8 @@ public sealed class RegisterApplicationService(
             RegistrationClientUri = client.RegistrationClientUri,
         };
 
-        _clientRepository.Remove(client.ClientId);
-        _clientRepository.Add(newClient);
+        await _clientRepository.Remove(client.ClientId);
+        await _clientRepository.Add(newClient);
 
         return newClient;
     }

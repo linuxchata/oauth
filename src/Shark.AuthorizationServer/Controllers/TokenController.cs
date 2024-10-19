@@ -21,9 +21,9 @@ public sealed class TokenController(
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Post([FromForm] TokenRequest request)
+    public async Task<IActionResult> Post([FromForm] TokenRequest request)
     {
-        var internalResponse = _tokenApplicationService.Execute(request.ToInternalRequest());
+        var internalResponse = await _tokenApplicationService.Execute(request.ToInternalRequest());
 
         switch (internalResponse)
         {

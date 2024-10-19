@@ -4,22 +4,21 @@ using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
-using Shark.AuthorizationServer.Core.Responses;
 using Shark.AuthorizationServer.Core.Responses.Revoke;
 using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class RevokeApplicationService(
-    IPersistedGrantRepository persistedGrantStore,
-    IRevokeTokenRepository revokeTokenStore,
+    IPersistedGrantRepository persistedGrantRepository,
+    IRevokeTokenRepository revokeTokenRepository,
     ILogger<TokenApplicationService> logger) : IRevokeApplicationService
 {
-    private readonly IPersistedGrantRepository _persistedGrantStore = persistedGrantStore;
-    private readonly IRevokeTokenRepository _revokeTokenStore = revokeTokenStore;
+    private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
+    private readonly IRevokeTokenRepository _revokeTokenRepository = revokeTokenRepository;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
-    public RevokeInternalBaseResponse Execute(RevokeInternalRequest request)
+    public async Task<RevokeInternalBaseResponse> Execute(RevokeInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -27,11 +26,11 @@ public sealed class RevokeApplicationService(
         {
             if (string.Equals(request.TokenHint, TokenHint.AccessToken))
             {
-                TryRevokeAccessToken(request.Token);
+                await TryRevokeAccessToken(request.Token);
             }
             else if (string.Equals(request.TokenHint, TokenHint.RefreshToken))
             {
-                TryRemoveRefreshToken(request.Token);
+                await TryRemoveRefreshToken(request.Token);
             }
             else
             {
@@ -39,15 +38,15 @@ public sealed class RevokeApplicationService(
             }
         }
 
-        if (!TryRevokeAccessToken(request.Token))
+        if (!await TryRevokeAccessToken(request.Token))
         {
-            TryRemoveRefreshToken(request.Token);
+            await TryRemoveRefreshToken(request.Token);
         }
 
         return new RevokeInternalResponse();
     }
 
-    private bool TryRevokeAccessToken(string token)
+    private async Task<bool> TryRevokeAccessToken(string token)
     {
         var handler = new JwtSecurityTokenHandler();
         if (!handler.CanReadToken(token))
@@ -61,10 +60,10 @@ public sealed class RevokeApplicationService(
 
         if (!string.IsNullOrWhiteSpace(jwtToken.Id))
         {
-            var revokedToken = _revokeTokenStore.Get(jwtToken.Id);
+            var revokedToken = await _revokeTokenRepository.Get(jwtToken.Id);
             if (revokedToken is null)
             {
-                _revokeTokenStore.Add(new RevokeToken(jwtToken.Id, DateTime.UtcNow));
+                await _revokeTokenRepository.Add(new RevokeToken(jwtToken.Id, DateTime.UtcNow));
                 _logger.LogInformation(
                     "Access token [{token}] has been added to revocation list. Access token is revoked",
                     token);
@@ -88,12 +87,12 @@ public sealed class RevokeApplicationService(
         }
     }
 
-    private void TryRemoveRefreshToken(string token)
+    private async Task TryRemoveRefreshToken(string token)
     {
-        var refreshToken = _persistedGrantStore.Get(token);
+        var refreshToken = await _persistedGrantRepository.Get(token);
         if (refreshToken is not null)
         {
-            _persistedGrantStore.Remove(token);
+            await _persistedGrantRepository.Remove(token);
             //// Do not log refresh token value
             _logger.LogInformation("Refresh token has been removed");
         }

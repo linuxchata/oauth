@@ -26,9 +26,9 @@ public class RevokeController(IRevokeApplicationService revokeApplicationService
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Post([FromForm] RevokeRequest request)
+    public async Task<IActionResult> Post([FromForm] RevokeRequest request)
     {
-        var internalResponse = _revokeApplicationService.Execute(request.ToInternalRequest());
+        var internalResponse = await _revokeApplicationService.Execute(request.ToInternalRequest());
 
         switch (internalResponse)
         {

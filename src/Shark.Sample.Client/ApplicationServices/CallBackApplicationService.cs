@@ -1,6 +1,7 @@
 ﻿using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
+using Shark.Sample.Client.Services;
 
 namespace Shark.Sample.Client.ApplicationServices;
 
@@ -8,12 +9,14 @@ public sealed class CallBackApplicationService(
     IAuthorizationService authorizationService,
     IStateStore stateStore,
     ISecureTokenStore securityStore,
-    IProofKeyForCodeExchangeService proofKeyForCodeExchangeService) : ICallBackApplicationService
+    IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
+    ILogger<AuthorizationService> logger) : ICallBackApplicationService
 {
     private readonly IAuthorizationService _authorizationService = authorizationService;
     private readonly IStateStore _stateStore = stateStore;
     private readonly ISecureTokenStore _securityStore = securityStore;
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
+    private readonly ILogger<AuthorizationService> _logger = logger;
 
     public async Task Execute(string? accessToken, string? tokenType, string? code, string? scope, string? state)
     {
@@ -40,7 +43,7 @@ public sealed class CallBackApplicationService(
 
     private void HandleImplicitGrantType(string? accessToken)
     {
-        var secureToken = new SecureToken(accessToken, null);
+        var secureToken = new SecureToken(accessToken, null, null);
 
         _securityStore.Add(GrantType.Implicit, secureToken);
     }
@@ -57,6 +60,9 @@ public sealed class CallBackApplicationService(
             state,
             expectedState,
             proofKeyForCodeExchange?.CodeVerifier);
+
+        _logger.LogInformation("Access token is {accessToken}", secureToken.AccessToken);
+        _logger.LogInformation("ID token is {idToken}", secureToken.IdToken);
 
         _securityStore.Add(GrantType.AuthorizationCode, secureToken);
     }

@@ -18,9 +18,9 @@ public sealed class TokenApplicationService(
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
     IIdTokenGeneratorService idTokenGeneratorService,
-    IPersistedGrantRepository persistedGrantStore,
     IResourceOwnerCredentialsValidationService resourceOwnerCredentialsValidationService,
     IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
+    IPersistedGrantRepository persistedGrantRepository,
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<TokenApplicationService> logger) : ITokenApplicationService
 {
@@ -28,17 +28,17 @@ public sealed class TokenApplicationService(
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IIdTokenGeneratorService _idTokenGeneratorService = idTokenGeneratorService;
-    private readonly IPersistedGrantRepository _persistedGrantStore = persistedGrantStore;
     private readonly IResourceOwnerCredentialsValidationService _resourceOwnerCredentialsValidationService = resourceOwnerCredentialsValidationService;
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
+    private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
-    public TokenInternalBaseResponse Execute(TokenInternalRequest request)
+    public async Task<TokenInternalBaseResponse> Execute(TokenInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        var client = _clientRepository.Get(request.ClientId);
+        var client = await _clientRepository.Get(request.ClientId);
 
         var response = ValidateClient(client, request);
         if (response != null)
@@ -48,11 +48,11 @@ public sealed class TokenApplicationService(
 
         if (IsGrantType(request.GrantType, GrantType.AuthorizationCode))
         {
-            return HandleAuthorizationCodeGrantType(request, client!);
+            return await HandleAuthorizationCodeGrantType(request, client!);
         }
         else if (IsGrantType(request.GrantType, GrantType.RefreshToken))
         {
-            return HandleRefreshTokenGrantType(request, client!);
+            return await HandleRefreshTokenGrantType(request, client!);
         }
         else if (IsGrantType(request.GrantType, GrantType.ClientCredentials))
         {
@@ -60,7 +60,7 @@ public sealed class TokenApplicationService(
         }
         else if (IsGrantType(request.GrantType, GrantType.ResourceOwnerCredentials))
         {
-            return HandleResourceOwnerCredentialsGrantType(request, client!);
+            return await HandleResourceOwnerCredentialsGrantType(request, client!);
         }
 
         return HandleUnsupportedGrantType(request);
@@ -106,9 +106,11 @@ public sealed class TokenApplicationService(
         return string.Equals(grantType, expectedGrantType, StringComparison.Ordinal);
     }
 
-    private TokenInternalBaseResponse HandleAuthorizationCodeGrantType(TokenInternalRequest request, Client client)
+    private async Task<TokenInternalBaseResponse> HandleAuthorizationCodeGrantType(
+        TokenInternalRequest request,
+        Client client)
     {
-        var persistedGrant = _persistedGrantStore.Get(request.Code);
+        var persistedGrant = await _persistedGrantRepository.Get(request.Code);
 
         var response = ValidateCodeGrant(persistedGrant, request);
         if (response != null)
@@ -117,39 +119,41 @@ public sealed class TokenApplicationService(
         }
 
         // Remove code persisted grant, since it can be considered consumed at this point
-        _persistedGrantStore.Remove(request.Code);
+        await _persistedGrantRepository.Remove(request.Code);
 
         _logger.LogInformation(
             "Found matching authorization code {code}. Issuing access token and refresh token for {grantType}",
             request.Code,
             GrantType.AuthorizationCode);
 
-        var token = GenerateAndStoreBearerToken(client, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
+        var token = await GenerateAndStoreBearerToken(client, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
         return new TokenInternalResponse(JsonSerializer.Serialize(token));
     }
 
-    private TokenInternalBaseResponse HandleRefreshTokenGrantType(TokenInternalRequest request, Client client)
+    private async Task<TokenInternalBaseResponse> HandleRefreshTokenGrantType(
+        TokenInternalRequest request,
+        Client client)
     {
-        var persistedGrant = _persistedGrantStore.Get(request.RefreshToken);
+        var persistedGrant = await _persistedGrantRepository.Get(request.RefreshToken);
 
         var response = ValidateRefreshTokenGrant(persistedGrant, request);
         if (response != null)
         {
             // Remove refresh token persisted grant if it exists, since it can be compromised
-            _persistedGrantStore.Remove(request.RefreshToken);
+            await _persistedGrantRepository.Remove(request.RefreshToken);
 
             return response;
         }
 
         // Remove previous refresh token
-        _persistedGrantStore.Remove(request.RefreshToken);
+        await _persistedGrantRepository.Remove(request.RefreshToken);
 
         _logger.LogInformation(
             "Found matching refresh token {refreshToken}. Issuing access token and refresh token for {grantType}",
             request.RefreshToken,
             GrantType.RefreshToken);
 
-        var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, persistedGrant!.Scopes, persistedGrant!.UserName);
+        var token = await GenerateAndStoreBearerToken(client!, request.RedirectUri, persistedGrant!.Scopes, persistedGrant!.UserName);
         return new TokenInternalResponse(JsonSerializer.Serialize(token));
     }
 
@@ -161,7 +165,7 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(JsonSerializer.Serialize(token));
     }
 
-    private TokenInternalBaseResponse HandleResourceOwnerCredentialsGrantType(TokenInternalRequest request, Client client)
+    private async Task<TokenInternalBaseResponse> HandleResourceOwnerCredentialsGrantType(TokenInternalRequest request, Client client)
     {
         if (!_resourceOwnerCredentialsValidationService.ValidateCredentials(request.Username, request.Password))
         {
@@ -170,7 +174,7 @@ public sealed class TokenApplicationService(
 
         _logger.LogInformation("Issuing access token for {grantType}", GrantType.ResourceOwnerCredentials);
 
-        var token = GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, request.Username);
+        var token = await GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, request.Username);
         return new TokenInternalResponse(JsonSerializer.Serialize(token));
     }
 
@@ -276,11 +280,11 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private TokenResponse GenerateAndStoreBearerToken(Client client, string? redirectUri, string[] scopes, string? userName = null)
+    private async Task<TokenResponse> GenerateAndStoreBearerToken(Client client, string? redirectUri, string[] scopes, string? userName = null)
     {
         var userId = Guid.NewGuid().ToString();
         var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, client.Audience);
-        var idToken = _idTokenGeneratorService.Generate(userId, client.Audience, scopes);
+        var idToken = _idTokenGeneratorService.Generate(userId, userName, client.Audience, scopes);
         var refreshToken = _stringGeneratorService.GenerateRefreshToken();
 
         var token = new TokenResponse
@@ -303,7 +307,7 @@ public sealed class TokenApplicationService(
             ExpiredIn = _configuration.AccessTokenExpirationInSeconds * 24,
         };
 
-        _persistedGrantStore.Add(tokenPersistedGrant);
+        await _persistedGrantRepository.Add(tokenPersistedGrant);
 
         return token;
     }

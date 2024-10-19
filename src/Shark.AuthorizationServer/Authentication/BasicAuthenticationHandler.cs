@@ -22,22 +22,22 @@ public sealed class BasicAuthenticationHandler(
     /// Handle authentication with client's identified and client's secret.
     /// </summary>
     /// <returns>Authenticate result.</returns>
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var authorizationHeaderValue = GetAndValidateAuthorizationHeader();
         if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
         {
-            return Task.FromResult(AuthenticateResult.Fail(UnauthorizedMessage));
+            return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
-        if (!ValidateCredentials(authorizationHeaderValue))
+        if (!await ValidateCredentials(authorizationHeaderValue))
         {
-            return Task.FromResult(AuthenticateResult.Fail(UnauthorizedMessage));
+            return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(Scheme.Name));
         var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
-        return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
+        return AuthenticateResult.Success(authenticationTicket);
     }
 
     private string? GetAndValidateAuthorizationHeader()
@@ -56,7 +56,7 @@ public sealed class BasicAuthenticationHandler(
         return authorizationHeaderValue;
     }
 
-    private bool ValidateCredentials(string authorizationHeaderValue)
+    private async Task<bool> ValidateCredentials(string authorizationHeaderValue)
     {
         try
         {
@@ -73,7 +73,7 @@ public sealed class BasicAuthenticationHandler(
             var clientId = decodedCredentials[..delimiterIndex];
             var clientSecret = decodedCredentials[(delimiterIndex + 1)..];
 
-            var client = _clientRepository.Get(clientId);
+            var client = await _clientRepository.Get(clientId);
             if (client is null || !string.Equals(client.ClientSecret, clientSecret, StringComparison.Ordinal))
             {
                 return false;

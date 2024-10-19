@@ -9,7 +9,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
 {
     private readonly IDistributedCache _cache = cache;
 
-    public Client? Get(string? value)
+    public async Task<Client?> Get(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -17,7 +17,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
         }
 
         // Read from cache
-        var serializedItem = _cache.GetString(value);
+        var serializedItem = await _cache.GetStringAsync(value);
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {
@@ -31,26 +31,25 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
 
         if (deserializedClients is not null)
         {
-            return deserializedClients.FirstOrDefault(
+            var client = deserializedClients.FirstOrDefault(
                 c => string.Equals(c.ClientId, value, StringComparison.OrdinalIgnoreCase));
+            return client;
         }
 
         throw new InvalidOperationException($"Client with identifier {value} cannot be found");
     }
 
-    public void Add(Client client)
+    public async Task Add(Client client)
     {
         var serializedItem = JsonSerializer.Serialize(client);
-        _cache.SetString(client.ClientId, serializedItem);
+        await _cache.SetStringAsync(client.ClientId, serializedItem);
     }
 
-    public void Remove(string? value)
+    public async Task Remove(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (!string.IsNullOrWhiteSpace(value))
         {
-            return;
+            await _cache.RemoveAsync(value);
         }
-
-        _cache.Remove(value);
     }
 }

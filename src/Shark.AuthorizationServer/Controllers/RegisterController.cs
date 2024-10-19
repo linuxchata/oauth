@@ -25,9 +25,9 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [HttpGet("{clientId}")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Read([FromRoute] string clientId)
+    public async Task<IActionResult> Read([FromRoute] string clientId)
     {
-        var internalResponse = _registerApplicationService.Read(clientId);
+        var internalResponse = await _registerApplicationService.Read(clientId);
 
         switch (internalResponse)
         {
@@ -50,9 +50,9 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [ProducesResponseType(StatusCodes.Status201Created)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    public IActionResult Post([FromBody] RegisterRequest request)
+    public async Task<IActionResult> Post([FromBody] RegisterRequest request)
     {
-        var internalResponse = _registerApplicationService.Post(request.ToInternalRequest());
+        var internalResponse = await _registerApplicationService.Post(request.ToInternalRequest());
 
         switch (internalResponse)
         {
@@ -75,9 +75,9 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [HttpPut("{clientId}")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Put(string clientId, [FromBody] RegisterUpdateRequest request)
+    public async Task<IActionResult> Put(string clientId, [FromBody] RegisterUpdateRequest request)
     {
-        var internalResponse = _registerApplicationService.Put(clientId, request.ToInternalRequest());
+        var internalResponse = await _registerApplicationService.Put(clientId, request.ToInternalRequest());
 
         switch (internalResponse)
         {
@@ -99,9 +99,9 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [HttpDelete("{clientId}")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult Delete([FromRoute] string clientId)
+    public async Task<IActionResult> Delete([FromRoute] string clientId)
     {
-        var internalResponse = _registerApplicationService.Delete(clientId);
+        var internalResponse = await _registerApplicationService.Delete(clientId);
 
         switch (internalResponse)
         {

@@ -2,5 +2,5 @@
 
 public interface IIdTokenGeneratorService
 {
-    string? Generate(string userId, string audience, string[] scopes);
+    string? Generate(string userId, string? userName, string audience, string[] scopes);
 }

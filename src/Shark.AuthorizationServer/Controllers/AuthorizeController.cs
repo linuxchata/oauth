@@ -22,7 +22,7 @@ public sealed class AuthorizeController(
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status302Found)]
-    public IActionResult Get(
+    public async Task<IActionResult> Get(
         [FromQuery] string response_type,
         [FromQuery] string client_id,
         [FromQuery] string redirect_uri,
@@ -42,7 +42,7 @@ public sealed class AuthorizeController(
             CodeChallengeMethod = code_challenge_method,
         };
 
-        var internalResponse = _authorizeApplicationService.Execute(internalRequest);
+        var internalResponse = await _authorizeApplicationService.Execute(internalRequest);
 
         switch (internalResponse)
         {

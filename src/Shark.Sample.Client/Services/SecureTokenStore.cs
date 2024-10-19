@@ -44,7 +44,7 @@ public sealed class SecureTokenStore(IDistributedCache cache) : ISecureTokenStor
 
         if (secureToken != null)
         {
-            var updatedSecureToken = new SecureToken(null, secureToken.RefreshToken);
+            var updatedSecureToken = new SecureToken(null, null, secureToken.RefreshToken);
 
             Add(key, updatedSecureToken);
         }

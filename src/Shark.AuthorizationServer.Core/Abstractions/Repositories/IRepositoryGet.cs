@@ -2,5 +2,5 @@
 
 public interface IRepositoryGet<T>
 {
-    T? Get(string? value);
+    Task<T?> Get(string? value);
 }

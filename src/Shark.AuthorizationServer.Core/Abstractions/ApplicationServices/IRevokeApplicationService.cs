@@ -5,5 +5,5 @@ namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 public interface IRevokeApplicationService
 {
-    RevokeInternalBaseResponse Execute(RevokeInternalRequest request);
+    Task<RevokeInternalBaseResponse> Execute(RevokeInternalRequest request);
 }

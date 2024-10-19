@@ -21,22 +21,22 @@ public sealed class ClientTokenAuthenticationHandler(
     /// Handle authentication with client's RegistrationAccessToken.
     /// </summary>
     /// <returns>Authenticate result.</returns>
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var authorizationHeaderValue = GetAndValidateAuthorizationHeader();
         if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
         {
-            return Task.FromResult(AuthenticateResult.Fail(UnauthorizedMessage));
+            return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
-        if (!ValidateCredentials(authorizationHeaderValue))
+        if (!await ValidateCredentials(authorizationHeaderValue))
         {
-            return Task.FromResult(AuthenticateResult.Fail(UnauthorizedMessage));
+            return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(Scheme.Name));
         var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
-        return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
+        return AuthenticateResult.Success(authenticationTicket);
     }
 
     private string? GetAndValidateAuthorizationHeader()
@@ -55,7 +55,7 @@ public sealed class ClientTokenAuthenticationHandler(
         return authorizationHeaderValue.Trim();
     }
 
-    private bool ValidateCredentials(string authorizationHeaderValue)
+    private async Task<bool> ValidateCredentials(string authorizationHeaderValue)
     {
         try
         {
@@ -68,7 +68,7 @@ public sealed class ClientTokenAuthenticationHandler(
             var startIndexOfAccessToken = authorizationHeaderValue.IndexOf(Constants.Scheme.Bearer) + 1;
             var accessToken = authorizationHeaderValue[(startIndexOfAccessToken + Constants.Scheme.Bearer.Length)..];
 
-            var client = _clientRepository.Get(clientId);
+            var client = await _clientRepository.Get(clientId);
             if (client is null || !string.Equals(client.RegistrationAccessToken, accessToken, StringComparison.Ordinal))
             {
                 return false;

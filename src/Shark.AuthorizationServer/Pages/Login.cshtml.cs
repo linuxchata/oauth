@@ -21,11 +21,11 @@ public sealed class LoginModel(
 
     public string? UserName { get; set; }
 
-    public IActionResult OnGet(string returnUrl)
+    public async Task<IActionResult> OnGet(string returnUrl)
     {
         ClientId = _redirectionService.GetClientId(returnUrl);
 
-        var client = _clientRepository.Get(ClientId);
+        var client = await _clientRepository.Get(ClientId);
         if (client is null)
         {
             return RedirectToPage("/Error");

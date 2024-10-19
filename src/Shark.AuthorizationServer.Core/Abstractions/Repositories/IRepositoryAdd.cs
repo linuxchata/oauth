@@ -2,5 +2,5 @@
 
 public interface IRepositoryAdd<T>
 {
-    void Add(T item);
+    Task Add(T item);
 }

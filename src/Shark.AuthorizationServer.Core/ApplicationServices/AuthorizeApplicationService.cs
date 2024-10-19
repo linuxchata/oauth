@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
@@ -15,31 +16,31 @@ using Shark.AuthorizationServer.DomainServices.Constants;
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class AuthorizeApplicationService(
-    IClientRepository clientRepository,
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
-    IPersistedGrantRepository persistedGrantStore,
     IRedirectionService redirectionService,
+    IClientRepository clientRepository,
+    IPersistedGrantRepository persistedGrantRepository,
     IHttpContextAccessor httpContextAccessor,
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<AuthorizeApplicationService> logger) : IAuthorizeApplicationService
 {
     private const int AuthorizationCodeExpirationInSeconds = 30;
 
-    private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
-    private readonly IPersistedGrantRepository _persistedGrantStore = persistedGrantStore;
     private readonly IRedirectionService _redirectionService = redirectionService;
+    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<AuthorizeApplicationService> _logger = logger;
 
-    public AuthorizeInternalBaseResponse Execute(AuthorizeInternalRequest request)
+    public async Task<AuthorizeInternalBaseResponse> Execute(AuthorizeInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        var client = _clientRepository.Get(request.ClientId);
+        var client = await _clientRepository.Get(request.ClientId);
 
         var response = ValidateRequest(request, client);
         if (response != null)
@@ -49,7 +50,7 @@ public sealed class AuthorizeApplicationService(
 
         if (IsResponseType(request.ResponseType, ResponseType.Code))
         {
-            return HandleCodeResponseType(request);
+            return await HandleCodeResponseType(request);
         }
         else if (IsResponseType(request.ResponseType, ResponseType.Token))
         {
@@ -92,7 +93,7 @@ public sealed class AuthorizeApplicationService(
         return string.Equals(responseType, expectedResponseType, StringComparison.OrdinalIgnoreCase);
     }
 
-    private AuthorizeInternalCodeResponse HandleCodeResponseType(AuthorizeInternalRequest request)
+    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponseType(AuthorizeInternalRequest request)
     {
         _logger.LogInformation(
             "Issuing authorization code for {responseType} response type",
@@ -100,7 +101,7 @@ public sealed class AuthorizeApplicationService(
 
         var code = _stringGeneratorService.GenerateCode();
 
-        StorePersistedGrant(request, code);
+        await StorePersistedGrant(request, code);
 
         var redirectUrl = _redirectionService.BuildClientCallbackUrl(
             request.RedirectUri,
@@ -133,7 +134,7 @@ public sealed class AuthorizeApplicationService(
         return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
     }
 
-    private void StorePersistedGrant(AuthorizeInternalRequest request, string code)
+    private async Task StorePersistedGrant(AuthorizeInternalRequest request, string code)
     {
         var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
 
@@ -150,7 +151,7 @@ public sealed class AuthorizeApplicationService(
             ExpiredIn = AuthorizationCodeExpirationInSeconds,
         };
 
-        _persistedGrantStore.Add(persistedGrant);
+        await _persistedGrantRepository.Add(persistedGrant);
     }
 
     private TokenResponse GenerateBearerToken(Client client, string[] scopes)

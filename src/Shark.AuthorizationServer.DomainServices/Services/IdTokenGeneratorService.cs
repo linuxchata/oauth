@@ -15,7 +15,7 @@ public sealed class IdTokenGeneratorService(
     private readonly ISigningCredentialsService _signingCredentialsService = signingCredentialsService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public string? Generate(string userId, string audience, string[] scopes)
+    public string? Generate(string userId, string? userName, string audience, string[] scopes)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId, nameof(userId));
         ArgumentException.ThrowIfNullOrWhiteSpace(audience, nameof(audience));
@@ -28,7 +28,7 @@ public sealed class IdTokenGeneratorService(
 
         var currentTime = DateTime.UtcNow;
 
-        var claims = CreateClaims(userId, audience, currentTime);
+        var claims = CreateClaims(userId, userName, audience, currentTime);
 
         var token = GenerateToken(claims);
 
@@ -40,7 +40,7 @@ public sealed class IdTokenGeneratorService(
         return scopes.Any(s => string.Equals(s, OpenIdConnectScope.OpenId, StringComparison.OrdinalIgnoreCase));
     }
 
-    private List<Claim> CreateClaims(string userId, string audience, DateTime currentTime)
+    private List<Claim> CreateClaims(string userId, string? userName, string audience, DateTime currentTime)
     {
         var issuer = _configuration.Issuer;
         var issuedAt = EpochTime.GetIntDate(currentTime.ToUniversalTime()).ToString();
@@ -49,11 +49,17 @@ public sealed class IdTokenGeneratorService(
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, userId),
-            new(JwtRegisteredClaimNames.Iss, issuer),
-            new(JwtRegisteredClaimNames.Aud, audience),
-            new(JwtRegisteredClaimNames.Iat, issuedAt),
-            new(JwtRegisteredClaimNames.Exp, expireAt)
         };
+
+        if (!string.IsNullOrWhiteSpace(userName))
+        {
+            claims.Add(new(JwtRegisteredClaimNames.Name, userName));
+        }
+
+        claims.Add(new(JwtRegisteredClaimNames.Iss, issuer));
+        claims.Add(new(JwtRegisteredClaimNames.Aud, audience));
+        claims.Add(new(JwtRegisteredClaimNames.Iat, issuedAt));
+        claims.Add(new(JwtRegisteredClaimNames.Exp, expireAt));
 
         return claims;
     }

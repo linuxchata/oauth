@@ -67,7 +67,7 @@ public sealed class AuthorizationService(
         if (!string.Equals(state, expectedState, StringComparison.Ordinal))
         {
             _logger.LogError("State does not match");
-            return new SecureToken(null, null);
+            return new SecureToken(null, null, null);
         }
 
         var formData = new List<KeyValuePair<string, string>>
@@ -176,7 +176,7 @@ public sealed class AuthorizationService(
 
             _logger.LogInformation("Bearer token has been fetched from authorization server");
 
-            return new SecureToken(bearerToken?.AccessToken, bearerToken?.RefreshToken);
+            return new SecureToken(bearerToken?.AccessToken, bearerToken?.IdToken, bearerToken?.RefreshToken);
         }
         catch (HttpRequestException ex)
         {
@@ -186,7 +186,7 @@ public sealed class AuthorizationService(
                 ex.StatusCode);
         }
 
-        return new SecureToken(null, null);
+        return new SecureToken(null, null, null);
     }
 
     private string BuildTokenEndpointUri()

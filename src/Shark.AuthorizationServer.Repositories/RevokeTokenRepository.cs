@@ -9,14 +9,14 @@ public sealed class RevokeTokenRepository(IDistributedCache cache) : IRevokeToke
 {
     private readonly IDistributedCache _cache = cache;
 
-    public RevokeToken? Get(string? value)
+    public async Task<RevokeToken?> Get(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
 
-        var serializedItem = _cache.GetString(value);
+        var serializedItem = await _cache.GetStringAsync(value);
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {
@@ -26,9 +26,9 @@ public sealed class RevokeTokenRepository(IDistributedCache cache) : IRevokeToke
         return null;
     }
 
-    public void Add(RevokeToken item)
+    public async Task Add(RevokeToken item)
     {
         var serializedItem = JsonSerializer.Serialize(item);
-        _cache.SetString(item.TokenId, serializedItem);
+        await _cache.SetStringAsync(item.TokenId, serializedItem);
     }
 }

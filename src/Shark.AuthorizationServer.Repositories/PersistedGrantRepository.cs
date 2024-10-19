@@ -9,14 +9,14 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
 {
     private readonly IDistributedCache _cache = cache;
 
-    public PersistedGrant? Get(string? value)
+    public async Task<PersistedGrant?> Get(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
 
-        var serializedItem = _cache.GetString(value);
+        var serializedItem = await _cache.GetStringAsync(value);
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {
@@ -26,23 +26,21 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
         return null;
     }
 
-    public void Add(PersistedGrant item)
+    public async Task Add(PersistedGrant item)
     {
         var cacheEntryOptions = new DistributedCacheEntryOptions
         {
             AbsoluteExpiration = DateTime.Now.AddSeconds(item.ExpiredIn),
         };
         var serializedItem = JsonSerializer.Serialize(item);
-        _cache.SetString(item.Value, serializedItem, cacheEntryOptions);
+        await _cache.SetStringAsync(item.Value, serializedItem, cacheEntryOptions);
     }
 
-    public void Remove(string? value)
+    public async Task Remove(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (!string.IsNullOrWhiteSpace(value))
         {
-            return;
+            await _cache.RemoveAsync(value);
         }
-
-        _cache.Remove(value);
     }
 }

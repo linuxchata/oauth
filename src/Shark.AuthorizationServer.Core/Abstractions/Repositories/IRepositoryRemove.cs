@@ -2,5 +2,5 @@
 
 public interface IRepositoryRemove<T>
 {
-    void Remove(string? value);
+    Task Remove(string? value);
 }
