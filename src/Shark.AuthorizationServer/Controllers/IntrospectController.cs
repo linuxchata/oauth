@@ -19,9 +19,9 @@ public class IntrospectController(
     /// <returns>HTTP response.</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Post([FromForm] IntrospectRequest request)
+    public async Task<IActionResult> Post([FromForm] IntrospectRequest request)
     {
-        var internalResponse = _introspectApplicationService.Execute(request.ToInternalRequest());
+        var internalResponse = await _introspectApplicationService.Execute(request.ToInternalRequest());
 
         return Ok(internalResponse);
     }

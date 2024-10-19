@@ -10,13 +10,13 @@ using Shark.AuthorizationServer.DomainServices.Constants;
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class IntrospectApplicationService(
-    IRevokeTokenRepository revokeTokenStore,
+    IRevokeTokenRepository revokeTokenRepository,
     ILogger<IntrospectApplicationService> logger) : IIntrospectApplicationService
 {
-    private readonly IRevokeTokenRepository _revokeTokenStore = revokeTokenStore;
+    private readonly IRevokeTokenRepository _revokeTokenRepository = revokeTokenRepository;
     private readonly ILogger<IntrospectApplicationService> _logger = logger;
 
-    public IntrospectInternalBaseResponse Execute(IntrospectInternalRequest request)
+    public async Task<IntrospectInternalBaseResponse> Execute(IntrospectInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -35,7 +35,7 @@ public sealed class IntrospectApplicationService(
             // Check revokation list
             if (!string.IsNullOrWhiteSpace(jwtToken.Id))
             {
-                var revokedToken = _revokeTokenStore.Get(jwtToken.Id);
+                var revokedToken = await _revokeTokenRepository.Get(jwtToken.Id);
                 if (revokedToken is not null)
                 {
                     _logger.LogInformation("Access token has been revoked");
