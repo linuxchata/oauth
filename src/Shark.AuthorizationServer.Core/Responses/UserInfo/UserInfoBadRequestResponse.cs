@@ -1,5 +1,5 @@
 ﻿namespace Shark.AuthorizationServer.Core.Responses.UserInfo;
 
-public class UserInfoBadRequestResponse : UserInfoBaseResponse
+public sealed class UserInfoBadRequestResponse : UserInfoBaseResponse
 {
 }

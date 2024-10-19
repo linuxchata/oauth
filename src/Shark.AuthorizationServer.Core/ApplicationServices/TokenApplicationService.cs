@@ -284,7 +284,7 @@ public sealed class TokenApplicationService(
     {
         var userId = Guid.NewGuid().ToString();
         var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, client.Audience);
-        var idToken = _idTokenGeneratorService.Generate(userId, userName, client.Audience, scopes);
+        var idToken = _idTokenGeneratorService.Generate(userId, userName, client.ClientId, scopes);
         var refreshToken = _stringGeneratorService.GenerateRefreshToken();
 
         var token = new TokenResponse

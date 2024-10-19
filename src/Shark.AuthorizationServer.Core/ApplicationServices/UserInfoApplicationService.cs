@@ -33,6 +33,11 @@ public sealed class UserInfoApplicationService(
 
         var profileData = await _profileService.Get(subject);
 
+        if (profileData is null)
+        {
+            return new UserInfoNotFoundResponse();
+        }
+
         if (claimsPrincipal.HasScope(Scope.Profile))
         {
             response.Subject = subject;

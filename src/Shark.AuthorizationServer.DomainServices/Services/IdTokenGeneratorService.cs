@@ -44,7 +44,7 @@ public sealed class IdTokenGeneratorService(
     {
         var issuer = _configuration.Issuer;
         var issuedAt = EpochTime.GetIntDate(currentTime.ToUniversalTime()).ToString();
-        var expireAt = EpochTime.GetIntDate(currentTime.AddHours(1).ToUniversalTime()).ToString();
+        var expireAt = EpochTime.GetIntDate(currentTime.AddMinutes(5).ToUniversalTime()).ToString();
 
         var claims = new List<Claim>
         {

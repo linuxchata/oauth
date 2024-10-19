@@ -17,6 +17,8 @@ public class UserInfoController(
     [Authorize(AuthenticationSchemes = Scheme.Bearer)]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
@@ -26,6 +28,8 @@ public class UserInfoController(
     [Authorize(AuthenticationSchemes = Scheme.Bearer)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Post()
     {
@@ -44,6 +48,8 @@ public class UserInfoController(
                 return Forbid();
             case UserInfoBadRequestResponse:
                 return BadRequest();
+            case UserInfoNotFoundResponse:
+                return NotFound();
             case UserInfoResponse response:
                 return Ok(response);
             default:
