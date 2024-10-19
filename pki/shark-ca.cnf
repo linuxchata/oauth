@@ -1,0 +1,20 @@
+[ req ]
+default_bits       = 4096
+distinguished_name = req_distinguished_name
+x509_extensions    = v3_ca
+prompt             = no
+default_md         = sha256
+
+[ req_distinguished_name ]
+C  = PL
+ST = DS
+L  = Wroclaw
+O  = Shark
+OU = RnD
+CN = shark-authorization-server-dev-ca
+
+[ v3_ca ]
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer
+basicConstraints = critical,CA:TRUE
+keyUsage = critical,keyCertSign,cRLSign
