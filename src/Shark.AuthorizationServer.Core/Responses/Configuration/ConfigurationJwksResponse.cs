@@ -21,4 +21,7 @@ public sealed class ConfigurationJwksResponse
 
     [JsonPropertyName("n")]
     public required string Modulus { get; set; } // The modulus part of the RSA key
+
+    [JsonPropertyName("x5c")]
+    public string? X509CertificateChain { get; set; } // X.509 certificate chain
 }

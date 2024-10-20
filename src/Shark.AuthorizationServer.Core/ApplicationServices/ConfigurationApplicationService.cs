@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Responses.Configuration;
+using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Constants;
 
@@ -11,12 +12,14 @@ namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class ConfigurationApplicationService(
     [FromKeyedServices("public")] RsaSecurityKey rsaSecurityKey,
+    SigningCertificate signingCertificate,
     IOptions<AuthorizationServerConfiguration> options) : IConfigurationApplicationService
 {
     private const string SigPublicKeyUse = "sig";
     private const string RsaKeyType = "RSA";
 
     private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
+    private readonly SigningCertificate _signingCertificate = signingCertificate;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
     public Task<ConfigurationResponse> Get()
@@ -61,6 +64,7 @@ public sealed class ConfigurationApplicationService(
             KeyType = RsaKeyType,
             KeyId = _configuration.KeyId,
             Modulus = Convert.ToBase64String(modulus),
+            X509CertificateChain = _signingCertificate.X509CertificateChain,
         };
 
         return Task.FromResult(response);

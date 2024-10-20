@@ -1,8 +1,10 @@
-﻿using Shark.AuthorizationServer.Authentication;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shark.AuthorizationServer.Authentication;
 using Shark.AuthorizationServer.Client.Extensions;
 using Shark.AuthorizationServer.Client.Services;
 using Shark.AuthorizationServer.Configurations;
 using Shark.AuthorizationServer.Constants;
+using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Services;
 
@@ -72,9 +74,11 @@ public static class ApplicationBuilderExtentions
                 securityConfiguration.PublicCertificatePath!);
             var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateCertificate(
                 securityConfiguration.PrivateCertificatePath!, securityConfiguration.PrivateCertificatePassword!);
+            var signingCertificate = SigningCertificateProvider.Get(securityConfiguration.PublicCertificatePath!);
 
             services.AddKeyedSingleton(Public, publicRsaSecurityKey);
             services.AddKeyedSingleton(Private, privateRsaSecurityKey);
+            services.AddTransient(s => signingCertificate);
         }
         else
         {
@@ -85,6 +89,7 @@ public static class ApplicationBuilderExtentions
 
             services.AddKeyedSingleton(Public, publicRsaSecurityKey);
             services.AddKeyedSingleton(Private, privateRsaSecurityKey);
+            services.AddTransient(s => new SigningCertificate());
         }
     }
 }
