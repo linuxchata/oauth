@@ -9,15 +9,15 @@ public sealed class StateStore(IDistributedCache cache) : IStateStore
 
     public string? Get(string key)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key, nameof(key));
 
         return _cache.GetString(key);
     }
 
     public void Add(string key, string state)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(key, nameof(key));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
 
         _cache.SetString(key, state);
     }

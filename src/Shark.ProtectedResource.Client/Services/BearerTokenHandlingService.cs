@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -11,7 +12,7 @@ using Shark.AuthorizationServer.Client.Models;
 namespace Shark.AuthorizationServer.Client.Services;
 
 public sealed class BearerTokenHandlingService(
-    RsaSecurityKey rsaSecurityKey,
+    [FromKeyedServices("public")] RsaSecurityKey rsaSecurityKey,
     IOptions<BearerTokenAuthenticationOptions> options,
     ILogger<BearerTokenHandlingService> logger) : IBearerTokenHandlingService
 {
@@ -97,7 +98,7 @@ public sealed class BearerTokenHandlingService(
         try
         {
             handler.ValidateToken(accessToken, validationParameters, out SecurityToken validatedToken);
-            if (!(validatedToken is JwtSecurityToken))
+            if (validatedToken is not JwtSecurityToken)
             {
                 return false;
             }

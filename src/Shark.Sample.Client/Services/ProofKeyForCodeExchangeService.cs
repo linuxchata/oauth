@@ -19,7 +19,7 @@ public sealed class ProofKeyForCodeExchangeService(
 
     public ProofKeyForCodeExchange Generate(string? state)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
 
         var codeVerifier = _stringGeneratorService.GenerateCodeVerifier();
         var codeChallenge = GetCodeChallenge(codeVerifier);
@@ -43,7 +43,7 @@ public sealed class ProofKeyForCodeExchangeService(
 
     public ProofKeyForCodeExchange? Get(string? state)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(state);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
 
         var serializedPkce = _cache.GetString(GetKey(state));
 

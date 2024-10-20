@@ -15,7 +15,7 @@ public static class ApplicationBuilderExtentions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
         services.Configure<BearerTokenAuthenticationOptions>(
             configuration.GetSection(BearerTokenAuthenticationOptions.Name));
@@ -34,21 +34,6 @@ public static class ApplicationBuilderExtentions
                 Scheme.Bearer,
                 options => options = bearerTokenAuthenticationOptions);
 
-        services
-            .AddAuthorizationBuilder()
-            .AddPolicy(Scope.Read, policy =>
-            {
-                policy.AddAuthenticationSchemes(Scheme.Bearer);
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim(ClaimType.Scope, Scope.Read);
-            })
-            .AddPolicy(Scope.Delete, policy =>
-            {
-                policy.AddAuthenticationSchemes(Scheme.Bearer);
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim(ClaimType.Scope, Scope.Delete);
-            });
-
         return services;
     }
 
@@ -56,7 +41,7 @@ public static class ApplicationBuilderExtentions
     {
         services.AddHttpClient();
         services.TryAddTransient<IPublicKeyProvider, PublicKeyProvider>();
-        services.TryAddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyProvider>();
+        services.TryAddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyNetworkProvider>();
 
         var serviceProvider = services.BuildServiceProvider();
         var rsaSecurityKeyProvider =

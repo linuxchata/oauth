@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
@@ -7,7 +8,7 @@ using Shark.AuthorizationServer.DomainServices.Configurations;
 namespace Shark.AuthorizationServer.DomainServices.Services;
 
 public sealed class SigningCredentialsService(
-    RsaSecurityKey rsaSecurityKey,
+    [FromKeyedServices("private")] RsaSecurityKey rsaSecurityKey,
     IOptions<AuthorizationServerConfiguration> options) : ISigningCredentialsService
 {
     private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;

@@ -10,14 +10,16 @@ namespace Shark.AuthorizationServer.Extensions;
 
 public static class ApplicationBuilderExtentions
 {
+    private const string Public = "public";
+    private const string Private = "private";
+
     public static IServiceCollection AddCustomAuthentication(
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
-        var rsaSecurityKey = Rsa256KeysGenerator.GetRsaSecurityKey();
-        services.AddSingleton(rsaSecurityKey);
+        services.AddRsaSecurityKey(configuration);
 
         services.Configure<AuthorizationServerConfiguration>(
             configuration.GetSection(AuthorizationServerConfiguration.Name));
@@ -57,5 +59,32 @@ public static class ApplicationBuilderExtentions
         services.AddSharkAuthentication(configuration);
 
         return services;
+    }
+
+    private static void AddRsaSecurityKey(this IServiceCollection services, IConfiguration configuration)
+    {
+        var securityConfiguration = new AuthorizationServerSecurityConfiguration();
+        configuration.GetSection(AuthorizationServerSecurityConfiguration.Name).Bind(securityConfiguration);
+
+        if (securityConfiguration.UseRsaCertificate)
+        {
+            var publicRsaSecurityKey = RsaSecurityKeyProvider.GetFromPublicCertificate(
+                securityConfiguration.PublicCertificatePath!);
+            var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateCertificate(
+                securityConfiguration.PrivateCertificatePath!, securityConfiguration.PrivateCertificatePassword!);
+
+            services.AddKeyedSingleton(Public, publicRsaSecurityKey);
+            services.AddKeyedSingleton(Private, privateRsaSecurityKey);
+        }
+        else
+        {
+            var publicRsaSecurityKey = RsaSecurityKeyProvider.GetFromPublicKey(
+                securityConfiguration.PublicKeyPath!);
+            var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateKey(
+                securityConfiguration.PrivateKeyPath!);
+
+            services.AddKeyedSingleton(Public, publicRsaSecurityKey);
+            services.AddKeyedSingleton(Private, privateRsaSecurityKey);
+        }
     }
 }

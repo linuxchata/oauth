@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Constants;
@@ -9,7 +10,7 @@ using Shark.AuthorizationServer.DomainServices.Constants;
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class ConfigurationApplicationService(
-    RsaSecurityKey rsaSecurityKey,
+    [FromKeyedServices("public")] RsaSecurityKey rsaSecurityKey,
     IOptions<AuthorizationServerConfiguration> options) : IConfigurationApplicationService
 {
     private const string SigPublicKeyUse = "sig";

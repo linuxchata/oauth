@@ -1,20 +1,9 @@
 ﻿using System.Security.Cryptography;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Shark.AuthorizationServer.DomainServices.Services;
 
 public static class Rsa256KeysGenerator
 {
-    public static RsaSecurityKey GetRsaSecurityKey()
-    {
-        var privateKey = File.ReadAllText("Keys/RS256.Private.pem");
-
-        var rsa = RSA.Create();
-        rsa.ImportFromPem(privateKey);
-
-        return new RsaSecurityKey(rsa);
-    }
-
     public static void Generate(int keySizeInBits = 2048)
     {
         using var rsa = RSA.Create(keySizeInBits);

@@ -1,3 +1,4 @@
+using Shark.AuthorizationServer.Client.Constants;
 using Shark.AuthorizationServer.Client.Extensions;
 using Shark.Sample.ProtectedResource.Extensions;
 
@@ -12,6 +13,22 @@ builder.Logging.AddSimpleConsole(options =>
 });
 
 builder.Services.AddSharkAuthentication(builder.Configuration);
+
+builder.Services
+    .AddAuthorizationBuilder()
+    .AddPolicy(Scope.Read, policy =>
+    {
+        policy.AddAuthenticationSchemes(Scheme.Bearer);
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim(ClaimType.Scope, Scope.Read);
+    })
+    .AddPolicy(Scope.Delete, policy =>
+    {
+        policy.AddAuthenticationSchemes(Scheme.Bearer);
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim(ClaimType.Scope, Scope.Delete);
+    });
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Web;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
@@ -62,7 +63,7 @@ public sealed class AuthorizationService(
         string? expectedState,
         string? codeVerifier)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(code);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(code, nameof(code));
 
         if (!string.Equals(state, expectedState, StringComparison.Ordinal))
         {
@@ -97,7 +98,7 @@ public sealed class AuthorizationService(
     /// </summary>
     public async Task<SecureToken> RequestAccessToken(string refreshToken, string? scope)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(refreshToken);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(refreshToken, nameof(refreshToken));
 
         var formData = new List<KeyValuePair<string, string>>
         {

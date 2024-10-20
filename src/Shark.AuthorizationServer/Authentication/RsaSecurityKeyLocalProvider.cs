@@ -3,7 +3,12 @@ using Shark.AuthorizationServer.Client.Services;
 
 namespace Shark.AuthorizationServer.Authentication;
 
-public sealed class RsaSecurityKeyLocalProvider(RsaSecurityKey rsaSecurityKey) : IRsaSecurityKeyProvider
+/// <summary>
+/// RsaSecurityKey provider for authorization server itself.
+/// </summary>
+/// <param name="rsaSecurityKey">Represents a Rsa security key.</param>
+public sealed class RsaSecurityKeyLocalProvider(
+    [FromKeyedServices("public")] RsaSecurityKey rsaSecurityKey) : IRsaSecurityKeyProvider
 {
     private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
 
