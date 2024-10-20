@@ -307,6 +307,9 @@ public sealed class TokenApplicationService(
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };
 
+        // TODO: Add Jti (token identifier) to refresh token persisted grant
+        // This should help revoke refresh token when access token is revoked
+
         var tokenPersistedGrant = new PersistedGrant
         {
             Type = GrantType.RefreshToken,

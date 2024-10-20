@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Security.Cryptography;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
@@ -14,6 +15,7 @@ public sealed class ConfigurationApplicationService(
     IOptions<AuthorizationServerConfiguration> options,
     IOptions<AuthorizationServerSecurityConfiguration> securityOptions,
     [FromKeyedServices("public")] RsaSecurityKey? rsaSecurityKey = null,
+    [FromKeyedServices("public")] X509SecurityKey? x509SecurityKey = null,
     SigningCertificate? signingCertificate = null) : IConfigurationApplicationService
 {
     private const string SigPublicKeyUse = "sig";
@@ -21,6 +23,7 @@ public sealed class ConfigurationApplicationService(
     private const string RsaKeyType = "RSA";
 
     private readonly RsaSecurityKey? _rsaSecurityKey = rsaSecurityKey;
+    private readonly X509SecurityKey? _x509SecurityKey = x509SecurityKey;
     private readonly SigningCertificate? _signingCertificate = signingCertificate;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly AuthorizationServerSecurityConfiguration _securityConfiguration = securityOptions.Value;
@@ -56,47 +59,74 @@ public sealed class ConfigurationApplicationService(
 
     public Task<ConfigurationJwksResponse> GetJsonWebKeySet()
     {
-        if (_configuration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
+        if (_securityConfiguration.SecurityAlgorithms == SecurityAlgorithms.RsaSha256)
         {
-            var response = new ConfigurationJwksResponse
-            {
-                Exponent = null,
-                PublicKeyUse = SigPublicKeyUse,
-                Algorithm = _securityConfiguration.SecurityAlgorithms,
-                KeyType = Hs256KeyType,
-                KeyId = _configuration.KeyId,
-                Modulus = null,
-                SymmetricKey = _securityConfiguration.SymmetricSecurityKey,
-                X509CertificateChain = null,
-            };
-
-            return Task.FromResult(response);
+            return GetRs256Response();
         }
-        else if (_securityConfiguration.SecurityAlgorithms == SecurityAlgorithms.RsaSha256)
+        else if (_configuration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
         {
-            // Danger zone - do not expose private key
-            var securityKey = _rsaSecurityKey ??
-                throw new InvalidOperationException("RSA security key is not registered");
-
-            var parameters = securityKey.Rsa.ExportParameters(false);
-            var exponent = parameters.Exponent ?? [];
-            var modulus = parameters.Modulus ?? [];
-
-            var response = new ConfigurationJwksResponse
-            {
-                Exponent = Convert.ToBase64String(exponent),
-                PublicKeyUse = SigPublicKeyUse,
-                Algorithm = _securityConfiguration.SecurityAlgorithms,
-                KeyType = RsaKeyType,
-                KeyId = _securityConfiguration.KeyId,
-                Modulus = Convert.ToBase64String(modulus),
-                SymmetricKey = null,
-                X509CertificateChain = _signingCertificate?.X509CertificateChain,
-            };
-
-            return Task.FromResult(response);
+            return GetHs256Response();
         }
 
         throw new InvalidOperationException($"Unsupported signature algorithms {_securityConfiguration.SecurityAlgorithms}");
+    }
+
+    private Task<ConfigurationJwksResponse> GetRs256Response()
+    {
+        RSA? rsa;
+        if (_securityConfiguration.UseRsaCertificate)
+        {
+            var securityKey = _x509SecurityKey ??
+                throw new InvalidOperationException("X509 security key is not registered");
+
+            rsa = securityKey.PublicKey as RSA;
+        }
+        else
+        {
+            var securityKey = _rsaSecurityKey ??
+                throw new InvalidOperationException("RSA security key is not registered");
+
+            rsa = securityKey.Rsa;
+        }
+
+        string? exponent = null;
+        string? modulus = null;
+        if (rsa is not null)
+        {
+            var parameters = rsa.ExportParameters(false);
+            exponent = Convert.ToBase64String(parameters.Exponent ?? []);
+            modulus = Convert.ToBase64String(parameters.Modulus ?? []);
+        }
+
+        var response = new ConfigurationJwksResponse
+        {
+            Exponent = exponent,
+            PublicKeyUse = SigPublicKeyUse,
+            Algorithm = _securityConfiguration.SecurityAlgorithms,
+            KeyType = RsaKeyType,
+            KeyId = _securityConfiguration.KeyId,
+            Modulus = modulus,
+            SymmetricKey = null,
+            X509CertificateChain = _signingCertificate?.X509CertificateChain,
+        };
+
+        return Task.FromResult(response);
+    }
+
+    private Task<ConfigurationJwksResponse> GetHs256Response()
+    {
+        var response = new ConfigurationJwksResponse
+        {
+            Exponent = null,
+            PublicKeyUse = SigPublicKeyUse,
+            Algorithm = _securityConfiguration.SecurityAlgorithms,
+            KeyType = Hs256KeyType,
+            KeyId = _configuration.KeyId,
+            Modulus = null,
+            SymmetricKey = _securityConfiguration.SymmetricSecurityKey,
+            X509CertificateChain = null,
+        };
+
+        return Task.FromResult(response);
     }
 }

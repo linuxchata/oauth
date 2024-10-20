@@ -83,21 +83,21 @@ public static class ApplicationBuilderExtentions
         {
             if (securityConfiguration.UseRsaCertificate)
             {
-                var publicRsaSecurityKey = RsaSecurityKeyProvider.GetFromPublicCertificate(
+                var publicX509SecurityKey = SecurityKeyProvider.GetFromPublicCertificate(
                     securityConfiguration.PublicCertificatePath!);
-                var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateCertificate(
+                var privateX509SecurityKey = SecurityKeyProvider.GetFromPrivateCertificate(
                     securityConfiguration.PrivateCertificatePath!, securityConfiguration.PrivateCertificatePassword!);
                 var signingCertificate = SigningCertificateProvider.Get(securityConfiguration.PublicCertificatePath!);
 
-                services.AddKeyedSingleton(Public, publicRsaSecurityKey);
-                services.AddKeyedSingleton(Private, privateRsaSecurityKey);
+                services.AddKeyedSingleton(Public, publicX509SecurityKey);
+                services.AddKeyedSingleton(Private, privateX509SecurityKey);
                 services.AddTransient(s => signingCertificate);
             }
             else
             {
-                var publicRsaSecurityKey = RsaSecurityKeyProvider.GetFromPublicKey(
+                var publicRsaSecurityKey = SecurityKeyProvider.GetFromPublicKey(
                     securityConfiguration.PublicKeyPath!);
-                var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateKey(
+                var privateRsaSecurityKey = SecurityKeyProvider.GetFromPrivateKey(
                     securityConfiguration.PrivateKeyPath!);
 
                 services.AddKeyedSingleton(Public, publicRsaSecurityKey);

@@ -19,7 +19,7 @@ public sealed class LoginModel(
 
     public List<string>? Scopes { get; private set; }
 
-    public string? UserName { get; set; }
+    public string? UserName { get; set; } = "Alice";
 
     public async Task<IActionResult> OnGet(string returnUrl)
     {

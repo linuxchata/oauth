@@ -50,7 +50,7 @@ public sealed class IntrospectApplicationService(
             var subject = claims.FirstOrDefault(c => c.Type == ClaimType.Subject);
             var scope = claims.FirstOrDefault(c => c.Type == ClaimType.Scope);
 
-            //// TODO: Check ValidTo and ValidFrom dates
+            // TODO: Check ValidTo and ValidFrom dates
 
             return new IntrospectInternalResponse
             {

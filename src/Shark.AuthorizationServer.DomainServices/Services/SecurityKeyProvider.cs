@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Shark.AuthorizationServer.DomainServices.Services;
 
-public static class RsaSecurityKeyProvider
+public static class SecurityKeyProvider
 {
     public static RsaSecurityKey GetFromPublicKey(string keyPath)
     {
@@ -34,29 +34,33 @@ public static class RsaSecurityKeyProvider
         return rsaSecurityKey;
     }
 
-    public static RsaSecurityKey GetFromPublicCertificate(string certificatePath)
+    public static X509SecurityKey GetFromPublicCertificate(string certificatePath)
     {
         ArgumentNullException.ThrowIfNull(certificatePath, nameof(certificatePath));
 
         var certificate = new X509Certificate2(certificatePath);
 
-        var rsa = certificate.GetRSAPublicKey()
-            ?? throw new InvalidOperationException("Ceritifate does not have RSA public key");
+        if (certificate.HasPrivateKey)
+        {
+            throw new InvalidOperationException("Ceritifate must not have a private key");
+        }
 
-        return new RsaSecurityKey(rsa);
+        return new X509SecurityKey(certificate);
     }
 
-    public static RsaSecurityKey GetFromPrivateCertificate(string certificatePath, string certificatePassword)
+    public static X509SecurityKey GetFromPrivateCertificate(string certificatePath, string certificatePassword)
     {
         ArgumentNullException.ThrowIfNull(certificatePath, nameof(certificatePath));
         ArgumentNullException.ThrowIfNull(certificatePassword, nameof(certificatePassword));
 
         var certificate = new X509Certificate2(certificatePath, certificatePassword);
 
-        var rsa = certificate.GetRSAPrivateKey()
-            ?? throw new InvalidOperationException("Ceritifate does not have RSA private key");
+        if (!certificate.HasPrivateKey)
+        {
+            throw new InvalidOperationException("Ceritifate must have a private key");
+        }
 
-        return new RsaSecurityKey(rsa);
+        return new X509SecurityKey(certificate);
     }
 
     private static RsaSecurityKey GetRsaSecurityKey(string keyPath)

@@ -19,13 +19,13 @@ public sealed class SecurityKeyNetworkProvider(IPublicKeyProvider publicKeyProvi
         var configurationJwksResponse = await _publicKeyProvider.Get() ??
             throw new InvalidOperationException("JSON Web Key Set configuration is empty");
 
-        if (configurationJwksResponse.Algorithm == SecurityAlgorithms.HmacSha256)
-        {
-            return GetSymmetricSecurityKey(configurationJwksResponse);
-        }
-        else if (configurationJwksResponse.Algorithm == SecurityAlgorithms.RsaSha256)
+        if (configurationJwksResponse.Algorithm == SecurityAlgorithms.RsaSha256)
         {
             return GetRsaSecurityKey(configurationJwksResponse);
+        }
+        else if (configurationJwksResponse.Algorithm == SecurityAlgorithms.HmacSha256)
+        {
+            return GetSymmetricSecurityKey(configurationJwksResponse);
         }
 
         throw new InvalidOperationException($"Unsupported signature algorithms {configurationJwksResponse.Algorithm}");
