@@ -66,7 +66,7 @@ public sealed class IdTokenGeneratorService(
 
     private string GenerateToken(List<Claim> claims)
     {
-        var signingCredentials = _signingCredentialsService.GenerateSigningCredentials();
+        var signingCredentials = _signingCredentialsService.GetSigningCredentials();
 
         var token = new JwtSecurityToken(claims: claims, signingCredentials: signingCredentials);
 

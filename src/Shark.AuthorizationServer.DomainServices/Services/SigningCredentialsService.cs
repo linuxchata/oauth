@@ -13,28 +13,28 @@ public sealed class SigningCredentialsService(
     private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public SigningCredentials GenerateSigningCredentials()
+    public SigningCredentials GetSigningCredentials()
     {
         if (_configuration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
         {
-            return GenerateSigningCredentialsHs256();
+            return GetHs256SigningCredentials();
         }
         else if (_configuration.SecurityAlgorithms == SecurityAlgorithms.RsaSha256)
         {
-            return GenerateSigningCredentialsRsa256();
+            return GetRsa256SigningCredentials();
         }
 
         throw new InvalidOperationException($"Unsupported signature algorithms {_configuration.SecurityAlgorithms}");
     }
 
-    private SigningCredentials GenerateSigningCredentialsHs256()
+    private SigningCredentials GetHs256SigningCredentials()
     {
         var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
         var securityKey = new SymmetricSecurityKey(key);
         return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
     }
 
-    private SigningCredentials GenerateSigningCredentialsRsa256()
+    private SigningCredentials GetRsa256SigningCredentials()
     {
         return new SigningCredentials(_rsaSecurityKey, SecurityAlgorithms.RsaSha256)
         {
