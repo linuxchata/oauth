@@ -19,6 +19,9 @@ public sealed class ConfigurationResponse
     [JsonPropertyName("register_endpoint")]
     public required string RegisterEndpoint { get; set; }
 
+    [JsonPropertyName("userinfo_endpoint")]
+    public required string UserInfoEndpoint { get; set; }
+
     [JsonPropertyName("jwks_endpoint")]
     public required string JsonWebKeySetEndpoint { get; set; }
 

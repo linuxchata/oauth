@@ -12,5 +12,7 @@ public static class AuthorizationServerEndpoint
 
     public const string Register = "register";
 
+    public const string UserInfo = "userinfo";
+
     public const string ConfigurationJwks = ".well-known/openid-configuration/jwks";
 }

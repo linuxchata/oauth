@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Client.Services;
 
-public interface IRsaSecurityKeyProvider
+public interface ISecurityKeyProvider
 {
-    Task<RsaSecurityKey> GetRsaSecurityKey();
+    Task<SecurityKey> GetSecurityKey();
 }

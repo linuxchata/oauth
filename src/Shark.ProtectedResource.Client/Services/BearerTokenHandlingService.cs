@@ -1,7 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -12,14 +10,14 @@ using Shark.AuthorizationServer.Client.Models;
 namespace Shark.AuthorizationServer.Client.Services;
 
 public sealed class BearerTokenHandlingService(
-    [FromKeyedServices("public")] RsaSecurityKey rsaSecurityKey,
+    SecurityKey securityKey,
     IOptions<BearerTokenAuthenticationOptions> options,
     ILogger<BearerTokenHandlingService> logger) : IBearerTokenHandlingService
 {
     private const string HeaderKeyName = "Authorization";
     private const string BearerTokenName = "Bearer";
 
-    private readonly RsaSecurityKey _rsaSecurityKey = rsaSecurityKey;
+    private readonly SecurityKey _securityKey = securityKey;
     private readonly BearerTokenAuthenticationOptions _configuration = options.Value;
     private readonly ILogger<BearerTokenHandlingService> _logger = logger;
 
@@ -81,16 +79,14 @@ public sealed class BearerTokenHandlingService(
     {
         tokenIdentity = new TokenIdentity();
 
-        var securityKey = GetIssuerSigningKey(jwtToken.SignatureAlgorithm);
-
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuer = _configuration.ValidateIssuer,
             ValidIssuer = _configuration.Issuer,
             ValidateAudience = _configuration.ValidateAudience,
-            ValidAudiences = new List<string> { _configuration.Audience },
+            ValidAudiences = [_configuration.Audience],
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = securityKey,
+            IssuerSigningKey = _securityKey,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromSeconds(10),
         };
@@ -110,24 +106,5 @@ public sealed class BearerTokenHandlingService(
         }
 
         return true;
-    }
-
-    private SecurityKey GetIssuerSigningKey(string signatureAlgorithm)
-    {
-        if (signatureAlgorithm == SecurityAlgorithms.HmacSha256)
-        {
-            var key = Encoding.UTF8.GetBytes(_configuration.SymmetricSecurityKey);
-
-            return new SymmetricSecurityKey(key)
-            {
-                KeyId = _configuration.KeyId
-            };
-        }
-        else if (signatureAlgorithm == SecurityAlgorithms.RsaSha256)
-        {
-            return _rsaSecurityKey;
-        }
-
-        throw new InvalidOperationException($"Unsupported signature algorithms {signatureAlgorithm}");
     }
 }

@@ -5,7 +5,8 @@ namespace Shark.AuthorizationServer.Core.Responses.Configuration;
 public sealed class ConfigurationJwksResponse
 {
     [JsonPropertyName("e")]
-    public required string Exponent { get; set; } // The exponent part of the RSA key
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public required string? Exponent { get; set; } // The exponent part of the RSA key
 
     [JsonPropertyName("use")]
     public required string PublicKeyUse { get; set; }
@@ -20,8 +21,14 @@ public sealed class ConfigurationJwksResponse
     public required string KeyId { get; set; }
 
     [JsonPropertyName("n")]
-    public required string Modulus { get; set; } // The modulus part of the RSA key
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public required string? Modulus { get; set; } // The modulus part of the RSA key
+
+    [JsonPropertyName("k")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public required string? SymmetricKey { get; set; } // The Base64url-encoded symmetric key
 
     [JsonPropertyName("x5c")]
-    public string? X509CertificateChain { get; set; } // X.509 certificate chain
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public required string? X509CertificateChain { get; set; } // X.509 certificate chain
 }

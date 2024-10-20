@@ -729,7 +729,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjgxQ0JBNEFBNjNFMTQwMkFCQjM3N0MxQjM2Q0Q5N0E4In0.eyJzdWIiOiI4Zjk1N2RjMC1kYTVkLTRlNjEtOGEwOS0yNDM5YzA0YTBmZTQiLCJuYW1lIjoiUHlseXAgTGViZWRpZXYiLCJzY29wZSI6InJlYWQgYWRkIHVwZGF0ZSBkZWxldGUgb3BlbmlkIHByb2ZpbGUgZW1haWwgYWRkcmVzcyBwaG9uZSIsImlhdCI6MTcyOTMxNTcwNSwianRpIjoiMWVhYTA2YjctMmZhNS00MmIyLTgwNzMtN2E3OTYwYTYzYTI0IiwibmJmIjoxNzI5MzE1NzA1LCJleHAiOjE3MjkzMTkzMDUsImlzcyI6Imh0dHA6Ly9hdXRob3JpemF0aW9uLXNlcnZlci1kZXYuY29tIiwiYXVkIjoiaHR0cDovL3Byb3RlY3RlZC1yZXNvdXJjZS1kZXYuY29tIn0.d_RxChAgBLQpYLHS4OYAyvuycrtjhmKtoJ8dADgh3UH3lOTg6ML8m24sX1X_a9A2lEF-vDmpwBW-2KTXfCNc4ks2nlwksiLfDELbh_48BLMQvjSZHHWx-PvLRC6pcHfGRhIs3h6-iKPeFZWP-QXclnB3EblcVHSUR5FYXzcyB-PiDkUwZWxymgRD6dfmmNIn-sTRLdJqf-NOsIvcWOBLxAxsRpt8oxnCvghXkoBF3tz1mI6wutiF47R8dKU42jYr_n8RO6VuQ7wGZSPcMEf6qYHjBymKqhV8C7DxE1xewl1tuz6DC9nMBZlXmkUXs9PoFpwHaXrZrVXHWvN2P1dKng",
+									"value": "{{AccessToken}}",
 									"type": "string"
 								}
 							]
@@ -756,7 +756,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjgxQ0JBNEFBNjNFMTQwMkFCQjM3N0MxQjM2Q0Q5N0E4In0.eyJzdWIiOiI4Zjk1N2RjMC1kYTVkLTRlNjEtOGEwOS0yNDM5YzA0YTBmZTQiLCJuYW1lIjoiUHlseXAgTGViZWRpZXYiLCJzY29wZSI6InJlYWQgYWRkIHVwZGF0ZSBkZWxldGUgb3BlbmlkIHByb2ZpbGUgZW1haWwgYWRkcmVzcyBwaG9uZSIsImlhdCI6MTcyOTMxNTcwNSwianRpIjoiMWVhYTA2YjctMmZhNS00MmIyLTgwNzMtN2E3OTYwYTYzYTI0IiwibmJmIjoxNzI5MzE1NzA1LCJleHAiOjE3MjkzMTkzMDUsImlzcyI6Imh0dHA6Ly9hdXRob3JpemF0aW9uLXNlcnZlci1kZXYuY29tIiwiYXVkIjoiaHR0cDovL3Byb3RlY3RlZC1yZXNvdXJjZS1kZXYuY29tIn0.d_RxChAgBLQpYLHS4OYAyvuycrtjhmKtoJ8dADgh3UH3lOTg6ML8m24sX1X_a9A2lEF-vDmpwBW-2KTXfCNc4ks2nlwksiLfDELbh_48BLMQvjSZHHWx-PvLRC6pcHfGRhIs3h6-iKPeFZWP-QXclnB3EblcVHSUR5FYXzcyB-PiDkUwZWxymgRD6dfmmNIn-sTRLdJqf-NOsIvcWOBLxAxsRpt8oxnCvghXkoBF3tz1mI6wutiF47R8dKU42jYr_n8RO6VuQ7wGZSPcMEf6qYHjBymKqhV8C7DxE1xewl1tuz6DC9nMBZlXmkUXs9PoFpwHaXrZrVXHWvN2P1dKng",
+									"value": "{{AccessToken}}",
 									"type": "string"
 								}
 							]

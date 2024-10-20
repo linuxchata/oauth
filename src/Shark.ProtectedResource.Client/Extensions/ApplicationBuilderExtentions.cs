@@ -23,8 +23,8 @@ public static class ApplicationBuilderExtentions
         var bearerTokenAuthenticationOptions = new BearerTokenAuthenticationOptions();
         configuration.GetSection(BearerTokenAuthenticationOptions.Name).Bind(bearerTokenAuthenticationOptions);
 
-        var rsaSecurityKey = GetRsaSecurityKey(services).GetAwaiter().GetResult();
-        services.AddSingleton(rsaSecurityKey);
+        var securityKey = GetSecurityKey(services).GetAwaiter().GetResult();
+        services.AddSingleton(securityKey);
 
         services.AddTransient<IBearerTokenHandlingService, BearerTokenHandlingService>();
 
@@ -37,17 +37,17 @@ public static class ApplicationBuilderExtentions
         return services;
     }
 
-    private static async Task<RsaSecurityKey> GetRsaSecurityKey(IServiceCollection services)
+    private static async Task<SecurityKey> GetSecurityKey(IServiceCollection services)
     {
         services.AddHttpClient();
         services.TryAddTransient<IPublicKeyProvider, PublicKeyProvider>();
-        services.TryAddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyNetworkProvider>();
+        services.TryAddTransient<ISecurityKeyProvider, SecurityKeyNetworkProvider>();
 
         var serviceProvider = services.BuildServiceProvider();
-        var rsaSecurityKeyProvider =
-            serviceProvider.GetService(typeof(IRsaSecurityKeyProvider)) as IRsaSecurityKeyProvider ??
-            throw new InvalidOperationException("RSA Security Key provider cannot be resolved");
+        var securityKeyProvider =
+            serviceProvider.GetService(typeof(ISecurityKeyProvider)) as ISecurityKeyProvider ??
+            throw new InvalidOperationException("Security key provider cannot be resolved");
 
-        return await rsaSecurityKeyProvider.GetRsaSecurityKey();
+        return await securityKeyProvider.GetSecurityKey();
     }
 }

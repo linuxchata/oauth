@@ -2,7 +2,13 @@
 
 public sealed class AuthorizationServerSecurityConfiguration
 {
-    public const string Name = nameof(AuthorizationServerConfiguration);
+    public const string Name = nameof(AuthorizationServerConfiguration); // Name of the main configuration
+
+    public string KeyId { get; set; } = null!;
+
+    public string SecurityAlgorithms { get; set; } = null!;
+
+    public string? SymmetricSecurityKey { get; set; }
 
     public bool UseRsaCertificate { get; set; }
 

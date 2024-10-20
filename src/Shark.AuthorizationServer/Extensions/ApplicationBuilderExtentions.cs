@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Authentication;
 using Shark.AuthorizationServer.Client.Extensions;
 using Shark.AuthorizationServer.Client.Services;
@@ -21,10 +22,13 @@ public static class ApplicationBuilderExtentions
     {
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
-        services.AddRsaSecurityKey(configuration);
+        services.AddSecurityKey(configuration);
 
         services.Configure<AuthorizationServerConfiguration>(
             configuration.GetSection(AuthorizationServerConfiguration.Name));
+
+        services.Configure<AuthorizationServerSecurityConfiguration>(
+            configuration.GetSection(AuthorizationServerSecurityConfiguration.Name));
 
         var authorizationServerConfiguration = new AuthorizationServerConfiguration();
         configuration.GetSection(AuthorizationServerConfiguration.Name).Bind(authorizationServerConfiguration);
@@ -57,39 +61,49 @@ public static class ApplicationBuilderExtentions
                 options => options = clientTokenAuthenticationOptions);
 
         // Bearer token authentication.
-        services.AddTransient<IRsaSecurityKeyProvider, RsaSecurityKeyLocalProvider>();
+        services.AddTransient<ISecurityKeyProvider, SecurityKeyLocalProvider>();
         services.AddSharkAuthentication(configuration);
 
         return services;
     }
 
-    private static void AddRsaSecurityKey(this IServiceCollection services, IConfiguration configuration)
+    private static void AddSecurityKey(this IServiceCollection services, IConfiguration configuration)
     {
         var securityConfiguration = new AuthorizationServerSecurityConfiguration();
         configuration.GetSection(AuthorizationServerSecurityConfiguration.Name).Bind(securityConfiguration);
 
-        if (securityConfiguration.UseRsaCertificate)
+        if (securityConfiguration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
         {
-            var publicRsaSecurityKey = RsaSecurityKeyProvider.GetFromPublicCertificate(
-                securityConfiguration.PublicCertificatePath!);
-            var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateCertificate(
-                securityConfiguration.PrivateCertificatePath!, securityConfiguration.PrivateCertificatePassword!);
-            var signingCertificate = SigningCertificateProvider.Get(securityConfiguration.PublicCertificatePath!);
+            var key = Encoding.UTF8.GetBytes(securityConfiguration.SymmetricSecurityKey!);
+            var symmetricSecurityKey = new SymmetricSecurityKey(key);
 
-            services.AddKeyedSingleton(Public, publicRsaSecurityKey);
-            services.AddKeyedSingleton(Private, privateRsaSecurityKey);
-            services.AddTransient(s => signingCertificate);
+            services.AddSingleton(symmetricSecurityKey);
         }
-        else
+        else if (securityConfiguration.SecurityAlgorithms == SecurityAlgorithms.RsaSha256)
         {
-            var publicRsaSecurityKey = RsaSecurityKeyProvider.GetFromPublicKey(
-                securityConfiguration.PublicKeyPath!);
-            var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateKey(
-                securityConfiguration.PrivateKeyPath!);
+            if (securityConfiguration.UseRsaCertificate)
+            {
+                var publicRsaSecurityKey = RsaSecurityKeyProvider.GetFromPublicCertificate(
+                    securityConfiguration.PublicCertificatePath!);
+                var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateCertificate(
+                    securityConfiguration.PrivateCertificatePath!, securityConfiguration.PrivateCertificatePassword!);
+                var signingCertificate = SigningCertificateProvider.Get(securityConfiguration.PublicCertificatePath!);
 
-            services.AddKeyedSingleton(Public, publicRsaSecurityKey);
-            services.AddKeyedSingleton(Private, privateRsaSecurityKey);
-            services.AddTransient(s => new SigningCertificate());
+                services.AddKeyedSingleton(Public, publicRsaSecurityKey);
+                services.AddKeyedSingleton(Private, privateRsaSecurityKey);
+                services.AddTransient(s => signingCertificate);
+            }
+            else
+            {
+                var publicRsaSecurityKey = RsaSecurityKeyProvider.GetFromPublicKey(
+                    securityConfiguration.PublicKeyPath!);
+                var privateRsaSecurityKey = RsaSecurityKeyProvider.GetFromPrivateKey(
+                    securityConfiguration.PrivateKeyPath!);
+
+                services.AddKeyedSingleton(Public, publicRsaSecurityKey);
+                services.AddKeyedSingleton(Private, privateRsaSecurityKey);
+                services.AddTransient(s => new SigningCertificate());
+            }
         }
     }
 }
