@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -86,6 +87,7 @@ public sealed class BearerTokenHandlingService(
             ValidateAudience = _configuration.ValidateAudience,
             ValidAudiences = [_configuration.Audience],
             ValidateIssuerSigningKey = true,
+            IssuerSigningKeyValidator = IssuerSigningKeyValidator(),
             IssuerSigningKey = _securityKey,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromSeconds(10),
@@ -106,5 +108,34 @@ public sealed class BearerTokenHandlingService(
         }
 
         return true;
+    }
+
+    private IssuerSigningKeyValidator IssuerSigningKeyValidator()
+    {
+        return (securityKey, securityToken, validationParameters) =>
+        {
+            if (securityKey is X509SecurityKey x509SecurityKey)
+            {
+                var chain = new X509Chain();
+                chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag; // Default
+                chain.ChainPolicy.VerificationTime = DateTime.Now;
+
+                var isValid = chain.Build(x509SecurityKey.Certificate);
+
+                if (!isValid)
+                {
+                    foreach (var chainStatus in chain.ChainStatus)
+                    {
+                        _logger.LogWarning("Chain error: {statusInformation}", chainStatus.StatusInformation);
+                    }
+                }
+
+                return isValid;
+            }
+
+            return true;
+        };
     }
 }

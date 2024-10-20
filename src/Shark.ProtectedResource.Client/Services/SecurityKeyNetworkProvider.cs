@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Client.Models;
@@ -30,7 +31,7 @@ public sealed class SecurityKeyNetworkProvider(IPublicKeyProvider publicKeyProvi
         throw new InvalidOperationException($"Unsupported signature algorithms {configurationJwksResponse.Algorithm}");
     }
 
-    private static RsaSecurityKey GetRsaSecurityKey(ConfigurationJwksResponse configurationJwksResponse)
+    private static SecurityKey GetRsaSecurityKey(ConfigurationJwksResponse configurationJwksResponse)
     {
         if (!string.Equals(configurationJwksResponse.KeyType, "RSA", StringComparison.OrdinalIgnoreCase))
         {
@@ -44,20 +45,35 @@ public sealed class SecurityKeyNetworkProvider(IPublicKeyProvider publicKeyProvi
 
         var rsa = RSA.Create();
 
-        var rsaParams = new RSAParameters
+        if (!string.IsNullOrWhiteSpace(configurationJwksResponse.X509CertificateChain))
         {
-            Modulus = Convert.FromBase64String(configurationJwksResponse.Modulus!),
-            Exponent = Convert.FromBase64String(configurationJwksResponse.Exponent!),
-        };
+            var certificateBytes = Convert.FromBase64String(configurationJwksResponse.X509CertificateChain!);
+            var certificate = new X509Certificate2(certificateBytes);
 
-        rsa.ImportParameters(rsaParams);
+            var x509SecurityKey = new X509SecurityKey(certificate)
+            {
+                KeyId = configurationJwksResponse.KeyId,
+            };
 
-        var securityKey = new RsaSecurityKey(rsa)
+            return x509SecurityKey;
+        }
+        else
         {
-            KeyId = configurationJwksResponse.KeyId
-        };
+            var rsaParams = new RSAParameters
+            {
+                Modulus = Convert.FromBase64String(configurationJwksResponse.Modulus!),
+                Exponent = Convert.FromBase64String(configurationJwksResponse.Exponent!),
+            };
 
-        return securityKey;
+            rsa.ImportParameters(rsaParams);
+
+            var rsaSecurityKey = new RsaSecurityKey(rsa)
+            {
+                KeyId = configurationJwksResponse.KeyId,
+            };
+
+            return rsaSecurityKey;
+        }
     }
 
     private static SymmetricSecurityKey GetSymmetricSecurityKey(ConfigurationJwksResponse configurationJwksResponse)
