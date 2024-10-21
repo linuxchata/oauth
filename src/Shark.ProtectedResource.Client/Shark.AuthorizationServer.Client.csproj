@@ -8,4 +8,8 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj" />
+  </ItemGroup>
+
 </Project>

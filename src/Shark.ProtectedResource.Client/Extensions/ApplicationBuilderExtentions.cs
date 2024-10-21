@@ -6,6 +6,8 @@ using Shark.AuthorizationServer.Client.Authentication;
 using Shark.AuthorizationServer.Client.Constants;
 using Shark.AuthorizationServer.Client.Models;
 using Shark.AuthorizationServer.Client.Services;
+using Shark.AuthorizationServer.Common;
+using Shark.AuthorizationServer.Common.Abstractions;
 
 namespace Shark.AuthorizationServer.Client.Extensions;
 
@@ -26,6 +28,7 @@ public static class ApplicationBuilderExtentions
         var securityKey = GetSecurityKey(services).GetAwaiter().GetResult();
         services.AddSingleton(securityKey);
 
+        services.AddTransient<ICertificateValidator, CertificateValidator>();
         services.AddTransient<IBearerTokenHandlingService, BearerTokenHandlingService>();
 
         services

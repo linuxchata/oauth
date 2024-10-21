@@ -7,11 +7,13 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Client.Constants;
 using Shark.AuthorizationServer.Client.Models;
+using Shark.AuthorizationServer.Common.Abstractions;
 
 namespace Shark.AuthorizationServer.Client.Services;
 
 public sealed class BearerTokenHandlingService(
     SecurityKey securityKey,
+    ICertificateValidator certificateValidator,
     IOptions<BearerTokenAuthenticationOptions> options,
     ILogger<BearerTokenHandlingService> logger) : IBearerTokenHandlingService
 {
@@ -19,6 +21,7 @@ public sealed class BearerTokenHandlingService(
     private const string BearerTokenName = "Bearer";
 
     private readonly SecurityKey _securityKey = securityKey;
+    private readonly ICertificateValidator _certificateValidator = certificateValidator;
     private readonly BearerTokenAuthenticationOptions _configuration = options.Value;
     private readonly ILogger<BearerTokenHandlingService> _logger = logger;
 
@@ -118,23 +121,7 @@ public sealed class BearerTokenHandlingService(
         {
             if (securityKey is X509SecurityKey x509SecurityKey)
             {
-                var chain = new X509Chain();
-                chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-                chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
-                chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag; // Default
-                chain.ChainPolicy.VerificationTime = DateTime.Now;
-
-                var isValid = chain.Build(x509SecurityKey.Certificate);
-
-                if (!isValid)
-                {
-                    foreach (var chainStatus in chain.ChainStatus)
-                    {
-                        _logger.LogWarning("Chain error: {statusInformation}", chainStatus.StatusInformation);
-                    }
-                }
-
-                return isValid;
+                return _certificateValidator.IsValid(x509SecurityKey.Certificate);
             }
 
             return true;
