@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer.Domain\Shark.AuthorizationServer.Domain.csproj">
       <TreatAsUsed>true</TreatAsUsed>
     </ProjectReference>

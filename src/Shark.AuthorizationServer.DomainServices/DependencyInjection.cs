@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Shark.AuthorizationServer.Common;
+using Shark.AuthorizationServer.Common.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Services;
 
@@ -8,6 +10,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection RegisterDomainServices(this IServiceCollection services)
     {
+        services.AddTransient<ICertificateValidator, CertificateValidator>();
+
         services.AddTransient<IStringGeneratorService, StringGeneratorService>();
         services.AddTransient<ISigningCredentialsService, SigningCredentialsService>();
         services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();

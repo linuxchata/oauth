@@ -1,17 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shark.AuthorizationServer.Common.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 
 namespace Shark.AuthorizationServer.DomainServices.Services;
 
 public sealed class SigningCredentialsService(
+    ICertificateValidator certificateValidator,
     IOptions<AuthorizationServerSecurityConfiguration> options,
     [FromKeyedServices("private")] RsaSecurityKey? rsaSecurityKey = null,
     [FromKeyedServices("private")] X509SecurityKey? x509SecurityKey = null,
     SymmetricSecurityKey? symmetricSecurityKey = null) : ISigningCredentialsService
 {
+    private readonly ICertificateValidator _certificateValidator = certificateValidator;
     private readonly RsaSecurityKey? _rsaSecurityKey = rsaSecurityKey;
     private readonly X509SecurityKey? _x509SecurityKey = x509SecurityKey;
     private readonly SymmetricSecurityKey? _symmetricSecurityKey = symmetricSecurityKey;
@@ -48,6 +51,11 @@ public sealed class SigningCredentialsService(
         if (securityKey.Certificate is null)
         {
             throw new InvalidOperationException("X509 certificate must not be null");
+        }
+
+        if (!_certificateValidator.IsValid(securityKey.Certificate))
+        {
+            throw new InvalidOperationException("X509 certificate must be valid");
         }
 
         return GetSigningCredentials(securityKey);
