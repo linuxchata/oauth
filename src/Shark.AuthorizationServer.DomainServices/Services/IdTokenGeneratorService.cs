@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Constants;
@@ -15,7 +16,7 @@ public sealed class IdTokenGeneratorService(
     private readonly ISigningCredentialsService _signingCredentialsService = signingCredentialsService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public string? Generate(string userId, string? userName, string audience, string[] scopes)
+    public IdToken Generate(string userId, string? userName, string audience, string[] scopes)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId, nameof(userId));
         ArgumentException.ThrowIfNullOrWhiteSpace(audience, nameof(audience));
@@ -23,16 +24,14 @@ public sealed class IdTokenGeneratorService(
 
         if (!HasOpenIdScope(scopes))
         {
-            return null;
+            return new IdToken();
         }
 
         var currentTime = DateTime.UtcNow;
 
         var claims = CreateClaims(userId, userName, audience, currentTime);
 
-        var token = GenerateToken(claims);
-
-        return token;
+        return GenerateToken(claims);
     }
 
     private bool HasOpenIdScope(string[] scopes)
@@ -64,17 +63,20 @@ public sealed class IdTokenGeneratorService(
         return claims;
     }
 
-    private string GenerateToken(List<Claim> claims)
+    private IdToken GenerateToken(List<Claim> claims)
     {
         var signingCredentials = _signingCredentialsService.GetSigningCredentials();
 
-        var token = new JwtSecurityToken(claims: claims, signingCredentials: signingCredentials);
+        var jwtSecurityToken = new JwtSecurityToken(claims: claims, signingCredentials: signingCredentials);
 
         if (!string.IsNullOrWhiteSpace(_configuration.KeyId))
         {
-            token.Header.TryAdd(JwtHeaderParameterNames.Kid, _configuration.KeyId);
+            jwtSecurityToken.Header.TryAdd(JwtHeaderParameterNames.Kid, _configuration.KeyId);
         }
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+        var token = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+
+        return new IdToken { Value = token };
     }
 }

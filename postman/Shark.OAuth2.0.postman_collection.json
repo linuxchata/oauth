@@ -411,7 +411,7 @@
 					"response": []
 				},
 				{
-					"name": "Revoke",
+					"name": "Revoke Access Token",
 					"event": [
 						{
 							"listen": "test",
@@ -453,6 +453,65 @@
 								{
 									"key": "token_hint",
 									"value": "access_token",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/revoke",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"revoke"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{ClientIdPermanent}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{ClientSecretPermanent}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "token",
+									"value": "{{RefreshToken}}",
+									"type": "text"
+								},
+								{
+									"key": "token_hint",
+									"value": "refresh_token",
 									"type": "text"
 								}
 							]

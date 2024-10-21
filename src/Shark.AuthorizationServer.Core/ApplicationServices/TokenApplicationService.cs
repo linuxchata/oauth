@@ -300,15 +300,12 @@ public sealed class TokenApplicationService(
 
         var token = new TokenResponse
         {
-            AccessToken = accessToken,
+            AccessToken = accessToken.Value,
             RefreshToken = refreshToken,
-            IdToken = idToken,
+            IdToken = idToken.Value,
             TokenType = AccessTokenType.Bearer,
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };
-
-        // TODO: Add Jti (token identifier) to refresh token persisted grant
-        // This should help revoke refresh token when access token is revoked
 
         var tokenPersistedGrant = new PersistedGrant
         {
@@ -316,6 +313,7 @@ public sealed class TokenApplicationService(
             ClientId = client.ClientId,
             RedirectUri = redirectUri,
             Scopes = scopes,
+            AccessTokenId = accessToken.Id, // Jti (token identifier) is needed to revoke refresh token when access token is revoked
             Value = refreshToken,
             UserName = userName,
             ExpiredIn = _configuration.AccessTokenExpirationInSeconds * 24,
@@ -332,7 +330,7 @@ public sealed class TokenApplicationService(
 
         var token = new TokenResponse
         {
-            AccessToken = accessToken,
+            AccessToken = accessToken.Value,
             TokenType = AccessTokenType.Bearer,
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };

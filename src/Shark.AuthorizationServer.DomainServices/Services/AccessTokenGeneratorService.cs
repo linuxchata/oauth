@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Constants;
@@ -15,7 +16,7 @@ public sealed class AccessTokenGeneratorService(
     private readonly ISigningCredentialsService _signingCredentialsService = signingCredentialsService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public string Generate(string? userId, string? userName, string[] scopes, string audience)
+    public AccessToken Generate(string? userId, string? userName, string[] scopes, string audience)
     {
         ArgumentNullException.ThrowIfNull(scopes, nameof(scopes));
         ArgumentException.ThrowIfNullOrWhiteSpace(audience, nameof(audience));
@@ -24,9 +25,7 @@ public sealed class AccessTokenGeneratorService(
 
         var claims = CreateClaims(userId, userName, scopes, currentTime);
 
-        var token = GenerateToken(claims, audience, currentTime);
-
-        return token;
+        return GenerateToken(claims, audience, currentTime);
     }
 
     private List<Claim> CreateClaims(string? userId, string? userName, string[] scopes, DateTime currentTime)
@@ -57,11 +56,11 @@ public sealed class AccessTokenGeneratorService(
         return claims;
     }
 
-    private string GenerateToken(List<Claim> claims, string audience, DateTime currentTime)
+    private AccessToken GenerateToken(List<Claim> claims, string audience, DateTime currentTime)
     {
         var signingCredentials = _signingCredentialsService.GetSigningCredentials();
 
-        var token = new JwtSecurityToken(
+        var jwtSecurityToken = new JwtSecurityToken(
             issuer: _configuration.Issuer ?? "Issuer",
             audience: audience,
             claims: claims,
@@ -71,9 +70,12 @@ public sealed class AccessTokenGeneratorService(
 
         if (!string.IsNullOrWhiteSpace(_configuration.KeyId))
         {
-            token.Header.TryAdd(JwtHeaderParameterNames.Kid, _configuration.KeyId);
+            jwtSecurityToken.Header.TryAdd(JwtHeaderParameterNames.Kid, _configuration.KeyId);
         }
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+        var token = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+
+        return new AccessToken { Id = jwtSecurityToken.Id, Value = token };
     }
 }

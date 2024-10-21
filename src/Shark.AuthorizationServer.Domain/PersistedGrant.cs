@@ -10,6 +10,8 @@ public record PersistedGrant
 
     public required string[] Scopes { get; set; }
 
+    public string? AccessTokenId { get; set; }
+
     public required string Value { get; set; }
 
     public string? UserName { get; set; }

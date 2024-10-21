@@ -161,7 +161,7 @@ public sealed class AuthorizeApplicationService(
 
         var token = new TokenResponse
         {
-            AccessToken = accessToken,
+            AccessToken = accessToken.Value,
             TokenType = AccessTokenType.Bearer,
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };

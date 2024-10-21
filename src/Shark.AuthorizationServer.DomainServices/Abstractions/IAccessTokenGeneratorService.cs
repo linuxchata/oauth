@@ -1,6 +1,8 @@
-﻿namespace Shark.AuthorizationServer.DomainServices.Abstractions;
+﻿using Shark.AuthorizationServer.Domain;
+
+namespace Shark.AuthorizationServer.DomainServices.Abstractions;
 
 public interface IAccessTokenGeneratorService
 {
-    string Generate(string? userId, string? userName, string[] scopes, string audience);
+    AccessToken Generate(string? userId, string? userName, string[] scopes, string audience);
 }
