@@ -38,7 +38,7 @@ public sealed class AuthorizeApplicationService(
 
     public async Task<AuthorizeInternalBaseResponse> Execute(AuthorizeInternalRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(nameof(request));
 
         var client = await _clientRepository.Get(request.ClientId);
 
