@@ -23,8 +23,7 @@ public sealed class SigningCredentialsService(
         {
             if (_configuration.UseRsaCertificate)
             {
-                // TODO: Make sure that it is impossible to sign token with invalid certificate
-                return GetRsaSigningCredentials(_x509SecurityKey);
+                return GetX509SigningCredentials(_x509SecurityKey);
             }
             else
             {
@@ -39,17 +38,29 @@ public sealed class SigningCredentialsService(
         throw new InvalidOperationException($"Unsupported signature algorithms {_configuration.SecurityAlgorithms}");
     }
 
-    private SigningCredentials GetRsaSigningCredentials(SecurityKey? securityKey)
+    private SigningCredentials GetX509SigningCredentials(X509SecurityKey? securityKey)
     {
         if (securityKey is null)
         {
-            throw new InvalidOperationException("Security key must not be null");
+            throw new InvalidOperationException("X509 security key must not be null");
         }
 
-        return new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256)
+        if (securityKey.Certificate is null)
         {
-            CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false },
-        };
+            throw new InvalidOperationException("X509 certificate must not be null");
+        }
+
+        return GetSigningCredentials(securityKey);
+    }
+
+    private SigningCredentials GetRsaSigningCredentials(RsaSecurityKey? securityKey)
+    {
+        if (securityKey is null)
+        {
+            throw new InvalidOperationException("RSA security key must not be null");
+        }
+
+        return GetSigningCredentials(securityKey);
     }
 
     private SigningCredentials GetSymmetricSigningCredentials()
@@ -60,5 +71,13 @@ public sealed class SigningCredentialsService(
         }
 
         return new SigningCredentials(_symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+    }
+
+    private SigningCredentials GetSigningCredentials(SecurityKey? securityKey)
+    {
+        return new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256)
+        {
+            CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false },
+        };
     }
 }
