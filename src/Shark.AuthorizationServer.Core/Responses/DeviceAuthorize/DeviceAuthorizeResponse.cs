@@ -9,4 +9,16 @@ public sealed class DeviceAuthorizeResponse : DeviceAuthorizeBaseResponse
 
     [JsonPropertyName("user_code")]
     public required string UserCode { get; set; }
+
+    [JsonPropertyName("verification_uri")]
+    public required string VerificationUri { get; set; }
+
+    [JsonPropertyName("verification_uri_complete")]
+    public required string VerificationUriComplete { get; set; }
+
+    [JsonPropertyName("expires_in")]
+    public required int ExpiresIn { get; set; }
+
+    [JsonPropertyName("interval")]
+    public required int Interval { get; set; }
 }

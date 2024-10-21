@@ -14,6 +14,10 @@ public sealed class DeviceAuthorizeApplicationService : IDeviceAuthorizeApplicat
         {
             DeviceCode = string.Empty,
             UserCode = string.Empty,
+            VerificationUri = string.Empty,
+            VerificationUriComplete = string.Empty,
+            ExpiresIn = 0,
+            Interval = 0,
         };
 
         return Task.FromResult(result as DeviceAuthorizeBaseResponse);
