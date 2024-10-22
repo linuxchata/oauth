@@ -22,7 +22,6 @@ public class IntrospectController(
     public async Task<IActionResult> Post([FromForm] IntrospectRequest request)
     {
         var internalResponse = await _applicationService.Execute(request.ToInternalRequest());
-
         return Ok(internalResponse);
     }
 }

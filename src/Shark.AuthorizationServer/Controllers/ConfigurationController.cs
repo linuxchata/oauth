@@ -18,8 +18,8 @@ public class ConfigurationController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
-        var response = await _applicationService.Get();
-        return Ok(response);
+        var internalResponse = await _applicationService.Get();
+        return Ok(internalResponse);
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ public class ConfigurationController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetJsonWebKeySet()
     {
-        var response = await _applicationService.GetJsonWebKeySet();
-        return Ok(response);
+        var internalResponse = await _applicationService.GetJsonWebKeySet();
+        return Ok(internalResponse);
     }
 }
