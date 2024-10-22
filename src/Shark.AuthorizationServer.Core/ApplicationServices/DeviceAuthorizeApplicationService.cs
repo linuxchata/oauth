@@ -8,7 +8,7 @@ public sealed class DeviceAuthorizeApplicationService : IDeviceAuthorizationAppl
 {
     public Task<DeviceAuthorizationBaseResponse> Execute(DeviceAuthorizationInternalRequest request)
     {
-        ArgumentNullException.ThrowIfNull(nameof(request));
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
 
         var result = new DeviceAuthorizationResponse
         {
