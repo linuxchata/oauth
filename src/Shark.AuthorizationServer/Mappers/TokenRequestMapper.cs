@@ -19,6 +19,7 @@ public static class TokenRequestMapper
             RefreshToken = request.refresh_token,
             Username = request.username,
             Password = request.password,
+            DeviceCode = request.device_code,
         };
     }
 }

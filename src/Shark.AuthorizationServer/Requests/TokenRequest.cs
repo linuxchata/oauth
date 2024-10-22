@@ -25,4 +25,7 @@ public sealed class TokenRequest
 
     [DefaultValue("")]
     public string? password { get; set; }
+
+    [DefaultValue("")]
+    public string? device_code { get; set; }
 }

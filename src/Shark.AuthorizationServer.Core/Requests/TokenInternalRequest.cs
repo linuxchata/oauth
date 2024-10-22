@@ -21,4 +21,6 @@ public sealed class TokenInternalRequest
     public string? Username { get; set; }
 
     public string? Password { get; set; }
+
+    public string? DeviceCode { get; set; }
 }

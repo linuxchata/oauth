@@ -46,7 +46,7 @@ public sealed class TokenApplicationService(
 
         var client = await _clientRepository.Get(request.ClientId);
 
-        var response = ValidateClient(client, request, claimsPrincipal);
+        var response = ValidateRequest(request, client, claimsPrincipal);
         if (response != null)
         {
             return response;
@@ -68,13 +68,17 @@ public sealed class TokenApplicationService(
         {
             return await HandleResourceOwnerCredentialsGrantType(request, client!);
         }
+        else if (IsGrantType(request.GrantType, GrantType.DeviceCode))
+        {
+            return HandleDeviceCodeGrantType(request, client!);
+        }
 
         return HandleUnsupportedGrantType(request);
     }
 
-    private TokenInternalBadRequestResponse? ValidateClient(
-        Client? client,
+    private TokenInternalBadRequestResponse? ValidateRequest(
         TokenInternalRequest request,
+        Client? client,
         ClaimsPrincipal claimsPrincipal)
     {
         // Validate client
@@ -84,6 +88,7 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidClient);
         }
 
+        // Validate client secret
         if (!claimsPrincipal.Identity?.IsAuthenticated ?? true)
         {
             if (!client.ClientSecret.EqualsTo(request.ClientSecret))
@@ -93,6 +98,7 @@ public sealed class TokenApplicationService(
             }
         }
 
+        // Validate redirect URI
         if (!string.IsNullOrWhiteSpace(request.RedirectUri) &&
             !client.RedirectUris.Contains(request.RedirectUri))
         {
@@ -190,6 +196,18 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
+    private TokenInternalBaseResponse HandleDeviceCodeGrantType(TokenInternalRequest request, Client client)
+    {
+        if (string.IsNullOrWhiteSpace(request.DeviceCode))
+        {
+            return new TokenInternalBadRequestResponse(Error.InvalidRequest);
+        }
+
+        _logger.LogInformation("Issuing access token for {grantType}", GrantType.DeviceCode);
+
+        throw new NotImplementedException();
+    }
+
     private TokenInternalBadRequestResponse HandleUnsupportedGrantType(TokenInternalRequest request)
     {
         _logger.LogWarning("Unsupported grant type {grantType}", request.GrantType);
@@ -205,21 +223,21 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
-        // Validate grant client
+        // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
             _logger.LogWarning("Mismatched client identifier for code persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
-        // Validate redirect URI
+        // Validate grant's redirect URI
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
             _logger.LogWarning("Mismatched redirect URI for code persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
-        // Validate grant scopes
+        // Validate grant's scopes
         var allowedScopes = persistedGrant.Scopes.ToHashSet() ?? [];
         foreach (var scope in request.Scopes)
         {
@@ -230,7 +248,7 @@ public sealed class TokenApplicationService(
             }
         }
 
-        // Validate code verifier
+        // Validate grant's code verifier
         if (!string.IsNullOrWhiteSpace(persistedGrant.CodeChallenge))
         {
             if (string.IsNullOrWhiteSpace(request.CodeVerifier))
@@ -275,14 +293,14 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
-        // Validate grant client
+        // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
             _logger.LogWarning("Mismatched client identifier for refresh token persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
-        // Validate redirect URI
+        // Validate grant's redirect URI
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
             _logger.LogWarning("Mismatched redirect URI for refresh token persisted grant");
