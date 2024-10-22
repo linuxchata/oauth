@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Web;
+using System;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
@@ -18,6 +20,10 @@ public sealed class DeviceAuthorizationApplicationService(
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<DeviceAuthorizationApplicationService> logger) : IDeviceAuthorizationApplicationService
 {
+    private const string DevicePath = "device";
+    private const string UserCodeQueryParameter = "user_code";
+    private const int DefaultDeviceCodeLifetimeInSeconds = 300;
+
     // The minimum amount of time in seconds that the client
     // should wait between polling requests to the token endpoint.
     private const int IntervalInSeconds = 5;
@@ -39,15 +45,16 @@ public sealed class DeviceAuthorizationApplicationService(
             return response;
         }
 
-        var authorizationServerBaseUri = new Uri(_configuration.AuthorizationServerUri);
+        var baseUri = new Uri(_configuration.AuthorizationServerUri);
+        var userCode = _stringGeneratorService.GenerateUserDeviceCode();
 
         var result = new DeviceAuthorizationResponse
         {
             DeviceCode = _stringGeneratorService.GenerateDeviceCode(),
-            UserCode = _stringGeneratorService.GenerateUserDeviceCode(),
-            VerificationUri = authorizationServerBaseUri.ToString(),
-            VerificationUriComplete = authorizationServerBaseUri.ToString(),
-            ExpiresIn = 0,
+            UserCode = userCode,
+            VerificationUri = GetVerificationUri(baseUri),
+            VerificationUriComplete = GetVerificationCompleteUri(baseUri, userCode),
+            ExpiresIn = client!.DeviceCodeLifetimeInSeconds ?? DefaultDeviceCodeLifetimeInSeconds,
             Interval = IntervalInSeconds,
         };
 
@@ -77,5 +84,23 @@ public sealed class DeviceAuthorizationApplicationService(
         }
 
         return null;
+    }
+
+    private string GetVerificationUri(Uri baseUri)
+    {
+        return (new Uri(baseUri, DevicePath)).ToString();
+    }
+
+    private string GetVerificationCompleteUri(Uri baseUri, string userCode)
+    {
+        var verificationCompleteUri = new Uri(baseUri, DevicePath);
+
+        var verificationCompleteUriBuilder = new UriBuilder(verificationCompleteUri);
+
+        var query = HttpUtility.ParseQueryString(verificationCompleteUriBuilder.Query);
+        query[UserCodeQueryParameter] = userCode;
+        verificationCompleteUriBuilder.Query = query.ToString();
+
+        return verificationCompleteUriBuilder.ToString();
     }
 }

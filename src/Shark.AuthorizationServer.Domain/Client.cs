@@ -30,11 +30,13 @@ public record Client
 
     public required string Audience { get; set; }
 
-    public required int AccessTokenLifetimeInSeconds { get; set; }
-
-    public required int RefreshTokenLifetimeInSeconds { get; set; }
-
     public required string RegistrationAccessToken { get; set; }
 
     public required string RegistrationClientUri { get; set; }
+
+    public int? DeviceCodeLifetimeInSeconds { get; set; }
+
+    public int? AccessTokenLifetimeInSeconds { get; set; }
+
+    public int? RefreshTokenLifetimeInSeconds { get; set; }
 }

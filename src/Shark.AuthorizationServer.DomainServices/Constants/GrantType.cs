@@ -2,6 +2,16 @@
 
 public sealed class GrantType
 {
+    public readonly static HashSet<string> AllowedGrandTypes =
+    [
+        GrantType.AuthorizationCode,
+        GrantType.RefreshToken,
+        GrantType.Implicit,
+        GrantType.ResourceOwnerCredentials,
+        GrantType.ClientCredentials,
+        GrantType.DeviceCode,
+    ];
+
     public const string AuthorizationCode = "authorization_code";
 
     public const string RefreshToken = "refresh_token";

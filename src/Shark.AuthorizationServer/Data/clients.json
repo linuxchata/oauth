@@ -17,7 +17,8 @@
     "RegistrationAccessToken": null,
     "RegistrationClientUri": null,
     "AccessTokenLifetimeInSeconds": 3600,
-    "RefreshTokenLifetimeInSeconds": 86400
+    "RefreshTokenLifetimeInSeconds": 86400,
+    "DeviceCodeLifetimeInSeconds": null
   },
   {
     "ClientName": "The default device client",
@@ -36,7 +37,8 @@
     "Audience": "http://protected-resource-dev.com",
     "RegistrationAccessToken": null,
     "RegistrationClientUri": null,
-    "AccessTokenLifetimeInSeconds": 3600,
-    "RefreshTokenLifetimeInSeconds": 86400
+    "AccessTokenLifetimeInSeconds": null,
+    "RefreshTokenLifetimeInSeconds": null,
+    "DeviceCodeLifetimeInSeconds": 300
   }
 ]

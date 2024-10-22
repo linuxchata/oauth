@@ -25,15 +25,6 @@ public sealed class RegisterApplicationService(
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    private readonly HashSet<string> allowedGrandTypes =
-    [
-        GrantType.AuthorizationCode,
-        GrantType.RefreshToken,
-        GrantType.Implicit,
-        GrantType.ResourceOwnerCredentials,
-        GrantType.ClientCredentials
-    ];
-
     public async Task<RegisterInternalBaseResponse> Read(string clientId)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
@@ -273,7 +264,7 @@ public sealed class RegisterApplicationService(
         var responseTypesArray = responseTypes.Split(' ');
         foreach (var grandType in grandTypesArray)
         {
-            if (!allowedGrandTypes.Contains(grandType))
+            if (!GrantType.AllowedGrandTypes.Contains(grandType))
             {
                 return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
             }
@@ -375,10 +366,10 @@ public sealed class RegisterApplicationService(
             LogoUri = request.LogoUri,
             Scope = request.Scope.Split(' '),
             Audience = request.Audience,
-            AccessTokenLifetimeInSeconds = DefaultAccessTokenLifetimeInSeconds,
-            RefreshTokenLifetimeInSeconds = DefaultRefreshTokenLifetimeInSeconds,
             RegistrationAccessToken = _stringGeneratorService.GenerateClientAccessToken(),
             RegistrationClientUri = registerEndpointUri.ToString(),
+            AccessTokenLifetimeInSeconds = DefaultAccessTokenLifetimeInSeconds,
+            RefreshTokenLifetimeInSeconds = DefaultRefreshTokenLifetimeInSeconds,
         };
 
         await _clientRepository.Add(client);
