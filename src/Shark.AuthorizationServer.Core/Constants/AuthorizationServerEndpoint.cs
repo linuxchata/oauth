@@ -10,7 +10,7 @@ public static class AuthorizationServerEndpoint
 
     public const string Revoke = "revoke";
 
-    public const string Register = "register";
+    public const string Registration = "register";
 
     public const string UserInfo = "userinfo";
 

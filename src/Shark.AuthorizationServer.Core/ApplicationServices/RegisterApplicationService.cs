@@ -356,7 +356,7 @@ public sealed class RegisterApplicationService(
         var clientId = Guid.NewGuid().ToString();
 
         var baseUri = new Uri(_configuration.AuthorizationServerUri);
-        var registerEndpointUri = new Uri(baseUri, $"{AuthorizationServerEndpoint.Register}/{clientId}");
+        var registerEndpointUri = new Uri(baseUri, $"{AuthorizationServerEndpoint.Registration}/{clientId}");
 
         var currentDate = DateTime.UtcNow;
 

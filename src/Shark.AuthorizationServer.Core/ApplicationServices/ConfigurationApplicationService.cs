@@ -30,29 +30,32 @@ public sealed class ConfigurationApplicationService(
 
     public Task<ConfigurationResponse> Get()
     {
+        // https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
+
         var baseUrl = new Uri(_configuration.AuthorizationServerUri);
+        var jsonWebKeySetEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.ConfigurationJwks);
         var authorizeEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Authorize);
         var tokenEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Token);
         var introspectEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Introspect);
         var revokeEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Revoke);
-        var registerEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Register);
+        var registrationEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Registration);
         var userInfoEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.UserInfo);
         var deviceAuthorizationEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.DeviceAuthorization);
-        var jsonWebKeySetEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.ConfigurationJwks);
 
         var response = new ConfigurationResponse
         {
+            Issuer = _configuration.Issuer,
+            JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
             AuthorizeEndpoint = authorizeEndpointUri.ToString(),
             TokenEndpoint = tokenEndpointUri.ToString(),
             IntrospectEndpoint = introspectEndpointUri.ToString(),
             RevokeEndpoint = revokeEndpointUri.ToString(),
-            RegisterEndpoint = registerEndpointUri.ToString(),
+            RegistrationEndpoint = registrationEndpointUri.ToString(),
             UserInfoEndpoint = userInfoEndpoint.ToString(),
             DeviceAuthorizationEndpoint = deviceAuthorizationEndpoint.ToString(),
-            JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
-            Issuer = _configuration.Issuer,
-            CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],
             GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ClientCredentials, GrantType.ResourceOwnerCredentials, GrantType.DeviceCode],
+            ResponseTypesSupported = [ResponseType.Code, ResponseType.Token],
+            CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],
             SecurityAlgorithms = [_configuration.SecurityAlgorithms],
         };
 
