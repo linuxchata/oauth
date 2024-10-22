@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Constants;
@@ -85,7 +86,7 @@ public sealed class TokenApplicationService(
 
         if (!claimsPrincipal.Identity?.IsAuthenticated ?? true)
         {
-            if (!string.Equals(client.ClientSecret, request.ClientSecret, StringComparison.Ordinal))
+            if (!client.ClientSecret.EqualsTo(request.ClientSecret))
             {
                 _logger.LogWarning("Invalid client secret");
                 return new TokenInternalBadRequestResponse(Error.InvalidClient);
@@ -114,7 +115,7 @@ public sealed class TokenApplicationService(
 
     private bool IsGrantType(string? grantType, string expectedGrantType)
     {
-        return string.Equals(grantType, expectedGrantType, StringComparison.Ordinal);
+        return grantType.EqualsTo(expectedGrantType);
     }
 
     private async Task<TokenInternalBaseResponse> HandleAuthorizationCodeGrantType(
@@ -205,14 +206,14 @@ public sealed class TokenApplicationService(
         }
 
         // Validate grant client
-        if (!string.Equals(persistedGrant.ClientId, request.ClientId, StringComparison.Ordinal))
+        if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
             _logger.LogWarning("Mismatched client identifier for code persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate redirect URI
-        if (!string.Equals(persistedGrant.RedirectUri, request.RedirectUri, StringComparison.Ordinal))
+        if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
             _logger.LogWarning("Mismatched redirect URI for code persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
@@ -240,11 +241,11 @@ public sealed class TokenApplicationService(
 
             string codeChallenge;
 
-            if (string.Equals(persistedGrant.CodeChallengeMethod, CodeChallengeMethod.Plain, StringComparison.OrdinalIgnoreCase))
+            if (persistedGrant.CodeChallengeMethod.EqualsTo(CodeChallengeMethod.Plain))
             {
                 codeChallenge = request.CodeVerifier;
             }
-            else if (string.Equals(persistedGrant.CodeChallengeMethod, CodeChallengeMethod.Sha256, StringComparison.OrdinalIgnoreCase))
+            else if (persistedGrant.CodeChallengeMethod.EqualsTo(CodeChallengeMethod.Sha256))
             {
                 codeChallenge = _proofKeyForCodeExchangeService.GetCodeChallenge(
                     request.CodeVerifier,
@@ -255,7 +256,7 @@ public sealed class TokenApplicationService(
                 return new TokenInternalBadRequestResponse(Error.InvalidRequest);
             }
 
-            if (!string.Equals(persistedGrant.CodeChallenge, codeChallenge, StringComparison.OrdinalIgnoreCase))
+            if (!persistedGrant.CodeChallenge.EqualsTo(codeChallenge))
             {
                 _logger.LogWarning("Mismatched code challenge for code persisted grant");
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
@@ -275,14 +276,14 @@ public sealed class TokenApplicationService(
         }
 
         // Validate grant client
-        if (!string.Equals(persistedGrant.ClientId, request.ClientId, StringComparison.Ordinal))
+        if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
             _logger.LogWarning("Mismatched client identifier for refresh token persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate redirect URI
-        if (!string.Equals(persistedGrant.RedirectUri, request.RedirectUri, StringComparison.Ordinal))
+        if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
             _logger.LogWarning("Mismatched redirect URI for refresh token persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);

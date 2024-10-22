@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
@@ -36,7 +37,7 @@ public sealed class IdTokenGeneratorService(
 
     private bool HasOpenIdScope(string[] scopes)
     {
-        return scopes.Any(s => string.Equals(s, OpenIdConnectScope.OpenId, StringComparison.OrdinalIgnoreCase));
+        return scopes.Any(s => s.EqualsTo(OpenIdConnectScope.OpenId));
     }
 
     private List<Claim> CreateClaims(string userId, string? userName, string audience, DateTime currentTime)

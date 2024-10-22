@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Client.Models;
+using Shark.AuthorizationServer.Common.Extensions;
 
 namespace Shark.AuthorizationServer.Client.Services;
 
@@ -33,12 +34,12 @@ public sealed class SecurityKeyNetworkProvider(IPublicKeyProvider publicKeyProvi
 
     private static SecurityKey GetRsaSecurityKey(ConfigurationJwksResponse configurationJwksResponse)
     {
-        if (!string.Equals(configurationJwksResponse.KeyType, "RSA", StringComparison.OrdinalIgnoreCase))
+        if (!configurationJwksResponse.KeyType.EqualsTo("RSA"))
         {
             throw new ArgumentException($"Unssuported key type {configurationJwksResponse.KeyType}");
         }
 
-        if (!string.Equals(configurationJwksResponse.Algorithm, SecurityAlgorithms.RsaSha256, StringComparison.OrdinalIgnoreCase))
+        if(!configurationJwksResponse.Algorithm.EqualsTo(SecurityAlgorithms.RsaSha256))
         {
             throw new ArgumentException($"Unssuported algorithm {configurationJwksResponse.Algorithm}");
         }

@@ -9,18 +9,13 @@ using Shark.AuthorizationServer.Client.Services;
 
 namespace Shark.AuthorizationServer.Client.Authentication;
 
-public sealed class BearerTokenAuthenticationHandler : AuthenticationHandler<BearerTokenAuthenticationOptions>
+public sealed class BearerTokenAuthenticationHandler(
+    IBearerTokenHandlingService bearerTokenHandlingService,
+    IOptionsMonitor<BearerTokenAuthenticationOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder) : AuthenticationHandler<BearerTokenAuthenticationOptions>(options, logger, encoder)
 {
-    private readonly IBearerTokenHandlingService _bearerTokenHandlingService;
-
-    public BearerTokenAuthenticationHandler(
-        IBearerTokenHandlingService bearerTokenHandlingService,
-        IOptionsMonitor<BearerTokenAuthenticationOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder) : base(options, logger, encoder)
-    {
-        _bearerTokenHandlingService = bearerTokenHandlingService;
-    }
+    private readonly IBearerTokenHandlingService _bearerTokenHandlingService = bearerTokenHandlingService;
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {

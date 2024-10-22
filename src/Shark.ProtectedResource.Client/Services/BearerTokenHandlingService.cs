@@ -62,7 +62,7 @@ public sealed class BearerTokenHandlingService(
         // TODO: Add token inspection via the network and wrap it around configuration flag
 
         var jwtToken = handler.ReadJwtToken(accessToken);
-        if (!ValidateAccessToken(handler, jwtToken, accessToken, ref tokenIdentity))
+        if (!ValidateAccessToken(handler, accessToken, ref tokenIdentity))
         {
             return false;
         }
@@ -78,7 +78,6 @@ public sealed class BearerTokenHandlingService(
 
     private bool ValidateAccessToken(
         JwtSecurityTokenHandler handler,
-        JwtSecurityToken jwtToken,
         string accessToken,
         ref TokenIdentity tokenIdentity)
     {

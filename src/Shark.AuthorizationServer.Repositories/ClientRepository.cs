@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Domain;
 
@@ -31,9 +32,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
 
         if (deserializedClients is not null)
         {
-            var client = deserializedClients.FirstOrDefault(
-                c => string.Equals(c.ClientId, value, StringComparison.OrdinalIgnoreCase));
-            return client;
+            return deserializedClients.FirstOrDefault(c => c.ClientId.EqualsTo(value));
         }
 
         throw new InvalidOperationException($"Client with identifier {value} cannot be found");

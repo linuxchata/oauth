@@ -2,6 +2,7 @@
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Configurations;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 
@@ -69,7 +70,7 @@ public sealed class ClientTokenAuthenticationHandler(
             var accessToken = authorizationHeaderValue[(startIndexOfAccessToken + Constants.Scheme.Bearer.Length)..];
 
             var client = await _clientRepository.Get(clientId);
-            if (client is null || !string.Equals(client.RegistrationAccessToken, accessToken, StringComparison.Ordinal))
+            if (client is null || !client.RegistrationAccessToken.EqualsTo(accessToken))
             {
                 return false;
             }

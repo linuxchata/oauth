@@ -4,6 +4,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Client.Constants;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Configurations;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 
@@ -31,14 +32,14 @@ public sealed class BasicAuthenticationHandler(
             return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
-        var credentials = GetCredentials(authorizationHeaderValue);
+        var (clientId, clientSecret) = GetCredentials(authorizationHeaderValue);
 
-        if (!await ValidateCredentials(credentials.ClientId, credentials.ClientSecret))
+        if (!await ValidateCredentials(clientId, clientSecret))
         {
             return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
-        var claimsPrincipal = CreateClaimsPrincipal(credentials.ClientId!);
+        var claimsPrincipal = CreateClaimsPrincipal(clientId!);
         var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
         return AuthenticateResult.Success(authenticationTicket);
     }
@@ -92,7 +93,7 @@ public sealed class BasicAuthenticationHandler(
         }
 
         var client = await _clientRepository.Get(clientId);
-        if (client is null || !string.Equals(client.ClientSecret, clientSecret, StringComparison.Ordinal))
+        if (client is null || !client.ClientSecret.EqualsTo(clientSecret))
         {
             return false;
         }

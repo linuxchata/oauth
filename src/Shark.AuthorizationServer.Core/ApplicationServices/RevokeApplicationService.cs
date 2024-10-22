@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Logging;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Constants;
@@ -24,11 +25,11 @@ public sealed class RevokeApplicationService(
 
         if (!string.IsNullOrWhiteSpace(request.TokenHint))
         {
-            if (string.Equals(request.TokenHint, TokenHint.AccessToken))
+            if (request.TokenHint.EqualsTo(TokenHint.AccessToken))
             {
                 await TryRevokeAccessToken(request.Token);
             }
-            else if (string.Equals(request.TokenHint, TokenHint.RefreshToken))
+            else if (request.TokenHint.EqualsTo(TokenHint.RefreshToken))
             {
                 await TryRemoveRefreshToken(request.Token);
             }

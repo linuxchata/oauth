@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Constants;
@@ -90,7 +91,7 @@ public sealed class AuthorizeApplicationService(
 
     private bool IsResponseType(string responseType, string expectedResponseType)
     {
-        return string.Equals(responseType, expectedResponseType, StringComparison.OrdinalIgnoreCase);
+        return responseType.EqualsTo(expectedResponseType);
     }
 
     private async Task<AuthorizeInternalCodeResponse> HandleCodeResponseType(AuthorizeInternalRequest request)

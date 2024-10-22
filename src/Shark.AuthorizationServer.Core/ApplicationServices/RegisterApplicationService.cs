@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Constants;
@@ -198,7 +199,7 @@ public sealed class RegisterApplicationService(
 
     private RegisterInternalBadRequestResponse? ValidateClientId(string clientId, string requestClientId)
     {
-        if (!string.Equals(clientId, requestClientId, StringComparison.OrdinalIgnoreCase))
+        if (!clientId.EqualsTo(requestClientId))
         {
             return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
@@ -210,7 +211,7 @@ public sealed class RegisterApplicationService(
     {
         if (!string.IsNullOrWhiteSpace(requestClientSecret))
         {
-            if (!string.Equals(requestClientSecret, clientSecret, StringComparison.OrdinalIgnoreCase))
+            if (!requestClientSecret.EqualsTo(clientSecret))
             {
                 return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
             }
@@ -240,7 +241,7 @@ public sealed class RegisterApplicationService(
     private RegisterInternalBadRequestResponse? ValidateTokenEndpointAuthMethod(string? tokenEndpointAuthMethod)
     {
         if (!string.IsNullOrWhiteSpace(tokenEndpointAuthMethod) &&
-            !string.Equals(tokenEndpointAuthMethod, ClientAuthMethod.ClientSecretBasic, StringComparison.OrdinalIgnoreCase))
+            !tokenEndpointAuthMethod.EqualsTo(ClientAuthMethod.ClientSecretBasic))
         {
             return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
@@ -269,20 +270,18 @@ public sealed class RegisterApplicationService(
                 return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
             }
 
-            if (string.Equals(grandType, GrantType.AuthorizationCode, StringComparison.OrdinalIgnoreCase))
+            if (grandType.EqualsTo(GrantType.AuthorizationCode))
             {
-                var codeResponseType = responseTypesArray.FirstOrDefault(
-                    t => string.Equals(t, ResponseType.Code, StringComparison.OrdinalIgnoreCase));
+                var codeResponseType = responseTypesArray.FirstOrDefault(t => t.EqualsTo(ResponseType.Code));
 
                 if (codeResponseType is null)
                 {
                     return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
                 }
             }
-            else if (string.Equals(grandType, GrantType.Implicit, StringComparison.OrdinalIgnoreCase))
+            else if (grandType.EqualsTo(GrantType.Implicit))
             {
-                var tokenResponseType = responseTypesArray.FirstOrDefault(
-                    t => string.Equals(t, ResponseType.Token, StringComparison.OrdinalIgnoreCase));
+                var tokenResponseType = responseTypesArray.FirstOrDefault(t => t.EqualsTo(ResponseType.Token));
 
                 if (tokenResponseType is null)
                 {

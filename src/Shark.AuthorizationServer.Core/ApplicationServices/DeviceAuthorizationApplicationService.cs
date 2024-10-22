@@ -11,6 +11,7 @@ using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Constants;
+using Shark.AuthorizationServer.Common.Extensions;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
@@ -71,7 +72,7 @@ public sealed class DeviceAuthorizationApplicationService(
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
         }
 
-        if (!string.Equals(request.ClientSecret, client.ClientSecret, StringComparison.OrdinalIgnoreCase))
+        if (!request.ClientSecret.EqualsTo(client.ClientSecret))
         {
             _logger.LogWarning("Invalid client secret for the client [{clientId}]", request.ClientId);
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
