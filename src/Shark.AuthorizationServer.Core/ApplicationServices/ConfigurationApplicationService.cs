@@ -52,7 +52,7 @@ public sealed class ConfigurationApplicationService(
             JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
             Issuer = _configuration.Issuer,
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],
-            GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ResourceOwnerCredentials, GrantType.ClientCredentials],
+            GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ClientCredentials, GrantType.ResourceOwnerCredentials, GrantType.DeviceCode],
             SecurityAlgorithms = [_configuration.SecurityAlgorithms],
         };
 
