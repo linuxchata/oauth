@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -46,17 +47,22 @@ public sealed class ConfigurationApplicationService(
         {
             Issuer = _configuration.Issuer,
             JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
-            AuthorizeEndpoint = authorizeEndpointUri.ToString(),
+            AuthorizationEndpoint = authorizeEndpointUri.ToString(),
             TokenEndpoint = tokenEndpointUri.ToString(),
             IntrospectEndpoint = introspectEndpointUri.ToString(),
             RevokeEndpoint = revokeEndpointUri.ToString(),
             RegistrationEndpoint = registrationEndpointUri.ToString(),
             UserInfoEndpoint = userInfoEndpoint.ToString(),
             DeviceAuthorizationEndpoint = deviceAuthorizationEndpoint.ToString(),
+            ScopesSupported = [Scope.OpenId, Scope.Profile, Scope.Email, Scope.Address, Scope.Phone],
+            ClaimsSupported = [JwtRegisteredClaimNames.Sub, JwtRegisteredClaimNames.Name],
             GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ClientCredentials, GrantType.ResourceOwnerCredentials, GrantType.DeviceCode],
             ResponseTypesSupported = [ResponseType.Code, ResponseType.Token],
+            SubjectTypesSupported = ["public"],
+            TokenEndpointAuthMethodsSupported = [ClientAuthMethod.ClientSecretBasic],
+            TokenEndpointAuthSigningAlgValuesSupported = [_configuration.SecurityAlgorithms],
+            IdTokenSigningAlgValuesSupported = [SecurityAlgorithms.RsaSha256],
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],
-            SecurityAlgorithms = [_configuration.SecurityAlgorithms],
         };
 
         return Task.FromResult(response);

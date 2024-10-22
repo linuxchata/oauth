@@ -10,8 +10,8 @@ public sealed class ConfigurationResponse
     [JsonPropertyName("jwks_uri")]
     public required string JsonWebKeySetEndpoint { get; set; }
 
-    [JsonPropertyName("authorize_endpoint")]
-    public required string AuthorizeEndpoint { get; set; }
+    [JsonPropertyName("authorization_endpoint")]
+    public required string AuthorizationEndpoint { get; set; }
 
     [JsonPropertyName("token_endpoint")]
     public required string TokenEndpoint { get; set; }
@@ -31,15 +31,30 @@ public sealed class ConfigurationResponse
     [JsonPropertyName("device_authorization_endpoint")]
     public required string DeviceAuthorizationEndpoint { get; set; }
 
+    [JsonPropertyName("scopes_supported")]
+    public required string[] ScopesSupported { get; set; }
+
+    [JsonPropertyName("claims_supported")]
+    public required string[] ClaimsSupported { get; set; }
+
     [JsonPropertyName("grant_types_supported")]
     public required string[] GrantTypesSupported { get; set; }
 
     [JsonPropertyName("response_types_supported")]
     public required string[] ResponseTypesSupported { get; set; }
 
+    [JsonPropertyName("subject_types_supported")]
+    public required string[] SubjectTypesSupported { get; set; }
+
+    [JsonPropertyName("token_endpoint_auth_methods_supported")]
+    public required string[] TokenEndpointAuthMethodsSupported { get; set; }
+
+    [JsonPropertyName("token_endpoint_auth_signing_alg_values_supported")]
+    public required string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; }
+
+    [JsonPropertyName("id_token_signing_alg_values_supported")]
+    public required string[] IdTokenSigningAlgValuesSupported { get; set; }
+
     [JsonPropertyName("code_challenge_methods_supported")]
     public required string[] CodeChallengeMethodsSupported { get; set; }
-
-    [JsonPropertyName("security_algorithm")]
-    public required string[] SecurityAlgorithms { get; set; }
 }

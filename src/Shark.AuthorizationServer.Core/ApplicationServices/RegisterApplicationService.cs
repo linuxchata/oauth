@@ -18,7 +18,6 @@ public sealed class RegisterApplicationService(
     IClientRepository clientRepository,
     IOptions<AuthorizationServerConfiguration> options) : IRegisterApplicationService
 {
-    private const string ClientSecretBasicAuthMethod = "client_secret_basic";
     private const int DefaultAccessTokenLifetimeInSeconds = 3600;
     private const int DefaultRefreshTokenLifetimeInSeconds = 3600 * 24;
 
@@ -250,7 +249,7 @@ public sealed class RegisterApplicationService(
     private RegisterInternalBadRequestResponse? ValidateTokenEndpointAuthMethod(string? tokenEndpointAuthMethod)
     {
         if (!string.IsNullOrWhiteSpace(tokenEndpointAuthMethod) &&
-            !string.Equals(tokenEndpointAuthMethod, ClientSecretBasicAuthMethod, StringComparison.OrdinalIgnoreCase))
+            !string.Equals(tokenEndpointAuthMethod, ClientAuthMethod.ClientSecretBasic, StringComparison.OrdinalIgnoreCase))
         {
             return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
@@ -371,7 +370,7 @@ public sealed class RegisterApplicationService(
             RedirectUris = request.RedirectUris,
             GrantTypes = request.GrantTypes.Split(' '),
             ResponseTypes = request.ResponseTypes.Split(' '),
-            TokenEndpointAuthMethod = ClientSecretBasicAuthMethod,
+            TokenEndpointAuthMethod = ClientAuthMethod.ClientSecretBasic,
             ClientUri = request.ClientUri,
             LogoUri = request.LogoUri,
             Scope = request.Scope.Split(' '),
