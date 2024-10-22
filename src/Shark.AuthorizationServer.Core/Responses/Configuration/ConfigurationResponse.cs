@@ -22,6 +22,9 @@ public sealed class ConfigurationResponse
     [JsonPropertyName("userinfo_endpoint")]
     public required string UserInfoEndpoint { get; set; }
 
+    [JsonPropertyName("device_authorization")]
+    public required string DeviceAuthorizationEndpoint { get; set; }
+
     [JsonPropertyName("jwks_endpoint")]
     public required string JsonWebKeySetEndpoint { get; set; }
 

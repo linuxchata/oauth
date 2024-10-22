@@ -12,5 +12,5 @@ public sealed class GrantType
 
     public const string ResourceOwnerCredentials = "password";
 
-    public const string DeviceCode = "device_code";
+    public const string DeviceCode = "urn:ietf:params:oauth:grant-type:device_code";
 }

@@ -14,5 +14,7 @@ public static class AuthorizationServerEndpoint
 
     public const string UserInfo = "userinfo";
 
+    public const string DeviceAuthorization = "deviceauthorization";
+
     public const string ConfigurationJwks = ".well-known/openid-configuration/jwks";
 }

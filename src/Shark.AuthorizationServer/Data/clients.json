@@ -1,6 +1,6 @@
 [
   {
-    "ClientName": "The first client",
+    "ClientName": "The default client",
     "Enabled": true,
     "ClientId": "client-1",
     "ClientSecret": "client-secret-01",
@@ -20,15 +20,15 @@
     "RefreshTokenLifetimeInSeconds": 86400
   },
   {
-    "ClientName": "The first device client",
+    "ClientName": "The default device client",
     "Enabled": true,
     "ClientId": "device-client-1",
     "ClientSecret": "client-secret-02",
-    "ClientIdIssuedAt": 1728814710,
+    "ClientIdIssuedAt": 1729589209,
     "ClientSecretExpiresAt": 0,
     "RedirectUris": [],
-    "GrantTypes": [ "device_code" ],
-    "ResponseTypes": [ "code" ],
+    "GrantTypes": [ "urn:ietf:params:oauth:grant-type:device_code" ],
+    "ResponseTypes": [],
     "TokenEndpointAuthMethod": "client_secret_basic",
     "ClientUri": null,
     "LogoUri": null,

@@ -37,6 +37,7 @@ public sealed class ConfigurationApplicationService(
         var revokeEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Revoke);
         var registerEndpointUri = new Uri(baseUrl, AuthorizationServerEndpoint.Register);
         var userInfoEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.UserInfo);
+        var deviceAuthorizationEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.DeviceAuthorization);
         var jsonWebKeySetEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.ConfigurationJwks);
 
         var response = new ConfigurationResponse
@@ -47,6 +48,7 @@ public sealed class ConfigurationApplicationService(
             RevokeEndpoint = revokeEndpointUri.ToString(),
             RegisterEndpoint = registerEndpointUri.ToString(),
             UserInfoEndpoint = userInfoEndpoint.ToString(),
+            DeviceAuthorizationEndpoint = deviceAuthorizationEndpoint.ToString(),
             JsonWebKeySetEndpoint = jsonWebKeySetEndpoint.ToString(),
             Issuer = _configuration.Issuer,
             CodeChallengeMethodsSupported = [CodeChallengeMethod.Plain, CodeChallengeMethod.Sha256],

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Constants;
@@ -6,14 +7,16 @@ using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
+using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
-public sealed class DeviceAuthorizeApplicationService(
+public sealed class DeviceAuthorizationApplicationService(
     IStringGeneratorService stringGeneratorService,
     IClientRepository clientRepository,
-    ILogger<DeviceAuthorizeApplicationService> logger) : IDeviceAuthorizationApplicationService
+    IOptions<AuthorizationServerConfiguration> options,
+    ILogger<DeviceAuthorizationApplicationService> logger) : IDeviceAuthorizationApplicationService
 {
     // The minimum amount of time in seconds that the client
     // should wait between polling requests to the token endpoint.
@@ -21,7 +24,8 @@ public sealed class DeviceAuthorizeApplicationService(
 
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IClientRepository _clientRepository = clientRepository;
-    private readonly ILogger<DeviceAuthorizeApplicationService> _logger = logger;
+    private readonly AuthorizationServerConfiguration _configuration = options.Value;
+    private readonly ILogger<DeviceAuthorizationApplicationService> _logger = logger;
 
     public async Task<DeviceAuthorizationBaseResponse> Execute(DeviceAuthorizationInternalRequest request)
     {
@@ -35,12 +39,14 @@ public sealed class DeviceAuthorizeApplicationService(
             return response;
         }
 
+        var authorizationServerBaseUri = new Uri(_configuration.AuthorizationServerUri);
+
         var result = new DeviceAuthorizationResponse
         {
             DeviceCode = _stringGeneratorService.GenerateDeviceCode(),
             UserCode = _stringGeneratorService.GenerateUserDeviceCode(),
-            VerificationUri = string.Empty,
-            VerificationUriComplete = string.Empty,
+            VerificationUri = authorizationServerBaseUri.ToString(),
+            VerificationUriComplete = authorizationServerBaseUri.ToString(),
             ExpiresIn = 0,
             Interval = IntervalInSeconds,
         };

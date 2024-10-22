@@ -8,7 +8,7 @@ public sealed class StringGeneratorService : IStringGeneratorService
     private const string RefreshTokenChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private const string ClientSecretChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private const string ClientAccessTokenChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private const string UserDeviceCodeChars = "MNOPQRSTUVWXYZABCDEFGHIJKL";
+    private const string UserDeviceCodeChars = "0123456789";
     private const string DeviceCodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz_0123456789";
 
     private static readonly Random Random = new();
