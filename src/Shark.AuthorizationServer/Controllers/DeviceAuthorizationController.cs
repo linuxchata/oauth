@@ -14,14 +14,17 @@ public sealed class DeviceAuthorizationController(
 {
     private readonly IDeviceAuthorizationApplicationService _applicationService = applicationService;
 
-    [HttpGet]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post([FromForm] DeviceAuthorizationRequest request)
     {
         var internalResponse = await _applicationService.Execute(request.ToInternalRequest());
 
         switch (internalResponse)
         {
+            case DeviceAuthorizationBadRequestResponse badRequestResponse:
+                return BadRequest(badRequestResponse.Message);
             case DeviceAuthorizationResponse response:
                 return Ok(response);
             default:

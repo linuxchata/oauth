@@ -9,4 +9,8 @@ public interface IStringGeneratorService
     string GenerateClientSecret(byte length = 18);
 
     string GenerateClientAccessToken(byte length = 42);
+
+    string GenerateDeviceCode(byte length = 47);
+
+    string GenerateUserDeviceCode(byte length = 6);
 }

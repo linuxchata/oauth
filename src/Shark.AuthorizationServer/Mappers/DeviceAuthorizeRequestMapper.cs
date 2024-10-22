@@ -10,6 +10,7 @@ public static class DeviceAuthorizeRequestMapper
         return new DeviceAuthorizationInternalRequest
         {
             ClientId = request.client_id,
+            ClientSecret = request.client_secret,
             Scope = request.scope,
         };
     }

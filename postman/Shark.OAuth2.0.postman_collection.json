@@ -263,12 +263,12 @@
 							"formdata": [
 								{
 									"key": "client_id",
-									"value": "client-1",
+									"value": "{{ClientIdPermanent}}",
 									"type": "text"
 								},
 								{
 									"key": "client_secret",
-									"value": "client-secret-01",
+									"value": "{{ClientSecretPermanent}}",
 									"type": "text"
 								},
 								{
@@ -336,12 +336,12 @@
 							"formdata": [
 								{
 									"key": "client_id",
-									"value": "client-1",
+									"value": "{{ClientIdPermanent}}",
 									"type": "text"
 								},
 								{
 									"key": "client_secret",
-									"value": "client-secret-01",
+									"value": "{{ClientSecretPermanent}}",
 									"type": "text"
 								},
 								{
@@ -363,6 +363,52 @@
 							],
 							"path": [
 								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Device Flow",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "client_id",
+									"value": "{{DeviceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{DeviceClientSecretPermanent}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "read",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/deviceauthorization",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"deviceauthorization"
 							]
 						}
 					},
@@ -921,6 +967,16 @@
 		{
 			"key": "ClientSecretPermanent",
 			"value": "client-secret-01",
+			"type": "string"
+		},
+		{
+			"key": "DeviceClientId",
+			"value": "device-client-1",
+			"type": "string"
+		},
+		{
+			"key": "DeviceClientSecretPermanent",
+			"value": "client-secret-02",
 			"type": "string"
 		},
 		{

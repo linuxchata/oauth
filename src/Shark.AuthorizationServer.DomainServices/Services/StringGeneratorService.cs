@@ -8,6 +8,8 @@ public sealed class StringGeneratorService : IStringGeneratorService
     private const string RefreshTokenChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private const string ClientSecretChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private const string ClientAccessTokenChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private const string UserDeviceCodeChars = "MNOPQRSTUVWXYZABCDEFGHIJKL";
+    private const string DeviceCodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz_0123456789";
 
     private static readonly Random Random = new();
 
@@ -29,6 +31,16 @@ public sealed class StringGeneratorService : IStringGeneratorService
     public string GenerateClientAccessToken(byte length = 42)
     {
         return GenerateInternal(ClientAccessTokenChars, length);
+    }
+
+    public string GenerateDeviceCode(byte length = 47)
+    {
+        return GenerateInternal(DeviceCodeChars, length);
+    }
+
+    public string GenerateUserDeviceCode(byte length = 6)
+    {
+        return GenerateInternal(UserDeviceCodeChars, length);
     }
 
     private string GenerateInternal(string chars, byte length)

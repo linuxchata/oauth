@@ -11,4 +11,6 @@ public sealed class GrantType
     public const string ClientCredentials = "client_credentials";
 
     public const string ResourceOwnerCredentials = "password";
+
+    public const string DeviceCode = "device_code";
 }
