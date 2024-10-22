@@ -15,7 +15,7 @@ public static class DependencyInjection
         services.AddTransient<IConfigurationApplicationService, ConfigurationApplicationService>();
         services.AddTransient<IRegisterApplicationService, RegisterApplicationService>();
         services.AddTransient<IUserInfoApplicationService, UserInfoApplicationService>();
-        services.AddTransient<IDeviceAuthorizeApplicationService, DeviceAuthorizeApplicationService>();
+        services.AddTransient<IDeviceAuthorizationApplicationService, DeviceAuthorizeApplicationService>();
 
         return services;
     }

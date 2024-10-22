@@ -5,9 +5,9 @@ namespace Shark.AuthorizationServer.Mappers;
 
 public static class DeviceAuthorizeRequestMapper
 {
-    public static DeviceAuthorizeInternalRequest ToInternalRequest(this DeviceAuthorizeRequest request)
+    public static DeviceAuthorizationInternalRequest ToInternalRequest(this DeviceAuthorizationRequest request)
     {
-        return new DeviceAuthorizeInternalRequest
+        return new DeviceAuthorizationInternalRequest
         {
             ClientId = request.client_id,
             Scope = request.scope,

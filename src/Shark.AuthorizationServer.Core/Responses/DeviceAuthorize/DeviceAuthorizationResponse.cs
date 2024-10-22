@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 
-public sealed class DeviceAuthorizeResponse : DeviceAuthorizeBaseResponse
+public sealed class DeviceAuthorizationResponse : DeviceAuthorizationBaseResponse
 {
     [JsonPropertyName("device_code")]
     public required string DeviceCode { get; set; }

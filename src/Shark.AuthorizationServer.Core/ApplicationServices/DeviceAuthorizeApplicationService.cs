@@ -4,13 +4,13 @@ using Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
-public sealed class DeviceAuthorizeApplicationService : IDeviceAuthorizeApplicationService
+public sealed class DeviceAuthorizeApplicationService : IDeviceAuthorizationApplicationService
 {
-    public Task<DeviceAuthorizeBaseResponse> Execute(DeviceAuthorizeInternalRequest request)
+    public Task<DeviceAuthorizationBaseResponse> Execute(DeviceAuthorizationInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(nameof(request));
 
-        var result = new DeviceAuthorizeResponse
+        var result = new DeviceAuthorizationResponse
         {
             DeviceCode = string.Empty,
             UserCode = string.Empty,
@@ -20,6 +20,6 @@ public sealed class DeviceAuthorizeApplicationService : IDeviceAuthorizeApplicat
             Interval = 0,
         };
 
-        return Task.FromResult(result as DeviceAuthorizeBaseResponse);
+        return Task.FromResult(result as DeviceAuthorizationBaseResponse);
     }
 }

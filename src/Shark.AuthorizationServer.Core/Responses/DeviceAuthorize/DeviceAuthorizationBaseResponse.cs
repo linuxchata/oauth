@@ -1,5 +1,5 @@
 ﻿namespace Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 
-public abstract class DeviceAuthorizeBaseResponse
+public abstract class DeviceAuthorizationBaseResponse
 {
 }

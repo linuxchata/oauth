@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Core.Requests;
 
-public sealed class DeviceAuthorizeInternalRequest
+public sealed class DeviceAuthorizationInternalRequest
 {
     public required string ClientId { get; set; }
 

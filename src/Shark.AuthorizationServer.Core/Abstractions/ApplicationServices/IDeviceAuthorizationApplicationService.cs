@@ -3,7 +3,7 @@ using Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 
 namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
-public interface IDeviceAuthorizeApplicationService
+public interface IDeviceAuthorizationApplicationService
 {
-    Task<DeviceAuthorizeBaseResponse> Execute(DeviceAuthorizeInternalRequest request);
+    Task<DeviceAuthorizationBaseResponse> Execute(DeviceAuthorizationInternalRequest request);
 }

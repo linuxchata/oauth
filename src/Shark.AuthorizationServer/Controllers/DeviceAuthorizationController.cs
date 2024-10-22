@@ -9,20 +9,20 @@ namespace Shark.AuthorizationServer.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public sealed class DeviceAuthorizeController(
-    IDeviceAuthorizeApplicationService deviceAuthorizeApplicationService) : ControllerBase
+public sealed class DeviceAuthorizationController(
+    IDeviceAuthorizationApplicationService applicationService) : ControllerBase
 {
-    private readonly IDeviceAuthorizeApplicationService _deviceAuthorizeApplicationService = deviceAuthorizeApplicationService;
+    private readonly IDeviceAuthorizationApplicationService _applicationService = applicationService;
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Post([FromForm] DeviceAuthorizeRequest request)
+    public async Task<IActionResult> Post([FromForm] DeviceAuthorizationRequest request)
     {
-        var internalResponse = await _deviceAuthorizeApplicationService.Execute(request.ToInternalRequest());
+        var internalResponse = await _applicationService.Execute(request.ToInternalRequest());
 
         switch (internalResponse)
         {
-            case DeviceAuthorizeResponse response:
+            case DeviceAuthorizationResponse response:
                 return Ok(response);
             default:
                 return new StatusCodeResult((int)HttpStatusCode.NotImplemented);

@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Requests;
 
-public sealed class DeviceAuthorizeRequest
+public sealed class DeviceAuthorizationRequest
 {
     [DefaultValue("")]
     public required string client_id { get; set; }
