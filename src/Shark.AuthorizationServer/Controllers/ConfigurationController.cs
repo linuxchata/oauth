@@ -6,9 +6,9 @@ namespace Shark.AuthorizationServer.Controllers;
 [Route(".well-known/openid-configuration")]
 [ApiController]
 public class ConfigurationController(
-    IConfigurationApplicationService configurationApplicationService) : ControllerBase
+    IConfigurationApplicationService applicationService) : ControllerBase
 {
-    private readonly IConfigurationApplicationService _configurationApplicationService = configurationApplicationService;
+    private readonly IConfigurationApplicationService _applicationService = applicationService;
 
     /// <summary>
     /// Gets well known OpenID configuration.
@@ -18,7 +18,7 @@ public class ConfigurationController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
-        var response = await _configurationApplicationService.Get();
+        var response = await _applicationService.Get();
         return Ok(response);
     }
 
@@ -31,7 +31,7 @@ public class ConfigurationController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetJsonWebKeySet()
     {
-        var response = await _configurationApplicationService.GetJsonWebKeySet();
+        var response = await _applicationService.GetJsonWebKeySet();
         return Ok(response);
     }
 }

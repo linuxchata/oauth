@@ -13,9 +13,9 @@ namespace Shark.AuthorizationServer.Controllers;
 [ApiController]
 [Route("[controller]")]
 public sealed class TokenController(
-    ITokenApplicationService tokenApplicationService) : ControllerBase
+    ITokenApplicationService applicationService) : ControllerBase
 {
-    private readonly ITokenApplicationService _tokenApplicationService = tokenApplicationService;
+    private readonly ITokenApplicationService _applicationService = applicationService;
 
     [Authorize(AuthenticationSchemes = Scheme.Basic)]
     [HttpPost]
@@ -25,7 +25,7 @@ public sealed class TokenController(
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Post([FromForm] TokenRequest request)
     {
-        var internalResponse = await _tokenApplicationService.Execute(request.ToInternalRequest(), HttpContext.User);
+        var internalResponse = await _applicationService.Execute(request.ToInternalRequest(), HttpContext.User);
 
         switch (internalResponse)
         {

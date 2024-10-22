@@ -12,9 +12,9 @@ namespace Shark.AuthorizationServer.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class RegisterController(IRegisterApplicationService registerApplicationService) : ControllerBase
+public class RegisterController(IRegisterApplicationService applicationService) : ControllerBase
 {
-    private readonly IRegisterApplicationService _registerApplicationService = registerApplicationService;
+    private readonly IRegisterApplicationService _applicationService = applicationService;
 
     /// <summary>
     /// Reads a registered client.
@@ -27,7 +27,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Read([FromRoute] string clientId)
     {
-        var internalResponse = await _registerApplicationService.Read(clientId);
+        var internalResponse = await _applicationService.Read(clientId);
 
         switch (internalResponse)
         {
@@ -52,7 +52,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Post([FromBody] RegisterRequest request)
     {
-        var internalResponse = await _registerApplicationService.Post(request.ToInternalRequest());
+        var internalResponse = await _applicationService.Post(request.ToInternalRequest());
 
         switch (internalResponse)
         {
@@ -77,7 +77,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Put(string clientId, [FromBody] RegisterUpdateRequest request)
     {
-        var internalResponse = await _registerApplicationService.Put(clientId, request.ToInternalRequest());
+        var internalResponse = await _applicationService.Put(clientId, request.ToInternalRequest());
 
         switch (internalResponse)
         {
@@ -101,7 +101,7 @@ public class RegisterController(IRegisterApplicationService registerApplicationS
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete([FromRoute] string clientId)
     {
-        var internalResponse = await _registerApplicationService.Delete(clientId);
+        var internalResponse = await _applicationService.Delete(clientId);
 
         switch (internalResponse)
         {

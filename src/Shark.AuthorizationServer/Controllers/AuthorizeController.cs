@@ -9,10 +9,10 @@ namespace Shark.AuthorizationServer.Controllers;
 [ApiController]
 [Route("[controller]")]
 public sealed class AuthorizeController(
-    IAuthorizeApplicationService authorizeApplicationService,
+    IAuthorizeApplicationService applicationService,
     IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
-    private readonly IAuthorizeApplicationService _authorizeApplicationService = authorizeApplicationService;
+    private readonly IAuthorizeApplicationService _applicationService = applicationService;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     /// <summary>
@@ -51,7 +51,7 @@ public sealed class AuthorizeController(
             CodeChallengeMethod = code_challenge_method,
         };
 
-        var internalResponse = await _authorizeApplicationService.Execute(internalRequest);
+        var internalResponse = await _applicationService.Execute(internalRequest);
 
         switch (internalResponse)
         {

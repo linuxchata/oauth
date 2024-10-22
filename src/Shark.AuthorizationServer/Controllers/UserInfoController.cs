@@ -10,9 +10,9 @@ namespace Shark.AuthorizationServer.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class UserInfoController(
-    IUserInfoApplicationService userInfoApplicationService) : ControllerBase
+    IUserInfoApplicationService applicationService) : ControllerBase
 {
-    private readonly IUserInfoApplicationService _userInfoApplicationService = userInfoApplicationService;
+    private readonly IUserInfoApplicationService _applicationService = applicationService;
 
     [Authorize(AuthenticationSchemes = Scheme.Bearer)]
     [HttpGet]
@@ -38,7 +38,7 @@ public class UserInfoController(
 
     private async Task<IActionResult> Execute()
     {
-        var internalResponse = await _userInfoApplicationService.Execute(HttpContext.User);
+        var internalResponse = await _applicationService.Execute(HttpContext.User);
 
         switch (internalResponse)
         {

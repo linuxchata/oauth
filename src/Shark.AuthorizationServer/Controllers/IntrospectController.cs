@@ -8,9 +8,9 @@ namespace Shark.AuthorizationServer.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class IntrospectController(
-    IIntrospectApplicationService introspectApplicationService) : ControllerBase
+    IIntrospectApplicationService applicationService) : ControllerBase
 {
-    private readonly IIntrospectApplicationService _introspectApplicationService = introspectApplicationService;
+    private readonly IIntrospectApplicationService _applicationService = applicationService;
 
     /// <summary>
     /// Determine the active state of an OAuth 2.0 token and to determine meta-information about this token.
@@ -21,7 +21,7 @@ public class IntrospectController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Post([FromForm] IntrospectRequest request)
     {
-        var internalResponse = await _introspectApplicationService.Execute(request.ToInternalRequest());
+        var internalResponse = await _applicationService.Execute(request.ToInternalRequest());
 
         return Ok(internalResponse);
     }

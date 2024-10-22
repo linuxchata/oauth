@@ -11,9 +11,9 @@ namespace Shark.AuthorizationServer.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class RevokeController(IRevokeApplicationService revokeApplicationService) : ControllerBase
+public class RevokeController(IRevokeApplicationService _applicationService) : ControllerBase
 {
-    private readonly IRevokeApplicationService _revokeApplicationService = revokeApplicationService;
+    private readonly IRevokeApplicationService _applicationService = _applicationService;
 
     /// <summary>
     /// Invalidates the actual token and, if applicable, other tokens based
@@ -28,7 +28,7 @@ public class RevokeController(IRevokeApplicationService revokeApplicationService
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Post([FromForm] RevokeRequest request)
     {
-        var internalResponse = await _revokeApplicationService.Execute(request.ToInternalRequest());
+        var internalResponse = await _applicationService.Execute(request.ToInternalRequest());
 
         switch (internalResponse)
         {
