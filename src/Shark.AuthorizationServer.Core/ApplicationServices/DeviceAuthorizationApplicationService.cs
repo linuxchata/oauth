@@ -1,7 +1,7 @@
 ﻿using System.Web;
-using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Constants;
@@ -11,13 +11,13 @@ using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Constants;
-using Shark.AuthorizationServer.Common.Extensions;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class DeviceAuthorizationApplicationService(
     IStringGeneratorService stringGeneratorService,
     IClientRepository clientRepository,
+    IPersistedGrantRepository persistedGrantRepository,
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<DeviceAuthorizationApplicationService> logger) : IDeviceAuthorizationApplicationService
 {
@@ -31,6 +31,7 @@ public sealed class DeviceAuthorizationApplicationService(
 
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<DeviceAuthorizationApplicationService> _logger = logger;
 
@@ -40,31 +41,16 @@ public sealed class DeviceAuthorizationApplicationService(
 
         var client = await _clientRepository.Get(request.ClientId);
 
-        var response = ValidateClient(client, request);
+        var response = ValidateRequest(request, client);
         if (response != null)
         {
             return response;
         }
 
-        var baseUri = new Uri(_configuration.AuthorizationServerUri);
-        var userCode = _stringGeneratorService.GenerateUserDeviceCode();
-
-        var result = new DeviceAuthorizationResponse
-        {
-            DeviceCode = _stringGeneratorService.GenerateDeviceCode(),
-            UserCode = userCode,
-            VerificationUri = GetVerificationUri(baseUri),
-            VerificationUriComplete = GetVerificationCompleteUri(baseUri, userCode),
-            ExpiresIn = client!.DeviceCodeLifetimeInSeconds ?? DefaultDeviceCodeLifetimeInSeconds,
-            Interval = IntervalInSeconds,
-        };
-
-        return result;
+        return await Handle(request, client!);
     }
 
-    private DeviceAuthorizationBadRequestResponse? ValidateClient(
-        Client? client,
-        DeviceAuthorizationInternalRequest request)
+    private DeviceAuthorizationBadRequestResponse? ValidateRequest(DeviceAuthorizationInternalRequest request, Client? client)
     {
         if (client is null)
         {
@@ -74,17 +60,39 @@ public sealed class DeviceAuthorizationApplicationService(
 
         if (!request.ClientSecret.EqualsTo(client.ClientSecret))
         {
-            _logger.LogWarning("Invalid client secret for the client [{clientId}]", request.ClientId);
+            _logger.LogWarning("Invalid client secret for client [{clientId}]", request.ClientId);
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
         }
 
         if (!client.GrantTypes.ToHashSet().Contains(GrantType.DeviceCode))
         {
-            _logger.LogWarning("Invalid grant for the client [{clientId}]", request.ClientId);
+            _logger.LogWarning("Invalid grant for client [{clientId}]", request.ClientId);
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidGrant);
         }
 
         return null;
+    }
+
+    private async Task<DeviceAuthorizationResponse> Handle(DeviceAuthorizationInternalRequest request, Client client)
+    {
+        _logger.LogInformation("Issuing device code for client [{clientId}]", client.ClientId);
+
+        var baseUri = new Uri(_configuration.AuthorizationServerUri);
+        var deviceCode = _stringGeneratorService.GenerateDeviceCode();
+        var userCode = _stringGeneratorService.GenerateUserDeviceCode();
+        var expiresIn = client!.DeviceCodeLifetimeInSeconds ?? DefaultDeviceCodeLifetimeInSeconds;
+
+        await StorePersistedGrant(request, deviceCode, expiresIn);
+
+        return new DeviceAuthorizationResponse
+        {
+            DeviceCode = deviceCode,
+            UserCode = userCode,
+            VerificationUri = GetVerificationUri(baseUri),
+            VerificationUriComplete = GetVerificationCompleteUri(baseUri, userCode),
+            ExpiresIn = expiresIn,
+            Interval = IntervalInSeconds,
+        };
     }
 
     private string GetVerificationUri(Uri baseUri)
@@ -103,5 +111,19 @@ public sealed class DeviceAuthorizationApplicationService(
         verificationCompleteUriBuilder.Query = query.ToString();
 
         return verificationCompleteUriBuilder.ToString();
+    }
+
+    private async Task StorePersistedGrant(DeviceAuthorizationInternalRequest request, string deviceCode, int expiresIn)
+    {
+        var persistedGrant = new PersistedGrant
+        {
+            Type = GrantType.DeviceCode,
+            ClientId = request.ClientId,
+            Scopes = request.Scopes,
+            Value = deviceCode,
+            ExpiredIn = expiresIn,
+        };
+
+        await _persistedGrantRepository.Add(persistedGrant);
     }
 }

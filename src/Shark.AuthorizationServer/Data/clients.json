@@ -33,7 +33,7 @@
     "TokenEndpointAuthMethod": "client_secret_basic",
     "ClientUri": null,
     "LogoUri": null,
-    "Scope": [ "openid" ],
+    "Scope": [ "device_auto" ],
     "Audience": "http://protected-resource-dev.com",
     "RegistrationAccessToken": null,
     "RegistrationClientUri": null,

@@ -70,7 +70,7 @@ public sealed class TokenApplicationService(
         }
         else if (IsGrantType(request.GrantType, GrantType.DeviceCode))
         {
-            return HandleDeviceCodeGrantType(request, client!);
+            return await HandleDeviceCodeGrantType(request, client!);
         }
 
         return HandleUnsupportedGrantType(request);
@@ -93,7 +93,7 @@ public sealed class TokenApplicationService(
         {
             if (!client.ClientSecret.EqualsTo(request.ClientSecret))
             {
-                _logger.LogWarning("Invalid client secret");
+                _logger.LogWarning("Invalid client secret for client [{clientId}]", request.ClientId);
                 return new TokenInternalBadRequestResponse(Error.InvalidClient);
             }
         }
@@ -102,7 +102,10 @@ public sealed class TokenApplicationService(
         if (!string.IsNullOrWhiteSpace(request.RedirectUri) &&
             !client.RedirectUris.Contains(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URI [{redirectUri}]", request.RedirectUri);
+            _logger.LogWarning(
+                "Mismatched redirect URL [{redirectUri}] for client [{clientId}]",
+                request.RedirectUri,
+                request.ClientId);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -112,6 +115,10 @@ public sealed class TokenApplicationService(
         {
             if (!allowedClientScopes.Contains(scope))
             {
+                _logger.LogWarning(
+                    "Mismatched scope [{scope}] for client [{clientId}]",
+                    scope,
+                request.ClientId);
                 return new TokenInternalBadRequestResponse(Error.InvalidScope);
             }
         }
@@ -196,12 +203,23 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
-    private TokenInternalBaseResponse HandleDeviceCodeGrantType(TokenInternalRequest request, Client client)
+    private async Task<TokenInternalBaseResponse> HandleDeviceCodeGrantType(TokenInternalRequest request, Client client)
     {
         if (string.IsNullOrWhiteSpace(request.DeviceCode))
         {
             return new TokenInternalBadRequestResponse(Error.InvalidRequest);
         }
+
+        var persistedGrant = await _persistedGrantRepository.Get(request.DeviceCode);
+
+        var response = ValidateDeviceCodeGrant(persistedGrant, request);
+        if (response != null)
+        {
+            return response;
+        }
+
+        // Remove device code persisted grant, since it can be considered consumed at this point
+        await _persistedGrantRepository.Remove(request.DeviceCode);
 
         _logger.LogInformation("Issuing access token for {grantType}", GrantType.DeviceCode);
 
@@ -304,6 +322,43 @@ public sealed class TokenApplicationService(
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
             _logger.LogWarning("Mismatched redirect URI for refresh token persisted grant");
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
+        return null;
+    }
+
+    private TokenInternalBadRequestResponse? ValidateDeviceCodeGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)
+    {
+        // Validate grant
+        if (persistedGrant is null)
+        {
+            _logger.LogWarning("Persistent grant was not found");
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
+        // Validate grant's client
+        if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
+        {
+            _logger.LogWarning("Mismatched client identifier for device code persisted grant");
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
+        // Validate grant's scopes
+        var allowedScopes = persistedGrant.Scopes.ToHashSet() ?? [];
+        foreach (var scope in request.Scopes)
+        {
+            if (!allowedScopes.Contains(scope))
+            {
+                _logger.LogWarning("Mismatched scope for device code persisted grant");
+                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+            }
+        }
+
+        // Validate grant's device code
+        if (!persistedGrant.Value.EqualsTo(request.DeviceCode))
+        {
+            _logger.LogWarning("Mismatched device code for device code persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 

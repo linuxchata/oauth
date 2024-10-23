@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Extensions;
@@ -51,14 +50,14 @@ public sealed class AuthorizeApplicationService(
 
         if (IsResponseType(request.ResponseType, ResponseType.Code))
         {
-            return await HandleCodeResponseType(request);
+            return await HandleCodeResponseType(request, client!);
         }
         else if (IsResponseType(request.ResponseType, ResponseType.Token))
         {
             return HandleTokenResponseType(request, client!);
         }
 
-        return HandleUnsupportedResponseType(request.ResponseType);
+        return HandleUnsupportedResponseType(request.ResponseType, client!);
     }
 
     private AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request, Client? client)
@@ -71,7 +70,10 @@ public sealed class AuthorizeApplicationService(
 
         if (!client.RedirectUris.Contains(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URL [{redirectUri}]", request.RedirectUri);
+            _logger.LogWarning(
+                "Mismatched redirect URL [{redirectUri}] for client [{clientId}]",
+                request.RedirectUri,
+                request.ClientId);
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
@@ -81,7 +83,10 @@ public sealed class AuthorizeApplicationService(
         {
             if (!allowedClientScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope [{scope}] from request", scope);
+                _logger.LogWarning(
+                    "Mismatched scope [{scope}] for client [{clientId}]",
+                    scope,
+                request.ClientId);
                 return new AuthorizeInternalBadRequestResponse(Error.InvalidScope);
             }
         }
@@ -94,10 +99,13 @@ public sealed class AuthorizeApplicationService(
         return responseType.EqualsTo(expectedResponseType);
     }
 
-    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponseType(AuthorizeInternalRequest request)
+    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponseType(
+        AuthorizeInternalRequest request,
+        Client client)
     {
         _logger.LogInformation(
-            "Issuing authorization code for {responseType} response type",
+            "Issuing authorization code for client [{clientId}]. Response type is {responseType}",
+            client.ClientId,
             ResponseType.Code);
 
         var code = _stringGeneratorService.GenerateCode();
@@ -116,7 +124,8 @@ public sealed class AuthorizeApplicationService(
     private AuthorizeInternalTokenResponse HandleTokenResponseType(AuthorizeInternalRequest request, Client client)
     {
         _logger.LogInformation(
-            "Issuing access token for {responseType} response type",
+            "Issuing access token for client [{clientId}]. Response type is {responseType}",
+            client.ClientId,
             ResponseType.Token);
 
         var token = GenerateBearerToken(client!, request.Scopes);
@@ -129,9 +138,12 @@ public sealed class AuthorizeApplicationService(
         return new AuthorizeInternalTokenResponse(redirectUrl);
     }
 
-    private AuthorizeInternalBadRequestResponse HandleUnsupportedResponseType(string responseType)
+    private AuthorizeInternalBadRequestResponse HandleUnsupportedResponseType(string responseType, Client client)
     {
-        _logger.LogWarning("Unsupported response type {responseType}", responseType);
+        _logger.LogWarning(
+            "Unsupported response type {responseType}. Client is [{clientId}]",
+            responseType,
+            client.ClientId);
         return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
     }
 
@@ -160,13 +172,13 @@ public sealed class AuthorizeApplicationService(
         var userId = Guid.NewGuid().ToString();
         var accessToken = _accessTokenGeneratorService.Generate(userId, null, scopes, client.Audience);
 
-        var token = new TokenResponse
+        var tokenResponse = new TokenResponse
         {
             AccessToken = accessToken.Value,
             TokenType = AccessTokenType.Bearer,
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };
 
-        return token;
+        return tokenResponse;
     }
 }

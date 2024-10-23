@@ -11,7 +11,7 @@ public static class DeviceAuthorizeRequestMapper
         {
             ClientId = request.client_id,
             ClientSecret = request.client_secret,
-            Scope = request.scope,
+            Scopes = request.scope?.Split(' ') ?? [],
         };
     }
 }
