@@ -370,6 +370,23 @@
 				},
 				{
 					"name": "Device Flow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response body\r",
+									"let responseData = pm.response.json();\r",
+									"\r",
+									"// Set the 'RefDeviceCodereshToken' from the response as a collection variable\r",
+									"pm.collectionVariables.set(\"DeviceCode\", responseData.device_code);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -397,7 +414,7 @@
 								},
 								{
 									"key": "scope",
-									"value": "read",
+									"value": "device_auto",
 									"type": "text"
 								}
 							]
@@ -409,6 +426,76 @@
 							],
 							"path": [
 								"deviceauthorization"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Device Flow Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{DeviceClientSecretPermanent}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{DeviceClientId}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "urn:ietf:params:oauth:grant-type:device_code",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{DeviceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "device_auto",
+									"type": "text"
+								},
+								{
+									"key": "device_code",
+									"value": "{{DeviceCode}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HostUri}}/token/",
+							"host": [
+								"{{HostUri}}"
+							],
+							"path": [
+								"token",
+								""
 							]
 						}
 					},
@@ -1006,6 +1093,11 @@
 		},
 		{
 			"key": "RefreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "DeviceCode",
 			"value": "",
 			"type": "string"
 		}

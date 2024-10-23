@@ -22,54 +22,77 @@ public sealed class IntrospectApplicationService(
 
         try
         {
-            // Try to read token
-            var handler = new JwtSecurityTokenHandler();
-            if (!handler.CanReadToken(request.Token))
+            var jwtToken = TryReadToken(request);
+            if (jwtToken is null)
             {
-                _logger.LogWarning("Token is not a valid access token");
                 return new IntrospectInternalResponse { Active = false };
             }
 
-            var jwtToken = handler.ReadJwtToken(request.Token);
-
-            // Check revokation list
-            if (!string.IsNullOrWhiteSpace(jwtToken.Id))
+            var response = await CheckRevokationList(jwtToken);
+            if (response != null)
             {
-                var revokedToken = await _revokeTokenRepository.Get(jwtToken.Id);
-                if (revokedToken is not null)
-                {
-                    _logger.LogInformation("Access token has been revoked");
-                    return new IntrospectInternalResponse { Active = false };
-                }
+                return response;
             }
 
-            // Create response
-            var claims = jwtToken.Claims;
-
-            var username = claims.FirstOrDefault(c => c.Type == ClaimType.Name);
-            var subject = claims.FirstOrDefault(c => c.Type == ClaimType.Subject);
-            var scope = claims.FirstOrDefault(c => c.Type == ClaimType.Scope);
-
-            // TODO: Check ValidTo and ValidFrom dates
-
-            return new IntrospectInternalResponse
-            {
-                Active = true,
-                Scope = scope?.Value,
-                Username = username?.Value,
-                TokenType = AccessTokenType.Bearer,
-                Expire = EpochTime.GetIntDate(jwtToken.ValidTo),
-                IssuedAt = EpochTime.GetIntDate(jwtToken.IssuedAt),
-                NotBefore = EpochTime.GetIntDate(jwtToken.ValidFrom),
-                Subject = subject?.Value,
-                Audience = string.Join(" ", jwtToken.Audiences),
-                Issuer = jwtToken.Issuer,
-                JwtId = jwtToken.Id,
-            };
+            return CreateResponse(jwtToken);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "{message}", ex.Message);
             return new IntrospectInternalResponse { Active = false };
         }
+    }
+
+    private JwtSecurityToken? TryReadToken(IntrospectInternalRequest request)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        if (!handler.CanReadToken(request.Token))
+        {
+            _logger.LogWarning("Token is not a valid access token");
+            return null;
+        }
+
+        return handler.ReadJwtToken(request.Token);
+    }
+
+    private async Task<IntrospectInternalResponse?> CheckRevokationList(JwtSecurityToken jwtToken)
+    {
+        if (!string.IsNullOrWhiteSpace(jwtToken.Id))
+        {
+            var revokedToken = await _revokeTokenRepository.Get(jwtToken.Id);
+            if (revokedToken is not null)
+            {
+                _logger.LogInformation("Access token has been revoked");
+                return new IntrospectInternalResponse { Active = false };
+            }
+        }
+
+        return null;
+    }
+
+    private IntrospectInternalResponse CreateResponse(JwtSecurityToken jwtToken)
+    {
+        var claims = jwtToken.Claims;
+
+        var username = claims.FirstOrDefault(c => c.Type == ClaimType.Name);
+        var subject = claims.FirstOrDefault(c => c.Type == ClaimType.Subject);
+        var scope = claims.FirstOrDefault(c => c.Type == ClaimType.Scope);
+
+        // TODO: Check ValidTo and ValidFrom dates
+
+        return new IntrospectInternalResponse
+        {
+            Active = true,
+            Scope = scope?.Value,
+            Username = username?.Value,
+            TokenType = AccessTokenType.Bearer,
+            Expire = EpochTime.GetIntDate(jwtToken.ValidTo),
+            IssuedAt = EpochTime.GetIntDate(jwtToken.IssuedAt),
+            NotBefore = EpochTime.GetIntDate(jwtToken.ValidFrom),
+            Subject = subject?.Value,
+            Audience = string.Join(" ", jwtToken.Audiences),
+            Issuer = jwtToken.Issuer,
+            JwtId = jwtToken.Id,
+        };
     }
 }
