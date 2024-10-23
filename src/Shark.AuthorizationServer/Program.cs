@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Logging.AddSimpleConsole(options =>
 {
-    options.IncludeScopes = false;
+    options.IncludeScopes = true;
     options.TimestampFormat = "dd-MM-yyyy HH:mm:ss ";
     options.SingleLine = true;
 });

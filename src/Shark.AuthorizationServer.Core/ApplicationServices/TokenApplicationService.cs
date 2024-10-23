@@ -44,6 +44,8 @@ public sealed class TokenApplicationService(
             request.ClientId = claimsPrincipal.FindFirstValue(Scope.ClientId);
         }
 
+        using var _ = _logger.BeginScope("ClientId: {ClientId} =>", request.ClientId!);
+
         var client = await _clientRepository.Get(request.ClientId);
 
         var response = ValidateRequest(request, client, claimsPrincipal);
@@ -223,8 +225,7 @@ public sealed class TokenApplicationService(
         if (!devicePersistedGrant!.IsAuthorized)
         {
             _logger.LogWarning(
-                "User did not authorize client [{clientId}] for {grantType} grant",
-                request.ClientId,
+                "User did not authorize device code for {grantType} grant",
                 GrantType.DeviceCode);
             return new TokenInternalBadRequestResponse(Error.AuthorizationPending);
         }
