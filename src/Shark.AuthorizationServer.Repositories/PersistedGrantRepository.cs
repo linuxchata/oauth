@@ -36,6 +36,16 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
         await _cache.SetStringAsync(item.Value, serializedItem, cacheEntryOptions);
     }
 
+    public async Task Add(DevicePersistedGrant item)
+    {
+        var cacheEntryOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpiration = DateTime.Now.AddSeconds(item.ExpiredIn),
+        };
+        var serializedItem = JsonSerializer.Serialize(item);
+        await _cache.SetStringAsync(item.DeviceCode, serializedItem, cacheEntryOptions);
+    }
+
     public async Task Remove(string? value)
     {
         if (!string.IsNullOrWhiteSpace(value))

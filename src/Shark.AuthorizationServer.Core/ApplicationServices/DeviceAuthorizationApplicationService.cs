@@ -82,7 +82,7 @@ public sealed class DeviceAuthorizationApplicationService(
         var userCode = _stringGeneratorService.GenerateUserDeviceCode();
         var expiresIn = client!.DeviceCodeLifetimeInSeconds ?? DefaultDeviceCodeLifetimeInSeconds;
 
-        await StorePersistedGrant(request, deviceCode, expiresIn);
+        await StorePersistedGrant(request, deviceCode, userCode, expiresIn);
 
         return new DeviceAuthorizationResponse
         {
@@ -113,17 +113,23 @@ public sealed class DeviceAuthorizationApplicationService(
         return verificationCompleteUriBuilder.ToString();
     }
 
-    private async Task StorePersistedGrant(DeviceAuthorizationInternalRequest request, string deviceCode, int expiresIn)
+    private async Task StorePersistedGrant(
+        DeviceAuthorizationInternalRequest request,
+        string deviceCode,
+        string userCode,
+        int expiresIn)
     {
-        var persistedGrant = new PersistedGrant
+        var devicePersistedGrant = new DevicePersistedGrant
         {
             Type = GrantType.DeviceCode,
             ClientId = request.ClientId,
             Scopes = request.Scopes,
-            Value = deviceCode,
+            DeviceCode = deviceCode,
+            UserCode = userCode,
+            IsAuthorized = false,
             ExpiredIn = expiresIn,
         };
 
-        await _persistedGrantRepository.Add(persistedGrant);
+        await _persistedGrantRepository.Add(devicePersistedGrant);
     }
 }
