@@ -223,7 +223,7 @@ public sealed class TokenApplicationService(
         if (!devicePersistedGrant!.IsAuthorized)
         {
             _logger.LogWarning(
-                "User did not authorize client [{clientId}] for {grantType} grant type",
+                "User did not authorize client [{clientId}] for {grantType} grant",
                 request.ClientId,
                 GrantType.DeviceCode);
             return new TokenInternalBadRequestResponse(Error.AuthorizationPending);
@@ -232,7 +232,7 @@ public sealed class TokenApplicationService(
         // Remove device code persisted grant, since it can be considered consumed at this point
         await _persistedGrantRepository.Remove(request.DeviceCode);
 
-        _logger.LogInformation("Issuing access token for {grantType} grant type", GrantType.DeviceCode);
+        _logger.LogInformation("Issuing access token for {grantType} grant", GrantType.DeviceCode);
 
         var token = await GenerateAndStoreBearerToken(client!, null, request.Scopes);
         return new TokenInternalResponse(token);
@@ -358,7 +358,7 @@ public sealed class TokenApplicationService(
         // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier for device code persisted grant");
+            _logger.LogWarning("Mismatched client identifier for {grantType} persisted grant", GrantType.DeviceCode);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -368,7 +368,7 @@ public sealed class TokenApplicationService(
         {
             if (!allowedScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope for device code persisted grant");
+                _logger.LogWarning("Mismatched scope for {grantType} persisted grant", GrantType.DeviceCode);
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }
@@ -376,7 +376,7 @@ public sealed class TokenApplicationService(
         // Validate grant's device code
         if (!persistedGrant.DeviceCode.EqualsTo(request.DeviceCode))
         {
-            _logger.LogWarning("Mismatched device code for device code persisted grant");
+            _logger.LogWarning("Mismatched device code for {grantType} persisted grant", GrantType.DeviceCode);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
