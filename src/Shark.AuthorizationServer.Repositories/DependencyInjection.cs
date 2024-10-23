@@ -10,6 +10,7 @@ public static class DependencyInjection
         services.AddSingleton<IClientRepository, ClientRepository>();
         services.AddSingleton<IPersistedGrantRepository, PersistedGrantRepository>();
         services.AddSingleton<IRevokeTokenRepository, RevokeTokenRepository>();
+        services.AddSingleton<IDevicePersistedGrantRepository, DevicePersistedGrantRepository>();
 
         return services;
     }

@@ -1,0 +1,39 @@
+﻿@page
+@model DeviceAuthorizeCompleteModel
+@{
+    ViewData["Title"] = "OAuth Authorization Server";
+}
+<style>
+    form {
+        display: inline-block;
+        margin-right: 10px;
+    }
+</style>
+
+<div class="text-center">
+    <h1 class="display-4">OAuth Authorization Server</h1>
+    @if (@Model.Success)
+    {
+        <div>
+            <h4 style="color:green">Your device has been successfully authorized</h4>
+            <p>
+                You can now enjoy full access to all features and services without any restrictions.
+                For your security, this authorization ensures that only recognized devices can interact
+                with your account. If you did not initiate this authorization, or if you notice any
+                unusual activity, please contact our support team immediately to secure your account.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div>
+            <h4 style="color:red">Your device was denied authorization.</h4>
+            <p>
+                Unfortunately, this device will not have access to the requested features or services.
+                If you believe this was an error or need further assistance, don't hesitate to contact
+                our support team to resolve the issue. Your security is our priority, and we are here
+                to help keep your account safe.
+            </p>
+        </div>
+    }
+</div>

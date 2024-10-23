@@ -17,6 +17,7 @@ namespace Shark.AuthorizationServer.Core.ApplicationServices;
 public sealed class TokenApplicationService(
     IClientRepository clientRepository,
     IPersistedGrantRepository persistedGrantRepository,
+    IDevicePersistedGrantRepository devicePersistedGrantRepository,
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
     IIdTokenGeneratorService idTokenGeneratorService,
@@ -27,6 +28,7 @@ public sealed class TokenApplicationService(
 {
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
+    private readonly IDevicePersistedGrantRepository _devicePersistedGrantRepository = devicePersistedGrantRepository;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IIdTokenGeneratorService _idTokenGeneratorService = idTokenGeneratorService;
@@ -208,7 +210,7 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidRequest);
         }
 
-        var devicePersistedGrant = await _persistedGrantRepository.GetByDeviceCode(request.DeviceCode);
+        var devicePersistedGrant = await _devicePersistedGrantRepository.GetByDeviceCode(request.DeviceCode);
 
         var response = ValidateDeviceCodeGrant(devicePersistedGrant, request);
         if (response != null)
@@ -225,7 +227,7 @@ public sealed class TokenApplicationService(
         }
 
         // Remove device code persisted grant, since it can be considered consumed at this point
-        await _persistedGrantRepository.Remove(request.DeviceCode);
+        await _devicePersistedGrantRepository.Remove(devicePersistedGrant);
 
         _logger.LogInformation("Issuing access token for {grantType} grant", GrantType.DeviceCode);
 

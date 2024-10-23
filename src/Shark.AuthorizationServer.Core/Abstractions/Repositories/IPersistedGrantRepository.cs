@@ -2,11 +2,11 @@
 
 namespace Shark.AuthorizationServer.Core.Abstractions.Repositories;
 
-public interface IPersistedGrantRepository :
-    IRepositoryGet<PersistedGrant>,
-    IRepositoryAdd<PersistedGrant>,
-    IRepositoryAdd<DevicePersistedGrant>,
-    IRepositoryRemove<PersistedGrant>
+public interface IPersistedGrantRepository
 {
-    Task<DevicePersistedGrant?> GetByDeviceCode(string? value);
+    Task<PersistedGrant?> Get(string? value);
+
+    Task Add(PersistedGrant item);
+
+    Task Remove(string? value);
 }

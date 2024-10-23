@@ -3,12 +3,22 @@
 @{
     ViewData["Title"] = "OAuth Authorization Server";
 }
+<style>
+    form {
+        display: inline-block;
+        margin-right: 10px;
+    }
+</style>
 
 <div class="text-center">
     <h1 class="display-4">OAuth Authorization Server</h1>
-    <p>Authorize your device</p>
+    <p>Authorize your device for the cliet application</p>
 
-    <form method="post">
+    <form method="post" asp-page-handler="Authorize">
         <input type="submit" value="Authorize" />
+    </form>
+
+    <form method="post" asp-page-handler="Deny">
+        <input type="submit" value="Deny" />
     </form>
 </div>

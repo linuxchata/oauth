@@ -29,6 +29,7 @@ public sealed class RevokeTokenRepository(IDistributedCache cache) : IRevokeToke
     public async Task Add(RevokeToken item)
     {
         var serializedItem = JsonSerializer.Serialize(item);
+
         await _cache.SetStringAsync(item.TokenId, serializedItem);
     }
 }

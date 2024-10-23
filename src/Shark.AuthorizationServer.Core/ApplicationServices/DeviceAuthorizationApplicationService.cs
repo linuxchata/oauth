@@ -17,7 +17,7 @@ namespace Shark.AuthorizationServer.Core.ApplicationServices;
 public sealed class DeviceAuthorizationApplicationService(
     IStringGeneratorService stringGeneratorService,
     IClientRepository clientRepository,
-    IPersistedGrantRepository persistedGrantRepository,
+    IDevicePersistedGrantRepository devicePersistedGrantRepository,
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<DeviceAuthorizationApplicationService> logger) : IDeviceAuthorizationApplicationService
 {
@@ -31,7 +31,7 @@ public sealed class DeviceAuthorizationApplicationService(
 
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IClientRepository _clientRepository = clientRepository;
-    private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
+    private readonly IDevicePersistedGrantRepository _devicePersistedGrantRepository = devicePersistedGrantRepository;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<DeviceAuthorizationApplicationService> _logger = logger;
 
@@ -130,6 +130,6 @@ public sealed class DeviceAuthorizationApplicationService(
             ExpiredIn = expiresIn,
         };
 
-        await _persistedGrantRepository.Add(devicePersistedGrant);
+        await _devicePersistedGrantRepository.Add(devicePersistedGrant);
     }
 }

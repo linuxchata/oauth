@@ -25,7 +25,7 @@ public sealed class LoginModel(
     {
         if (string.IsNullOrWhiteSpace(returnUrl))
         {
-            return RedirectToPage("/Error");
+            return RedirectToPage("Error");
         }
 
         ClientId = _redirectionService.GetClientId(returnUrl);
@@ -33,7 +33,7 @@ public sealed class LoginModel(
         var client = await _clientRepository.Get(ClientId);
         if (client is null)
         {
-            return RedirectToPage("/Error");
+            return RedirectToPage("Error");
         }
 
         Scopes = client?.Scope?.ToList() ?? [];
