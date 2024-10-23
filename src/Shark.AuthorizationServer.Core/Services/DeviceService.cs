@@ -1,5 +1,6 @@
 ﻿using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
+using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.Services;
 
@@ -25,13 +26,12 @@ public sealed class DeviceService(IDevicePersistedGrantRepository devicePersiste
         {
             var devicePersistedGrant = await _devicePersistedGrantRepository.GetByUserCode(userCode);
 
-            if (devicePersistedGrant != null)
+            if (devicePersistedGrant != null && !devicePersistedGrant.IsAuthorized)
             {
-                var newDevicePersistedGrant = devicePersistedGrant with { };
-                newDevicePersistedGrant.IsAuthorized = true;
+                var adjustedDevicePersistedGrant = AdjustDevicePersistedGrant(devicePersistedGrant);
 
                 await _devicePersistedGrantRepository.Remove(devicePersistedGrant);
-                await _devicePersistedGrantRepository.Add(newDevicePersistedGrant);
+                await _devicePersistedGrantRepository.Add(adjustedDevicePersistedGrant);
             }
         }
     }
@@ -47,5 +47,13 @@ public sealed class DeviceService(IDevicePersistedGrantRepository devicePersiste
                 await _devicePersistedGrantRepository.Remove(devicePersistedGrant);
             }
         }
+    }
+
+    private DevicePersistedGrant AdjustDevicePersistedGrant(DevicePersistedGrant devicePersistedGrant)
+    {
+        var adjustedDevicePersistedGrant = devicePersistedGrant with { };
+        adjustedDevicePersistedGrant.IsAuthorized = true;
+
+        return adjustedDevicePersistedGrant;
     }
 }

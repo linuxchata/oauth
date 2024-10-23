@@ -14,5 +14,7 @@ public record DevicePersistedGrant
 
     public required bool IsAuthorized { get; set; }
 
+    public required DateTime CreatedDate { get; set; }
+
     public int ExpiredIn { get; set; }
 }
