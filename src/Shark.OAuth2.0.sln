@@ -19,7 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.Repositories", "Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.csproj", "{00BD7CAA-805A-430D-8B25-C0AAAB336499}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.AuthorizationServer.Common", "Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj", "{2E59163B-501A-4896-8F3E-45CEDC4C110F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.Common", "Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj", "{2E59163B-501A-4896-8F3E-45CEDC4C110F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D8F10FE-4F47-469C-820D-8A1CA117D0AB}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

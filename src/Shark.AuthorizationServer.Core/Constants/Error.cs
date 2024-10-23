@@ -17,4 +17,6 @@ public sealed class Error
     public const string InvalidRedirectUri = "invalid_redirect_uri";
 
     public const string InvalidClientMetadata = "invalid_client_metadata";
+
+    public const string AuthorizationPending = "authorization_pending";
 }

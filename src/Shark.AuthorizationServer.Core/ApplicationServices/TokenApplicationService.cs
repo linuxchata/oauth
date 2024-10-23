@@ -70,7 +70,7 @@ public sealed class TokenApplicationService(
         }
         else if (IsGrantType(request.GrantType, GrantType.DeviceCode))
         {
-            return await HandleDeviceCodeGrantType(request, client!);
+            return await HandleDeviceCodeGrantType(request, client!, claimsPrincipal);
         }
 
         return HandleUnsupportedGrantType(request);
@@ -203,7 +203,10 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
-    private async Task<TokenInternalBaseResponse> HandleDeviceCodeGrantType(TokenInternalRequest request, Client client)
+    private async Task<TokenInternalBaseResponse> HandleDeviceCodeGrantType(
+        TokenInternalRequest request,
+        Client client,
+        ClaimsPrincipal claimsPrincipal)
     {
         if (string.IsNullOrWhiteSpace(request.DeviceCode))
         {
@@ -218,12 +221,20 @@ public sealed class TokenApplicationService(
             return response;
         }
 
+        // TODO: Check whether whether the user has approved the grant
+        if (false)
+        {
+            //// _logger.LogWarning("User did not authorize client [{clientId}]", request.ClientId);
+            //// return new TokenInternalBadRequestResponse(Error.AuthorizationPending);
+        }
+
         // Remove device code persisted grant, since it can be considered consumed at this point
         await _persistedGrantRepository.Remove(request.DeviceCode);
 
         _logger.LogInformation("Issuing access token for {grantType}", GrantType.DeviceCode);
 
-        throw new NotImplementedException();
+        var token = await GenerateAndStoreBearerToken(client!, null, request.Scopes);
+        return new TokenInternalResponse(token);
     }
 
     private TokenInternalBadRequestResponse HandleUnsupportedGrantType(TokenInternalRequest request)
