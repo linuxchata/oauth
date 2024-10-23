@@ -11,19 +11,29 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
 
     public async Task<PersistedGrant?> Get(string? value)
     {
+        return await GetInternal<PersistedGrant?>(value);
+    }
+
+    public async Task<DevicePersistedGrant?> GetByDeviceCode(string? value)
+    {
+        return await GetInternal<DevicePersistedGrant?>(value);
+    }
+
+    private async Task<T?> GetInternal<T>(string? value)
+    {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return null;
+            return default;
         }
 
         var serializedItem = await _cache.GetStringAsync(value);
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {
-            return JsonSerializer.Deserialize<PersistedGrant>(serializedItem);
+            return JsonSerializer.Deserialize<T>(serializedItem);
         }
 
-        return null;
+        return default;
     }
 
     public async Task Add(PersistedGrant item)

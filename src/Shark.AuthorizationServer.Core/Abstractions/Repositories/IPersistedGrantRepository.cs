@@ -8,4 +8,5 @@ public interface IPersistedGrantRepository :
     IRepositoryAdd<DevicePersistedGrant>,
     IRepositoryRemove<PersistedGrant>
 {
+    Task<DevicePersistedGrant?> GetByDeviceCode(string? value);
 }

@@ -16,22 +16,22 @@ namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class TokenApplicationService(
     IClientRepository clientRepository,
+    IPersistedGrantRepository persistedGrantRepository,
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
     IIdTokenGeneratorService idTokenGeneratorService,
     IResourceOwnerCredentialsValidationService resourceOwnerCredentialsValidationService,
     IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
-    IPersistedGrantRepository persistedGrantRepository,
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<TokenApplicationService> logger) : ITokenApplicationService
 {
     private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IIdTokenGeneratorService _idTokenGeneratorService = idTokenGeneratorService;
     private readonly IResourceOwnerCredentialsValidationService _resourceOwnerCredentialsValidationService = resourceOwnerCredentialsValidationService;
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
-    private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
@@ -70,7 +70,7 @@ public sealed class TokenApplicationService(
         }
         else if (IsGrantType(request.GrantType, GrantType.DeviceCode))
         {
-            return await HandleDeviceCodeGrantType(request, client!, claimsPrincipal);
+            return await HandleDeviceCodeGrantType(request, client!);
         }
 
         return HandleUnsupportedGrantType(request);
@@ -190,7 +190,9 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
-    private async Task<TokenInternalBaseResponse> HandleResourceOwnerCredentialsGrantType(TokenInternalRequest request, Client client)
+    private async Task<TokenInternalBaseResponse> HandleResourceOwnerCredentialsGrantType(
+        TokenInternalRequest request,
+        Client client)
     {
         if (!_resourceOwnerCredentialsValidationService.ValidateCredentials(request.Username, request.Password))
         {
@@ -203,35 +205,34 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
-    private async Task<TokenInternalBaseResponse> HandleDeviceCodeGrantType(
-        TokenInternalRequest request,
-        Client client,
-        ClaimsPrincipal claimsPrincipal)
+    private async Task<TokenInternalBaseResponse> HandleDeviceCodeGrantType(TokenInternalRequest request, Client client)
     {
         if (string.IsNullOrWhiteSpace(request.DeviceCode))
         {
             return new TokenInternalBadRequestResponse(Error.InvalidRequest);
         }
 
-        var persistedGrant = await _persistedGrantRepository.Get(request.DeviceCode);
+        var devicePersistedGrant = await _persistedGrantRepository.GetByDeviceCode(request.DeviceCode);
 
-        var response = ValidateDeviceCodeGrant(persistedGrant, request);
+        var response = ValidateDeviceCodeGrant(devicePersistedGrant, request);
         if (response != null)
         {
             return response;
         }
 
-        // TODO: Check whether whether the user has approved the grant
-        if (false)
+        if (!devicePersistedGrant!.IsAuthorized)
         {
-            //// _logger.LogWarning("User did not authorize client [{clientId}]", request.ClientId);
-            //// return new TokenInternalBadRequestResponse(Error.AuthorizationPending);
+            _logger.LogWarning(
+                "User did not authorize client [{clientId}] for {grantType} grant type",
+                request.ClientId,
+                GrantType.DeviceCode);
+            return new TokenInternalBadRequestResponse(Error.AuthorizationPending);
         }
 
         // Remove device code persisted grant, since it can be considered consumed at this point
         await _persistedGrantRepository.Remove(request.DeviceCode);
 
-        _logger.LogInformation("Issuing access token for {grantType}", GrantType.DeviceCode);
+        _logger.LogInformation("Issuing access token for {grantType} grant type", GrantType.DeviceCode);
 
         var token = await GenerateAndStoreBearerToken(client!, null, request.Scopes);
         return new TokenInternalResponse(token);
@@ -243,7 +244,9 @@ public sealed class TokenApplicationService(
         return new TokenInternalBadRequestResponse(Error.InvalidGrantType);
     }
 
-    private TokenInternalBadRequestResponse? ValidateCodeGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)
+    private TokenInternalBadRequestResponse? ValidateCodeGrant(
+        PersistedGrant? persistedGrant,
+        TokenInternalRequest request)
     {
         // Validate grant
         if (persistedGrant is null)
@@ -313,7 +316,9 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private TokenInternalBadRequestResponse? ValidateRefreshTokenGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)
+    private TokenInternalBadRequestResponse? ValidateRefreshTokenGrant(
+        PersistedGrant? persistedGrant,
+        TokenInternalRequest request)
     {
         // Validate grant
         if (persistedGrant is null)
@@ -339,7 +344,9 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private TokenInternalBadRequestResponse? ValidateDeviceCodeGrant(PersistedGrant? persistedGrant, TokenInternalRequest request)
+    private TokenInternalBadRequestResponse? ValidateDeviceCodeGrant(
+        DevicePersistedGrant? persistedGrant,
+        TokenInternalRequest request)
     {
         // Validate grant
         if (persistedGrant is null)
@@ -367,7 +374,7 @@ public sealed class TokenApplicationService(
         }
 
         // Validate grant's device code
-        if (!persistedGrant.Value.EqualsTo(request.DeviceCode))
+        if (!persistedGrant.DeviceCode.EqualsTo(request.DeviceCode))
         {
             _logger.LogWarning("Mismatched device code for device code persisted grant");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
@@ -376,7 +383,11 @@ public sealed class TokenApplicationService(
         return null;
     }
 
-    private async Task<TokenResponse> GenerateAndStoreBearerToken(Client client, string? redirectUri, string[] scopes, string? userName = null)
+    private async Task<TokenResponse> GenerateAndStoreBearerToken(
+        Client client,
+        string? redirectUri,
+        string[] scopes,
+        string? userName = null)
     {
         var userId = Guid.NewGuid().ToString();
         var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, client.Audience);
