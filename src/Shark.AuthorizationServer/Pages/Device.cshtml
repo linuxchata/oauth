@@ -1,0 +1,22 @@
+﻿@page
+@model DeviceModel
+@{
+    ViewData["Title"] = "OAuth Authorization Server";
+}
+
+<div class="text-center">
+    <h1 class="display-4">OAuth Authorization Server</h1>
+    <p>Enter the code displayed on the screen of your device</p>
+
+    <form method="post">
+        <div class="form-group">
+            @Html.TextBoxFor(m =>
+                @Model.UserCode,
+                new { @class = "form-input", placeholder = "Enter user code", required = "required", maxlength = 6 })
+        </div>
+
+        <br />
+
+        <input type="submit" value="Submit" />
+    </form>
+</div>

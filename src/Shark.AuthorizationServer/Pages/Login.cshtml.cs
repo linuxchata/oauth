@@ -23,6 +23,11 @@ public sealed class LoginModel(
 
     public async Task<IActionResult> OnGet(string returnUrl)
     {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+        {
+            return RedirectToPage("/Error");
+        }
+
         ClientId = _redirectionService.GetClientId(returnUrl);
 
         var client = await _clientRepository.Get(ClientId);
