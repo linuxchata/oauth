@@ -13,6 +13,10 @@ builder.Logging.AddSimpleConsole(options =>
     options.TimestampFormat = "dd-MM-yyyy HH:mm:ss ";
     options.SingleLine = true;
 });
+builder.Logging.Configure(options =>
+{
+    options.ActivityTrackingOptions = ActivityTrackingOptions.None;
+});
 
 builder.Services.AddHttpClient();
 builder.Services.AddDistributedMemoryCache();

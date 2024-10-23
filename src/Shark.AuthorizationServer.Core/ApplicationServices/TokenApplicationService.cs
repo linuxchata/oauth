@@ -86,7 +86,7 @@ public sealed class TokenApplicationService(
         // Validate client
         if (client is null)
         {
-            _logger.LogWarning("Unknown client with identifier [{clientId}]", request.ClientId);
+            _logger.LogWarning("Unknown client");
             return new TokenInternalBadRequestResponse(Error.InvalidClient);
         }
 
@@ -95,7 +95,7 @@ public sealed class TokenApplicationService(
         {
             if (!client.ClientSecret.EqualsTo(request.ClientSecret))
             {
-                _logger.LogWarning("Invalid client secret for client [{clientId}]", request.ClientId);
+                _logger.LogWarning("Invalid client secret");
                 return new TokenInternalBadRequestResponse(Error.InvalidClient);
             }
         }
@@ -104,10 +104,7 @@ public sealed class TokenApplicationService(
         if (!string.IsNullOrWhiteSpace(request.RedirectUri) &&
             !client.RedirectUris.Contains(request.RedirectUri))
         {
-            _logger.LogWarning(
-                "Mismatched redirect URL [{redirectUri}] for client [{clientId}]",
-                request.RedirectUri,
-                request.ClientId);
+            _logger.LogWarning("Mismatched redirect URL [{redirectUri}]", request.RedirectUri);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -117,10 +114,7 @@ public sealed class TokenApplicationService(
         {
             if (!allowedClientScopes.Contains(scope))
             {
-                _logger.LogWarning(
-                    "Mismatched scope [{scope}] for client [{clientId}]",
-                    scope,
-                request.ClientId);
+                _logger.LogWarning("Mismatched scope [{scope}]", scope);
                 return new TokenInternalBadRequestResponse(Error.InvalidScope);
             }
         }
@@ -149,7 +143,7 @@ public sealed class TokenApplicationService(
         await _persistedGrantRepository.Remove(request.Code);
 
         _logger.LogInformation(
-            "Found matching authorization code {code}. Issuing access token and refresh token for {grantType}",
+            "Found matching authorization code {code}. Issuing access token and refresh token for {grantType} grant",
             request.Code,
             GrantType.AuthorizationCode);
 
@@ -186,7 +180,7 @@ public sealed class TokenApplicationService(
 
     private TokenInternalResponse HandleClientCredentialsGrantType(TokenInternalRequest request, Client client)
     {
-        _logger.LogInformation("Issuing access token for {grantType}", GrantType.ClientCredentials);
+        _logger.LogInformation("Issuing access token for {grantType} grant", GrantType.ClientCredentials);
 
         var token = GenerateBearerToken(client!, request.Scopes);
         return new TokenInternalResponse(token);
@@ -201,7 +195,7 @@ public sealed class TokenApplicationService(
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
-        _logger.LogInformation("Issuing access token for {grantType}", GrantType.ResourceOwnerCredentials);
+        _logger.LogInformation("Issuing access token for {grantType} grant", GrantType.ResourceOwnerCredentials);
 
         var token = await GenerateAndStoreBearerToken(client!, request.RedirectUri, request.Scopes, request.Username);
         return new TokenInternalResponse(token);
@@ -259,14 +253,14 @@ public sealed class TokenApplicationService(
         // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier for code persisted grant");
+            _logger.LogWarning("Mismatched client identifier for {grantType} persisted grant", GrantType.AuthorizationCode);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate grant's redirect URI
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URI for code persisted grant");
+            _logger.LogWarning("Mismatched redirect URI for {grantType} persisted grant", GrantType.AuthorizationCode);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -276,7 +270,7 @@ public sealed class TokenApplicationService(
         {
             if (!allowedScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope for code persisted grant");
+                _logger.LogWarning("Mismatched scope for {grantType} persisted grant", GrantType.AuthorizationCode);
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }
@@ -309,7 +303,7 @@ public sealed class TokenApplicationService(
 
             if (!persistedGrant.CodeChallenge.EqualsTo(codeChallenge))
             {
-                _logger.LogWarning("Mismatched code challenge for code persisted grant");
+                _logger.LogWarning("Mismatched code challenge for {grantType} persisted grant", GrantType.AuthorizationCode);
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }
@@ -331,14 +325,14 @@ public sealed class TokenApplicationService(
         // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier for refresh token persisted grant");
+            _logger.LogWarning("Mismatched client identifier for {grantType} persisted grant", GrantType.RefreshToken);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate grant's redirect URI
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URI for refresh token persisted grant");
+            _logger.LogWarning("Mismatched redirect URI for {grantType} persisted grant", GrantType.RefreshToken);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
