@@ -259,9 +259,9 @@ public sealed class RegisterApplicationService(
             return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
-        var grandTypesArray = grantTypes.Split(' ');
-        var responseTypesArray = responseTypes.Split(' ');
-        foreach (var grandType in grandTypesArray)
+        var grandTypesList = grantTypes.Split(' ').ToList();
+        var responseTypesList = responseTypes.Split(' ').ToList();
+        foreach (var grandType in grandTypesList)
         {
             if (!GrantType.AllowedGrandTypes.Contains(grandType))
             {
@@ -270,7 +270,7 @@ public sealed class RegisterApplicationService(
 
             if (grandType.EqualsTo(GrantType.AuthorizationCode))
             {
-                var codeResponseType = responseTypesArray.FirstOrDefault(t => t.EqualsTo(ResponseType.Code));
+                var codeResponseType = responseTypesList.FirstOrDefault(t => t.EqualsTo(ResponseType.Code));
 
                 if (codeResponseType is null)
                 {
@@ -279,7 +279,7 @@ public sealed class RegisterApplicationService(
             }
             else if (grandType.EqualsTo(GrantType.Implicit))
             {
-                var tokenResponseType = responseTypesArray.FirstOrDefault(t => t.EqualsTo(ResponseType.Token));
+                var tokenResponseType = responseTypesList.FirstOrDefault(t => t.EqualsTo(ResponseType.Token));
 
                 if (tokenResponseType is null)
                 {

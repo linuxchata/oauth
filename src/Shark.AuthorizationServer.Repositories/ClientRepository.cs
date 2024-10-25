@@ -32,7 +32,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
 
         if (deserializedClients is not null)
         {
-            return deserializedClients.FirstOrDefault(c => c.ClientId.EqualsTo(value));
+            return deserializedClients.Find(c => c.ClientId.EqualsTo(value));
         }
 
         throw new InvalidOperationException($"Client with identifier {value} cannot be found");

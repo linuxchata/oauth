@@ -13,6 +13,7 @@ public sealed class WeatherForecastService(
     IAuthorizationService authorizationService) : IWeatherForecastService
 {
     private const string ProtectedResourceEndpoint = "https://localhost:9002/weatherforecast";
+    private const string MissingAccessTokenErrorMessage = "Missing access token";
 
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ISecureTokenStore _secureTokenStore = secureTokenStore;
@@ -65,10 +66,6 @@ public sealed class WeatherForecastService(
             _secureTokenStore.RemoveAccessToken(grantType);
             throw;
         }
-        catch (HttpRequestException)
-        {
-            throw;
-        }
     }
 
     private async Task<AuthenticationHeaderValue> GetHeaderForAuthorizationCode(string grantType)
@@ -111,7 +108,7 @@ public sealed class WeatherForecastService(
 
         var secureToken = await _authorizationService.RequestAccessToken(refreshToken!, null!);
         _secureTokenStore.Add(grantType, secureToken);
-        return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
+        return secureToken.AccessToken ?? throw new ArgumentException(MissingAccessTokenErrorMessage);
     }
 
     private string GetAccessTokenImplicit(string grantType)
@@ -122,7 +119,7 @@ public sealed class WeatherForecastService(
             return accessToken;
         }
 
-        throw new ArgumentException("Missing access token");
+        throw new ArgumentException(MissingAccessTokenErrorMessage);
     }
 
     private async Task<string> GetAccessTokenClientCredentials(string? scope, string grantType)
@@ -135,7 +132,7 @@ public sealed class WeatherForecastService(
 
         var secureToken = await _authorizationService.RequestAccessToken(scope);
         _secureTokenStore.Add(grantType, secureToken);
-        return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
+        return secureToken.AccessToken ?? throw new ArgumentException(MissingAccessTokenErrorMessage);
     }
 
     private async Task<string> GetAccessTokenResourceOwnerCredentials(string username, string password, string? scope, string grantType)
@@ -148,6 +145,6 @@ public sealed class WeatherForecastService(
 
         var secureToken = await _authorizationService.RequestAccessToken(username, password, scope);
         _secureTokenStore.Add(grantType, secureToken);
-        return secureToken.AccessToken ?? throw new ArgumentException("Missing access token");
+        return secureToken.AccessToken ?? throw new ArgumentException(MissingAccessTokenErrorMessage);
     }
 }
