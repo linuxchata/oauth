@@ -35,7 +35,7 @@ public sealed class IdTokenGeneratorService(
         return GenerateToken(claims);
     }
 
-    private bool HasOpenIdScope(string[] scopes)
+    private static bool HasOpenIdScope(IEnumerable<string> scopes)
     {
         return scopes.Any(s => s.EqualsTo(OpenIdConnectScope.OpenId));
     }

@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Core.Responses.Introspect;
 
-public sealed class IntrospectInternalResponse : IntrospectInternalBaseResponse
+public sealed class IntrospectInternalResponse : IIntrospectInternalResponse
 {
     [JsonPropertyName("active")]
     public required bool Active { get; set; }

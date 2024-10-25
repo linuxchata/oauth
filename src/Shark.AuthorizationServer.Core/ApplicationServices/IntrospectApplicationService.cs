@@ -16,7 +16,7 @@ public sealed class IntrospectApplicationService(
     private readonly IRevokeTokenRepository _revokeTokenRepository = revokeTokenRepository;
     private readonly ILogger<IntrospectApplicationService> _logger = logger;
 
-    public async Task<IntrospectInternalBaseResponse> Execute(IntrospectInternalRequest request)
+    public async Task<IIntrospectInternalResponse> Execute(IntrospectInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -38,7 +38,7 @@ public sealed class IntrospectApplicationService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{message}", ex.Message);
+            _logger.LogError(ex, "{Message}", ex.Message);
             return new IntrospectInternalResponse { Active = false };
         }
     }
@@ -62,7 +62,7 @@ public sealed class IntrospectApplicationService(
             var revokedToken = await _revokeTokenRepository.Get(jwtToken.Id);
             if (revokedToken is not null)
             {
-                _logger.LogInformation("Access token with identifier {jwtTokenId} has been revoked", jwtToken.Id);
+                _logger.LogInformation("Access token with identifier {JwtTokenId} has been revoked", jwtToken.Id);
                 return new IntrospectInternalResponse { Active = false };
             }
         }
@@ -78,7 +78,7 @@ public sealed class IntrospectApplicationService(
         var subject = claims.FirstOrDefault(c => c.Type == ClaimType.Subject);
         var scope = claims.FirstOrDefault(c => c.Type == ClaimType.Scope);
 
-        // TODO: Check ValidTo and ValidFrom dates
+        //// TODO: Check ValidTo and ValidFrom dates
 
         return new IntrospectInternalResponse
         {

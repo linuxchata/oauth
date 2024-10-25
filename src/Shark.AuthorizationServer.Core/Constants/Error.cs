@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Core.Constants;
 
-public sealed class Error
+public static class Error
 {
     public const string InvalidResponseType = "invalid_response_type";
 

@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Client.Constants;
 
-public sealed class Scheme
+public static class Scheme
 {
     public const string Bearer = nameof(Bearer);
 }

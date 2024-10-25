@@ -5,5 +5,5 @@ namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 public interface IDeviceAuthorizationApplicationService
 {
-    Task<DeviceAuthorizationBaseResponse> Execute(DeviceAuthorizationInternalRequest request);
+    Task<IDeviceAuthorizationResponse> Execute(DeviceAuthorizationInternalRequest request);
 }

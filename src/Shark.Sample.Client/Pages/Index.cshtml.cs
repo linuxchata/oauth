@@ -1,10 +1,7 @@
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
-using Shark.Sample.Client.Services;
 
 namespace Shark.Sample.Client.Pages;
 
@@ -22,10 +19,6 @@ public class IndexModel(
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public List<WeatherForecast>? Data { get; private set; }
-
-    public void OnGet()
-    {
-    }
 
     public void OnPostGetAuthTokenAuthorizationCode()
     {

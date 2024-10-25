@@ -11,10 +11,6 @@ public sealed class DeviceAuthorizeModel(IDeviceService deviceService) : PageMod
 
     private readonly IDeviceService _deviceService = deviceService;
 
-    public void OnGet()
-    {
-    }
-
     public async Task<IActionResult> OnPostAuthorize()
     {
         await _deviceService.Authorize(GetUserCode());

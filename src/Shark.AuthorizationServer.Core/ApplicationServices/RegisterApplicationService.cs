@@ -26,7 +26,7 @@ public sealed class RegisterApplicationService(
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public async Task<RegisterInternalBaseResponse> Read(string clientId)
+    public async Task<IRegisterInternalResponse> Read(string clientId)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
 
@@ -39,7 +39,7 @@ public sealed class RegisterApplicationService(
         return client.ToInternalResponse();
     }
 
-    public async Task<RegisterInternalBaseResponse> Post(RegisterInternalRequest request)
+    public async Task<IRegisterInternalResponse> Post(RegisterInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -54,7 +54,7 @@ public sealed class RegisterApplicationService(
         return client.ToInternalResponse();
     }
 
-    public async Task<RegisterInternalBaseResponse> Put(string clientId, RegisterUpdateInternalRequest request)
+    public async Task<IRegisterInternalResponse> Put(string clientId, RegisterUpdateInternalRequest request)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
         ArgumentNullException.ThrowIfNull(request, nameof(request));
@@ -88,7 +88,7 @@ public sealed class RegisterApplicationService(
         return newClient.ToInternalResponse();
     }
 
-    public async Task<RegisterInternalBaseResponse> Delete(string clientId)
+    public async Task<IRegisterInternalResponse> Delete(string clientId)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
 
@@ -103,7 +103,7 @@ public sealed class RegisterApplicationService(
         return new RegisterInternalNoContentResponse();
     }
 
-    private RegisterInternalBadRequestResponse? ValidatePostRequest(RegisterInternalRequest request)
+    private static RegisterInternalBadRequestResponse? ValidatePostRequest(RegisterInternalRequest request)
     {
         var response = ValidateRedirectUris(request.RedirectUris);
         if (response is not null)
@@ -150,7 +150,7 @@ public sealed class RegisterApplicationService(
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidatePutRequest(RegisterUpdateInternalRequest request)
+    private static RegisterInternalBadRequestResponse? ValidatePutRequest(RegisterUpdateInternalRequest request)
     {
         var response = ValidateRedirectUris(request.RedirectUris);
         if (response is not null)
@@ -197,7 +197,7 @@ public sealed class RegisterApplicationService(
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateClientId(string clientId, string requestClientId)
+    private static RegisterInternalBadRequestResponse? ValidateClientId(string clientId, string requestClientId)
     {
         if (!clientId.EqualsTo(requestClientId))
         {
@@ -207,20 +207,18 @@ public sealed class RegisterApplicationService(
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateClientSecret(string clientSecret, string? requestClientSecret)
+    private static RegisterInternalBadRequestResponse? ValidateClientSecret(string clientSecret, string? requestClientSecret)
     {
-        if (!string.IsNullOrWhiteSpace(requestClientSecret))
+        if (!string.IsNullOrWhiteSpace(requestClientSecret) &&
+            !requestClientSecret.EqualsTo(clientSecret))
         {
-            if (!requestClientSecret.EqualsTo(clientSecret))
-            {
-                return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-            }
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateRedirectUris(string[] redirectUris)
+    private static RegisterInternalBadRequestResponse? ValidateRedirectUris(string[] redirectUris)
     {
         if (redirectUris is null || redirectUris.Length == 0)
         {
@@ -238,7 +236,7 @@ public sealed class RegisterApplicationService(
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateTokenEndpointAuthMethod(string? tokenEndpointAuthMethod)
+    private static RegisterInternalBadRequestResponse? ValidateTokenEndpointAuthMethod(string? tokenEndpointAuthMethod)
     {
         if (!string.IsNullOrWhiteSpace(tokenEndpointAuthMethod) &&
             !tokenEndpointAuthMethod.EqualsTo(ClientAuthMethod.ClientSecretBasic))
@@ -249,7 +247,7 @@ public sealed class RegisterApplicationService(
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateGrandTypesAndResponseTypes(string grantTypes, string responseTypes)
+    private static RegisterInternalBadRequestResponse? ValidateGrandTypesAndResponseTypes(string grantTypes, string responseTypes)
     {
         if (string.IsNullOrWhiteSpace(grantTypes))
         {
@@ -293,7 +291,7 @@ public sealed class RegisterApplicationService(
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateClientName(string clientName)
+    private static RegisterInternalBadRequestResponse? ValidateClientName(string clientName)
     {
         if (string.IsNullOrWhiteSpace(clientName))
         {
@@ -303,33 +301,29 @@ public sealed class RegisterApplicationService(
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateClientUri(string? clientUri)
+    private static RegisterInternalBadRequestResponse? ValidateClientUri(string? clientUri)
     {
-        if (!string.IsNullOrWhiteSpace(clientUri))
+        if (!string.IsNullOrWhiteSpace(clientUri) &&
+            !Uri.IsWellFormedUriString(clientUri, UriKind.Absolute))
         {
-            if (!Uri.IsWellFormedUriString(clientUri, UriKind.Absolute))
-            {
-                return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-            }
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateLogoUri(string? logoUri)
+    private static RegisterInternalBadRequestResponse? ValidateLogoUri(string? logoUri)
     {
-        if (!string.IsNullOrWhiteSpace(logoUri))
+        if (!string.IsNullOrWhiteSpace(logoUri) &&
+            !Uri.IsWellFormedUriString(logoUri, UriKind.Absolute))
         {
-            if (!Uri.IsWellFormedUriString(logoUri, UriKind.Absolute))
-            {
-                return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-            }
+            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
         }
 
         return null;
     }
 
-    private RegisterInternalBadRequestResponse? ValidateAudience(string audience)
+    private static RegisterInternalBadRequestResponse? ValidateAudience(string audience)
     {
         if (string.IsNullOrWhiteSpace(audience) ||
             !Uri.IsWellFormedUriString(audience, UriKind.Absolute))

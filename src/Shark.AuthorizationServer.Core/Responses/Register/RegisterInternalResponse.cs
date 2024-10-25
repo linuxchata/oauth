@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Core.Responses.Register;
 
-public sealed class RegisterInternalResponse : RegisterInternalBaseResponse
+public sealed class RegisterInternalResponse : IRegisterInternalResponse
 {
     [JsonPropertyName("client_name")]
     public required string ClientName { get; set; }

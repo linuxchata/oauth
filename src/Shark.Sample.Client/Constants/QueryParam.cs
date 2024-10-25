@@ -1,6 +1,6 @@
 ﻿namespace Shark.Sample.Client.Constants;
 
-public sealed class QueryParam
+public static class QueryParam
 {
     public const string ClientId = "client_id";
 

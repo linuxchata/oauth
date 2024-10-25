@@ -28,7 +28,7 @@ public sealed class AccessTokenGeneratorService(
         return GenerateToken(claims, audience, currentTime);
     }
 
-    private List<Claim> CreateClaims(string? userId, string? userName, string[] scopes, DateTime currentTime)
+    private static List<Claim> CreateClaims(string? userId, string? userName, string[] scopes, DateTime currentTime)
     {
         var claims = new List<Claim>();
 

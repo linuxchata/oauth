@@ -49,7 +49,7 @@ public sealed class DeviceService(IDevicePersistedGrantRepository devicePersiste
         }
     }
 
-    private DevicePersistedGrant AdjustDevicePersistedGrant(DevicePersistedGrant devicePersistedGrant)
+    private static DevicePersistedGrant AdjustDevicePersistedGrant(DevicePersistedGrant devicePersistedGrant)
     {
         var adjustedDevicePersistedGrant = devicePersistedGrant with { };
         adjustedDevicePersistedGrant.IsAuthorized = true;

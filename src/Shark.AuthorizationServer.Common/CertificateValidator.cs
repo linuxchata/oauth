@@ -27,7 +27,7 @@ public sealed class CertificateValidator(ILogger<CertificateValidator> logger) :
         {
             foreach (var chainStatus in chain.ChainStatus)
             {
-                _logger.LogError("Chain error: {statusInformation}", chainStatus.StatusInformation);
+                _logger.LogError("Chain error: {StatusInformation}", chainStatus.StatusInformation);
             }
         }
 

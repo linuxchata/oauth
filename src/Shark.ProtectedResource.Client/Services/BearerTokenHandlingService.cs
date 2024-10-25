@@ -59,7 +59,7 @@ public sealed class BearerTokenHandlingService(
             return false;
         }
 
-        // TODO: Add token inspection via the network and wrap it around configuration flag
+        //// TODO: Add token inspection via the network and wrap it around configuration flag
 
         var jwtToken = handler.ReadJwtToken(accessToken);
         if (!ValidateAccessToken(handler, accessToken, ref tokenIdentity))
@@ -106,7 +106,7 @@ public sealed class BearerTokenHandlingService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{message}", ex.Message);
+            _logger.LogError(ex, "{Message}", ex.Message);
             return false;
         }
 

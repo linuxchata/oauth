@@ -43,7 +43,7 @@ public sealed class StringGeneratorService : IStringGeneratorService
         return GenerateInternal(UserDeviceCodeChars, length);
     }
 
-    private string GenerateInternal(string chars, byte length)
+    private static string GenerateInternal(string chars, byte length)
     {
         return new string(Enumerable.Repeat(chars, length)
             .Select(s => s[Random.Next(s.Length)]).ToArray());

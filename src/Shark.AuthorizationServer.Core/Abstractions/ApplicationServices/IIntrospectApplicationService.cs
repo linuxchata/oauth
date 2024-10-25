@@ -5,5 +5,5 @@ namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 public interface IIntrospectApplicationService
 {
-    Task<IntrospectInternalBaseResponse> Execute(IntrospectInternalRequest request);
+    Task<IIntrospectInternalResponse> Execute(IntrospectInternalRequest request);
 }

@@ -9,43 +9,59 @@
 
     <div class="form-container">
         <form method="post" asp-page-handler="GetAuthTokenAuthorizationCode">
-            <label>Get OAuth token with Authorization Code grant type</label>
-            <input type="submit" value="Get token" />
+            <label for="GetAuthTokenAuthorizationCode">
+                Get OAuth token with Authorization Code grant type
+            </label>
+            <input type="submit" id="GetAuthTokenAuthorizationCode" value="Get token" />
         </form>
 
         <form method="post" asp-page-handler="GetDataAuthorizationCode">
-            <label>Get Data from Protected Resource with Authorization Code grant type</label>
-            <input type="submit" value="Get Data" />
+            <label for="GetDataAuthorizationCode">
+                Get Data from Protected Resource with Authorization Code grant type
+            </label>
+            <input type="submit" id="GetDataAuthorizationCode" value="Get Data" />
         </form>
 
         <form method="post" asp-page-handler="GetAuthTokenAuthorizationCodePkce">
-            <label>Get OAuth token with Authorization Code PKCE grant type</label>
-            <input type="submit" value="Get token" />
+            <label for="GetAuthTokenAuthorizationCodePkce">
+                Get OAuth token with Authorization Code PKCE grant type
+            </label>
+            <input type="submit" id="GetAuthTokenAuthorizationCodePkce" value="Get token" />
         </form>
 
         <form method="post" asp-page-handler="GetDataAuthorizationCodePkce">
-            <label>Get Data from Protected Resource with Authorization Code PKCE grant type</label>
-            <input type="submit" value="Get Data" />
+            <label for="GetDataAuthorizationCodePkce">
+                Get Data from Protected Resource with Authorization Code PKCE grant type
+            </label>
+            <input type="submit" id="GetDataAuthorizationCodePkce" value="Get Data" />
         </form>
 
         <form method="post" asp-page-handler="GetAuthTokenImplicit">
-            <label>Get OAuth token with Implicit grant type</label>
-            <input type="submit" value="Get token" />
+            <label for="GetDataAuthorizationCodePkce">
+                Get OAuth token with Implicit grant type
+            </label>
+            <input type="submit" id="GetAuthTokenImplicit" value="Get token" />
         </form>
 
         <form method="post" asp-page-handler="GetDataImplicit">
-            <label>Get Data from Protected Resource with Implicit grant type</label>
-            <input type="submit" value="Get Data" />
+            <label for="GetDataImplicit">
+                Get Data from Protected Resource with Implicit grant type
+            </label>
+            <input type="submit" id="GetDataImplicit" value="Get Data" />
         </form>
 
         <form method="post" asp-page-handler="GetDataResourceOwnerCredentials">
-            <label>Get Data from Protected Resource with Resource Owner Credentials grant type</label>
-            <input type="submit" value="Get Data" />
+            <label for="GetDataResourceOwnerCredentials">
+                Get Data from Protected Resource with Resource Owner Credentials grant type
+            </label>
+            <input type="submit" id="GetDataResourceOwnerCredentials" value="Get Data" />
         </form>
 
         <form method="post" asp-page-handler="GetDataClientCredentials">
-            <label>Get Data from Protected Resource with Client Credentials grant type</label>
-            <input type="submit" value="Get Data" />
+            <label for="GetDataClientCredentials">
+                Get Data from Protected Resource with Client Credentials grant type
+            </label>
+            <input type="submit" id="GetDataClientCredentials" value="Get Data" />
         </form>
     </div>
     <br />

@@ -6,5 +6,5 @@ namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 public interface ITokenApplicationService
 {
-    Task<TokenInternalBaseResponse> Execute(TokenInternalRequest request, ClaimsPrincipal claimsPrincipal);
+    Task<ITokenInternalResponse> Execute(TokenInternalRequest request, ClaimsPrincipal claimsPrincipal);
 }

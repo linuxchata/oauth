@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Client.Constants;
 
-public sealed class ClaimType
+public static class ClaimType
 {
     public const string Subject = "sub";
 

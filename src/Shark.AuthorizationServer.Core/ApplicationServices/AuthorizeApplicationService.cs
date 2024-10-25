@@ -36,7 +36,7 @@ public sealed class AuthorizeApplicationService(
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<AuthorizeApplicationService> _logger = logger;
 
-    public async Task<AuthorizeInternalBaseResponse> Execute(AuthorizeInternalRequest request)
+    public async Task<IAuthorizeInternalResponse> Execute(AuthorizeInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -64,14 +64,14 @@ public sealed class AuthorizeApplicationService(
     {
         if (client is null)
         {
-            _logger.LogWarning("Unknown client with identifier [{clientId}]", request.ClientId);
+            _logger.LogWarning("Unknown client with identifier [{ClientId}]", request.ClientId);
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
         if (!client.RedirectUris.Contains(request.RedirectUri))
         {
             _logger.LogWarning(
-                "Mismatched redirect URL [{redirectUri}] for client [{clientId}]",
+                "Mismatched redirect URL [{RedirectUri}] for client [{ClientId}]",
                 request.RedirectUri,
                 request.ClientId);
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
@@ -84,9 +84,9 @@ public sealed class AuthorizeApplicationService(
             if (!allowedClientScopes.Contains(scope))
             {
                 _logger.LogWarning(
-                    "Mismatched scope [{scope}] for client [{clientId}]",
+                    "Mismatched scope [{Scope}] for client [{ClientId}]",
                     scope,
-                request.ClientId);
+                    request.ClientId);
                 return new AuthorizeInternalBadRequestResponse(Error.InvalidScope);
             }
         }
@@ -94,7 +94,7 @@ public sealed class AuthorizeApplicationService(
         return null;
     }
 
-    private bool IsResponseType(string responseType, string expectedResponseType)
+    private static bool IsResponseType(string responseType, string expectedResponseType)
     {
         return responseType.EqualsTo(expectedResponseType);
     }
@@ -104,7 +104,7 @@ public sealed class AuthorizeApplicationService(
         Client client)
     {
         _logger.LogInformation(
-            "Issuing authorization code for client [{clientId}]. Response type is {responseType}",
+            "Issuing authorization code for client [{ClientId}]. Response type is {ResponseType}",
             client.ClientId,
             ResponseType.Code);
 
@@ -124,7 +124,7 @@ public sealed class AuthorizeApplicationService(
     private AuthorizeInternalTokenResponse HandleTokenResponseType(AuthorizeInternalRequest request, Client client)
     {
         _logger.LogInformation(
-            "Issuing access token for client [{clientId}]. Response type is {responseType}",
+            "Issuing access token for client [{ClientId}]. Response type is {ResponseType}",
             client.ClientId,
             ResponseType.Token);
 
@@ -141,7 +141,7 @@ public sealed class AuthorizeApplicationService(
     private AuthorizeInternalBadRequestResponse HandleUnsupportedResponseType(string responseType, Client client)
     {
         _logger.LogWarning(
-            "Unsupported response type {responseType}. Client is [{clientId}]",
+            "Unsupported response type {ResponseType}. Client is [{ClientId}]",
             responseType,
             client.ClientId);
         return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);

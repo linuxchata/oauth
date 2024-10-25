@@ -60,7 +60,7 @@ public sealed class BasicAuthenticationHandler(
         return authorizationHeaderValue;
     }
 
-    private (string? ClientId, string? ClientSecret) GetCredentials(string authorizationHeaderValue)
+    private static (string? ClientId, string? ClientSecret) GetCredentials(string authorizationHeaderValue)
     {
         try
         {

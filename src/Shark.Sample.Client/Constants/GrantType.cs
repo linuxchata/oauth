@@ -1,6 +1,6 @@
 ﻿namespace Shark.Sample.Client.Constants;
 
-public sealed class GrantType
+public static class GrantType
 {
     public const string AuthorizationCode = "authorization_code";
 

@@ -30,13 +30,13 @@ public sealed class CallBackApplicationService(
         }
     }
 
-    private bool IsImplicitGrantType(string? accessToken, string? tokenType)
+    private static bool IsImplicitGrantType(string? accessToken, string? tokenType)
     {
         return !string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(tokenType) &&
             string.Equals(tokenType, AccessTokenType.Bearer, StringComparison.OrdinalIgnoreCase);
     }
 
-    private bool IsAuthorizationCodeGrantType(string? code)
+    private static bool IsAuthorizationCodeGrantType(string? code)
     {
         return !string.IsNullOrWhiteSpace(code);
     }
@@ -61,8 +61,8 @@ public sealed class CallBackApplicationService(
             expectedState,
             proofKeyForCodeExchange?.CodeVerifier);
 
-        _logger.LogInformation("Access token is {accessToken}", secureToken.AccessToken);
-        _logger.LogInformation("ID token is {idToken}", secureToken.IdToken);
+        _logger.LogInformation("Access token is {AccessToken}", secureToken.AccessToken);
+        _logger.LogInformation("ID token is {IdToken}", secureToken.IdToken);
 
         _securityStore.Add(GrantType.AuthorizationCode, secureToken);
     }

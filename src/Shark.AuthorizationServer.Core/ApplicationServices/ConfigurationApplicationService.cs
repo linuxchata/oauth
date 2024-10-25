@@ -31,7 +31,7 @@ public sealed class ConfigurationApplicationService(
 
     public Task<ConfigurationResponse> Get()
     {
-        // https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
+        //// https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
 
         var baseUrl = new Uri(_configuration.AuthorizationServerUri);
         var jsonWebKeySetEndpoint = new Uri(baseUrl, AuthorizationServerEndpoint.ConfigurationJwks);

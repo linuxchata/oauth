@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Core.Responses.UserInfo;
 
-public sealed class UserInfoResponse : UserInfoBaseResponse
+public sealed class UserInfoResponse : IUserInfoResponse
 {
     [JsonPropertyName("sub")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

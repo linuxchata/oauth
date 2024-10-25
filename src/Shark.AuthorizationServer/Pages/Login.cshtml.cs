@@ -36,7 +36,7 @@ public sealed class LoginModel(
             return RedirectToPage("Error");
         }
 
-        Scopes = client?.Scope?.ToList() ?? [];
+        Scopes = client.Scope?.ToList() ?? [];
 
         return Page();
     }

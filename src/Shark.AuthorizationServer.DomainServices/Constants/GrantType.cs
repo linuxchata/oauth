@@ -1,17 +1,7 @@
 ﻿namespace Shark.AuthorizationServer.DomainServices.Constants;
 
-public sealed class GrantType
+public static class GrantType
 {
-    public readonly static HashSet<string> AllowedGrandTypes =
-    [
-        GrantType.AuthorizationCode,
-        GrantType.RefreshToken,
-        GrantType.Implicit,
-        GrantType.ResourceOwnerCredentials,
-        GrantType.ClientCredentials,
-        GrantType.DeviceCode,
-    ];
-
     public const string AuthorizationCode = "authorization_code";
 
     public const string RefreshToken = "refresh_token";
@@ -23,4 +13,14 @@ public sealed class GrantType
     public const string ResourceOwnerCredentials = "password";
 
     public const string DeviceCode = "urn:ietf:params:oauth:grant-type:device_code";
+
+    public readonly static HashSet<string> AllowedGrandTypes =
+    [
+        GrantType.AuthorizationCode,
+        GrantType.RefreshToken,
+        GrantType.Implicit,
+        GrantType.ResourceOwnerCredentials,
+        GrantType.ClientCredentials,
+        GrantType.DeviceCode,
+    ];
 }

@@ -13,7 +13,7 @@ public sealed class UserInfoApplicationService(
 {
     private readonly IProfileService _profileService = profileService;
 
-    public async Task<UserInfoBaseResponse> Execute(ClaimsPrincipal claimsPrincipal)
+    public async Task<IUserInfoResponse> Execute(ClaimsPrincipal claimsPrincipal)
     {
         ArgumentNullException.ThrowIfNull(claimsPrincipal, nameof(claimsPrincipal));
 

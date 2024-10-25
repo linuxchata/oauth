@@ -18,7 +18,7 @@ public sealed class WeatherForecastController : ControllerBase
 
     public WeatherForecastController()
     {
-        _forecast = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        _forecast = Enumerable.Range(1, 4).Select(index => new WeatherForecast
         {
             Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
             TemperatureC = Random.Shared.Next(-35, 40),
@@ -29,6 +29,7 @@ public sealed class WeatherForecastController : ControllerBase
     [HttpGet]
     [Authorize(Scope.Read)]
     [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType<WeatherForecast[]>(StatusCodes.Status200OK)]
     public IActionResult Get()
     {
         return Ok(_forecast.ToArray());
@@ -36,6 +37,7 @@ public sealed class WeatherForecastController : ControllerBase
 
     [HttpDelete]
     [Authorize(Scope.Delete)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult Delete()
     {
         _forecast.RemoveAt(_forecast.Count - 1);

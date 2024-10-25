@@ -27,7 +27,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
 
         // Read from file
         using var streamReader = new StreamReader("Data/clients.json");
-        var clients = streamReader.ReadToEnd();
+        var clients = await streamReader.ReadToEndAsync();
         var deserializedClients = JsonSerializer.Deserialize<List<Client>>(clients);
 
         if (deserializedClients is not null)

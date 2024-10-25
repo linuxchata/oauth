@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Core.Constants;
 
-public sealed class ResponseType
+public static class ResponseType
 {
     public const string Code = "code";
 

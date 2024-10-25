@@ -1,5 +1,5 @@
 ﻿namespace Shark.AuthorizationServer.Core.Responses.Revoke;
 
-public sealed class RevokeInternalResponse : RevokeInternalBaseResponse
+public sealed class RevokeInternalResponse : IRevokeInternalResponse
 {
 }

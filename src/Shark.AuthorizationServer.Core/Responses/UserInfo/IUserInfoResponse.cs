@@ -1,5 +1,5 @@
 ﻿namespace Shark.AuthorizationServer.Core.Responses.UserInfo;
 
-public abstract class UserInfoBaseResponse
+public interface IUserInfoResponse
 {
 }

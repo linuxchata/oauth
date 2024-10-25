@@ -55,14 +55,14 @@ public sealed class ProofKeyForCodeExchangeService(
         return null;
     }
 
-    private string GetCodeChallenge(string codeVerifier)
+    private static string GetCodeChallenge(string codeVerifier)
     {
         var bytes = Encoding.ASCII.GetBytes(codeVerifier);
         var hash = SHA256.HashData(bytes);
         return Base64UrlEncode(hash);
     }
 
-    private string Base64UrlEncode(byte[] input)
+    private static string Base64UrlEncode(byte[] input)
     {
         // Convert to base64, then replace URL-unsafe characters and trim padding.
         return Convert.ToBase64String(input)
@@ -71,7 +71,7 @@ public sealed class ProofKeyForCodeExchangeService(
             .TrimEnd('=');
     }
 
-    private string GetKey(string state)
+    private static string GetKey(string state)
     {
         return $"pkce_{state}";
     }

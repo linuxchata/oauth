@@ -35,7 +35,7 @@ public sealed class DeviceAuthorizationApplicationService(
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<DeviceAuthorizationApplicationService> _logger = logger;
 
-    public async Task<DeviceAuthorizationBaseResponse> Execute(DeviceAuthorizationInternalRequest request)
+    public async Task<IDeviceAuthorizationResponse> Execute(DeviceAuthorizationInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -54,19 +54,19 @@ public sealed class DeviceAuthorizationApplicationService(
     {
         if (client is null)
         {
-            _logger.LogWarning("Unknown client with identifier [{clientId}]", request.ClientId);
+            _logger.LogWarning("Unknown client with identifier [{ClientId}]", request.ClientId);
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
         }
 
         if (!request.ClientSecret.EqualsTo(client.ClientSecret))
         {
-            _logger.LogWarning("Invalid client secret for client [{clientId}]", request.ClientId);
+            _logger.LogWarning("Invalid client secret for client [{ClientId}]", request.ClientId);
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
         }
 
         if (!client.GrantTypes.ToHashSet().Contains(GrantType.DeviceCode))
         {
-            _logger.LogWarning("Invalid grant for client [{clientId}]", request.ClientId);
+            _logger.LogWarning("Invalid grant for client [{ClientId}]", request.ClientId);
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -75,7 +75,7 @@ public sealed class DeviceAuthorizationApplicationService(
 
     private async Task<DeviceAuthorizationResponse> Handle(DeviceAuthorizationInternalRequest request, Client client)
     {
-        _logger.LogInformation("Issuing device code for client [{clientId}]", client.ClientId);
+        _logger.LogInformation("Issuing device code for client [{ClientId}]", client.ClientId);
 
         var baseUri = new Uri(_configuration.AuthorizationServerUri);
         var deviceCode = _stringGeneratorService.GenerateDeviceCode();
@@ -95,12 +95,12 @@ public sealed class DeviceAuthorizationApplicationService(
         };
     }
 
-    private string GetVerificationUri(Uri baseUri)
+    private static string GetVerificationUri(Uri baseUri)
     {
-        return (new Uri(baseUri, DevicePath)).ToString();
+        return new Uri(baseUri, DevicePath).ToString();
     }
 
-    private string GetVerificationCompleteUri(Uri baseUri, string userCode)
+    private static string GetVerificationCompleteUri(Uri baseUri, string userCode)
     {
         var verificationCompleteUri = new Uri(baseUri, DevicePath);
 

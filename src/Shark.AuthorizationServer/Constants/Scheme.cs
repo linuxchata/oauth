@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Constants;
 
-public sealed class Scheme
+public static class Scheme
 {
     public const string Cookies = nameof(Cookies);
 

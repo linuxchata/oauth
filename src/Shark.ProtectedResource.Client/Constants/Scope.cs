@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Client.Constants;
 
-public sealed class Scope
+public static class Scope
 {
     public const string Read = "read";
 

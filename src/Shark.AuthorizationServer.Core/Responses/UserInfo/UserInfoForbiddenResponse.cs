@@ -1,5 +1,5 @@
 ﻿namespace Shark.AuthorizationServer.Core.Responses.UserInfo;
 
-public sealed class UserInfoForbiddenResponse : UserInfoBaseResponse
+public sealed class UserInfoForbiddenResponse : IUserInfoResponse
 {
 }

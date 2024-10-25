@@ -183,7 +183,7 @@ public sealed class AuthorizationService(
         {
             _logger.LogError(
                 ex,
-                "Unable to fetch Bearer token from authorization server. Status code is [{statusCode}]",
+                "Unable to fetch Bearer token from authorization server. Status code is [{StatusCode}]",
                 ex.StatusCode);
         }
 

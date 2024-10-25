@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.DomainServices.Constants;
 
-public sealed class CodeChallengeMethod
+public static class CodeChallengeMethod
 {
     public const string Plain = "plain";
 

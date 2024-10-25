@@ -27,7 +27,7 @@ public sealed class LoginService(
         }
     }
 
-    private List<Claim> CreateClaims(string userName, string[] selectedScopes)
+    private static List<Claim> CreateClaims(string userName, string[] selectedScopes)
     {
         var claims = new List<Claim>();
 
@@ -46,7 +46,7 @@ public sealed class LoginService(
         return claims;
     }
 
-    private ClaimsPrincipal CreateClaimsPrincipal(List<Claim> claims)
+    private static ClaimsPrincipal CreateClaimsPrincipal(List<Claim> claims)
     {
         var claimsIdentity = new ClaimsIdentity(
             claims,

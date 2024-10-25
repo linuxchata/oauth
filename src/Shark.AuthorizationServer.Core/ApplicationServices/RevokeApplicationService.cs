@@ -19,7 +19,7 @@ public sealed class RevokeApplicationService(
     private readonly IRevokeTokenRepository _revokeTokenRepository = revokeTokenRepository;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
-    public async Task<RevokeInternalBaseResponse> Execute(RevokeInternalRequest request)
+    public async Task<IRevokeInternalResponse> Execute(RevokeInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -66,13 +66,13 @@ public sealed class RevokeApplicationService(
             {
                 await _revokeTokenRepository.Add(new RevokeToken(jwtToken.Id, DateTime.UtcNow));
                 _logger.LogInformation(
-                    "Access token [{token}] has been added to revocation list. Access token is revoked",
+                    "Access token [{Token}] has been added to revocation list. Access token is revoked",
                     token);
             }
             else
             {
                 _logger.LogInformation(
-                    "Access token [{token}] has already been revoked",
+                    "Access token [{Token}] has already been revoked",
                     token);
             }
 
@@ -81,7 +81,7 @@ public sealed class RevokeApplicationService(
         else
         {
             _logger.LogWarning(
-                "Access token [{token}] does not have identfier. Access token cannot be revoked",
+                "Access token [{Token}] does not have identfier. Access token cannot be revoked",
                 token);
             //// If token was read, so it is a access token. Marked it as handled
             return true;

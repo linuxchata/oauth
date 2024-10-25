@@ -21,5 +21,4 @@ public sealed class AuthorizationServerSecurityConfiguration
     public string? PrivateCertificatePath { get; set; }
 
     public string? PrivateCertificatePassword { get; set; }
-
 }

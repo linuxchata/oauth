@@ -5,11 +5,11 @@ namespace Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
 public interface IRegisterApplicationService
 {
-    Task<RegisterInternalBaseResponse> Read(string clientId);
+    Task<IRegisterInternalResponse> Read(string clientId);
 
-    Task<RegisterInternalBaseResponse> Post(RegisterInternalRequest request);
+    Task<IRegisterInternalResponse> Post(RegisterInternalRequest request);
 
-    Task<RegisterInternalBaseResponse> Put(string clientId, RegisterUpdateInternalRequest request);
+    Task<IRegisterInternalResponse> Put(string clientId, RegisterUpdateInternalRequest request);
 
-    Task<RegisterInternalBaseResponse> Delete(string clientId);
+    Task<IRegisterInternalResponse> Delete(string clientId);
 }
