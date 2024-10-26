@@ -270,7 +270,7 @@ public sealed class RegisterApplicationService(
 
             if (grandType.EqualsTo(GrantType.AuthorizationCode))
             {
-                var codeResponseType = responseTypesList.FirstOrDefault(t => t.EqualsTo(ResponseType.Code));
+                var codeResponseType = responseTypesList.Find(t => t.EqualsTo(ResponseType.Code));
 
                 if (codeResponseType is null)
                 {
@@ -279,7 +279,7 @@ public sealed class RegisterApplicationService(
             }
             else if (grandType.EqualsTo(GrantType.Implicit))
             {
-                var tokenResponseType = responseTypesList.FirstOrDefault(t => t.EqualsTo(ResponseType.Token));
+                var tokenResponseType = responseTypesList.Find(t => t.EqualsTo(ResponseType.Token));
 
                 if (tokenResponseType is null)
                 {

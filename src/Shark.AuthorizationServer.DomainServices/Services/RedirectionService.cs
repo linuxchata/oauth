@@ -20,6 +20,7 @@ public sealed class RedirectionService : IRedirectionService
         ArgumentException.ThrowIfNullOrWhiteSpace(returnUrl);
 
         // Parse parameters from query string to rebuild URL to Autorize endpoint
+        // TODO: Review need for localhost
         var returnUri = new Uri("http://localhost/" + returnUrl); // Fix issue with parsing query string
         var returnUriQueryString = returnUri.Query;
         var responseType = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ResponseType);

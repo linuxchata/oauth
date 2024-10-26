@@ -1,9 +1,17 @@
+using System.Security.Authentication;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.ApplicationServices;
 using Shark.Sample.Client.Models;
 using Shark.Sample.Client.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ConfigureHttpsDefaults(listenOptions =>
+    {
+        listenOptions.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
+    });
+});
 
 // Add services to the container.
 builder.Logging.AddSimpleConsole(options =>

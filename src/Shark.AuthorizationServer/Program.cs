@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using Prometheus;
 using Shark.AuthorizationServer.Core;
 using Shark.AuthorizationServer.DomainServices;
@@ -5,6 +6,13 @@ using Shark.AuthorizationServer.Extensions;
 using Shark.AuthorizationServer.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ConfigureHttpsDefaults(listenOptions =>
+    {
+        listenOptions.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
+    });
+});
 
 // Add services to the container.
 builder.Logging.AddSimpleConsole(options =>
