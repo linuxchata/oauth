@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Shark.AuthorizationServer.Pages;
+namespace Shark.AuthorizationServer.Pages.Device;
 
 public sealed class DeviceAuthorizeCompleteModel : PageModel
 {
