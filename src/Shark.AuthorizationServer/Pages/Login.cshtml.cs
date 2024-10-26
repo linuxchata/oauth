@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
-using Shark.AuthorizationServer.Helpers;
 
 namespace Shark.AuthorizationServer.Pages;
 
@@ -45,7 +44,8 @@ public sealed class LoginModel(
     {
         await _loginService.SignIn(userName, selectedScopes);
 
-        var authorizeUrl = _redirectionService.BuildAuthorizeUrl(returnUrl, selectedScopes);
-        HttpContext.Response.Redirect(authorizeUrl);
+        var authorizeEndpointUrl = _redirectionService.BuildAuthorizeUrl(returnUrl, selectedScopes);
+
+        HttpContext.Response.Redirect(authorizeEndpointUrl);
     }
 }
