@@ -26,7 +26,7 @@ public sealed class RegisterApplicationService(
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public async Task<IRegisterInternalResponse> Read(string clientId)
+    public async Task<IRegisterInternalResponse> ExecuteRead(string clientId)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
 
@@ -39,7 +39,7 @@ public sealed class RegisterApplicationService(
         return client.ToInternalResponse();
     }
 
-    public async Task<IRegisterInternalResponse> Post(RegisterInternalRequest request)
+    public async Task<IRegisterInternalResponse> ExecutePost(RegisterInternalRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -54,7 +54,7 @@ public sealed class RegisterApplicationService(
         return client.ToInternalResponse();
     }
 
-    public async Task<IRegisterInternalResponse> Put(string clientId, RegisterUpdateInternalRequest request)
+    public async Task<IRegisterInternalResponse> ExecutePut(string clientId, RegisterUpdateInternalRequest request)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
         ArgumentNullException.ThrowIfNull(request, nameof(request));
@@ -88,7 +88,7 @@ public sealed class RegisterApplicationService(
         return newClient.ToInternalResponse();
     }
 
-    public async Task<IRegisterInternalResponse> Delete(string clientId)
+    public async Task<IRegisterInternalResponse> ExecuteDelete(string clientId)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
 

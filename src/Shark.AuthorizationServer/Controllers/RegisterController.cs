@@ -27,7 +27,7 @@ public class RegisterController(IRegisterApplicationService applicationService) 
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Read([FromRoute] string clientId)
     {
-        var internalResponse = await _applicationService.Read(clientId);
+        var internalResponse = await _applicationService.ExecuteRead(clientId);
 
         switch (internalResponse)
         {
@@ -52,7 +52,7 @@ public class RegisterController(IRegisterApplicationService applicationService) 
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Post([FromBody] RegisterRequest request)
     {
-        var internalResponse = await _applicationService.Post(request.ToInternalRequest());
+        var internalResponse = await _applicationService.ExecutePost(request.ToInternalRequest());
 
         switch (internalResponse)
         {
@@ -77,7 +77,7 @@ public class RegisterController(IRegisterApplicationService applicationService) 
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Put(string clientId, [FromBody] RegisterUpdateRequest request)
     {
-        var internalResponse = await _applicationService.Put(clientId, request.ToInternalRequest());
+        var internalResponse = await _applicationService.ExecutePut(clientId, request.ToInternalRequest());
 
         switch (internalResponse)
         {
@@ -101,7 +101,7 @@ public class RegisterController(IRegisterApplicationService applicationService) 
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete([FromRoute] string clientId)
     {
-        var internalResponse = await _applicationService.Delete(clientId);
+        var internalResponse = await _applicationService.ExecuteDelete(clientId);
 
         switch (internalResponse)
         {
