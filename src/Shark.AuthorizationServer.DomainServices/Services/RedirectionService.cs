@@ -1,27 +1,29 @@
 ﻿using System.Web;
+using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
+using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.DomainServices.Services;
 
-public sealed class RedirectionService : IRedirectionService
+public sealed class RedirectionService(
+    IOptions<AuthorizationServerConfiguration> options) : IRedirectionService
 {
+    private const string PlaceholderHostName = "http://localhost/";
+
+    private readonly AuthorizationServerConfiguration _configuration = options.Value;
+
     public string? GetClientId(string returnUrl)
     {
         return HttpUtility.ParseQueryString(returnUrl)?.Get(QueryParam.ClientId);
     }
 
-    public string BuildAuthorizeUrl(
-        string authorizationServerUri,
-        string returnUrl,
-        string[] scopes)
+    public string BuildAuthorizeUrl(string returnUrl, string[] scopes)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(authorizationServerUri);
-        ArgumentException.ThrowIfNullOrWhiteSpace(returnUrl);
+        ArgumentException.ThrowIfNullOrWhiteSpace(returnUrl, nameof(returnUrl));
 
         // Parse parameters from query string to rebuild URL to Autorize endpoint
-        // TODO: Review need for localhost
-        var returnUri = new Uri("http://localhost/" + returnUrl); // Fix issue with parsing query string
+        var returnUri = new Uri(PlaceholderHostName + returnUrl); // Fix issue with parsing query string
         var returnUriQueryString = returnUri.Query;
         var responseType = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ResponseType);
         var clientId = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.ClientId);
@@ -31,7 +33,7 @@ public sealed class RedirectionService : IRedirectionService
         var redirectUrl = HttpUtility.ParseQueryString(returnUriQueryString)?.Get(QueryParam.RedirectUri);
 
         // Rebuild URL to Autorize endpoint (mostly validation purpose)
-        var uriBuilder = new UriBuilder(authorizationServerUri)
+        var uriBuilder = new UriBuilder(_configuration.AuthorizationServerUri)
         {
             Path = returnUri.LocalPath,
         };
@@ -80,8 +82,8 @@ public sealed class RedirectionService : IRedirectionService
 
     public string BuildClientCallbackUrl(string redirectUri, string code, string[] scopes, string? state)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(redirectUri);
-        ArgumentException.ThrowIfNullOrWhiteSpace(code);
+        ArgumentException.ThrowIfNullOrWhiteSpace(redirectUri, nameof(redirectUri));
+        ArgumentException.ThrowIfNullOrWhiteSpace(code, nameof(code));
 
         var uriBuilder = new UriBuilder(redirectUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -105,9 +107,9 @@ public sealed class RedirectionService : IRedirectionService
 
     public string BuildClientCallbackUrl(string redirectUri, string token, string tokenType)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(redirectUri);
-        ArgumentException.ThrowIfNullOrWhiteSpace(token);
-        ArgumentException.ThrowIfNullOrWhiteSpace(tokenType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(redirectUri, nameof(redirectUri));
+        ArgumentException.ThrowIfNullOrWhiteSpace(token, nameof(token));
+        ArgumentException.ThrowIfNullOrWhiteSpace(tokenType, nameof(tokenType));
 
         var uriBuilder = new UriBuilder(redirectUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);

@@ -45,8 +45,7 @@ public sealed class LoginModel(
     {
         await _loginService.SignIn(userName, selectedScopes);
 
-        var authorizationServerUri = HttpContext.Request.GetUri();
-        var authorizeUrl = _redirectionService.BuildAuthorizeUrl(authorizationServerUri, returnUrl, selectedScopes);
+        var authorizeUrl = _redirectionService.BuildAuthorizeUrl(returnUrl, selectedScopes);
         HttpContext.Response.Redirect(authorizeUrl);
     }
 }
