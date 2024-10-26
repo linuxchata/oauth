@@ -10,6 +10,10 @@ html {
     }
 }
 
+h1 {
+    margin-bottom: 30px;
+}
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -18,6 +22,65 @@ body {
     margin-bottom: 60px;
 }
 
-.form-input{
+.form-input {
     width: 200px;
 }
+
+input[type="submit"] {
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+    input[type="submit"]:hover {
+        background-color: darkorange;
+    }
+
+input[type="text"] {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+    input[type="text"]:focus {
+        border-color: orange;
+        box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+        outline: none;
+    }
+
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+    input[type="checkbox"]:checked {
+        background-color: orange;
+        border-color: orange;
+    }
+
+        input[type="checkbox"]:checked::before {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 3px;
+            width: 6px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
