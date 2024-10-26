@@ -1,10 +1,9 @@
 ﻿using System.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
-using Shark.AuthorizationServer.Core.Constants;
+using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 using Shark.AuthorizationServer.Domain;
@@ -15,6 +14,7 @@ using Shark.AuthorizationServer.DomainServices.Constants;
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class DeviceAuthorizationApplicationService(
+    IDeviceAuthorizationValidator deviceAuthorizationValidator,
     IStringGeneratorService stringGeneratorService,
     IClientRepository clientRepository,
     IDevicePersistedGrantRepository devicePersistedGrantRepository,
@@ -29,6 +29,7 @@ public sealed class DeviceAuthorizationApplicationService(
     // should wait between polling requests to the token endpoint.
     private const int IntervalInSeconds = 5;
 
+    private readonly IDeviceAuthorizationValidator _deviceAuthorizationValidator = deviceAuthorizationValidator;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IDevicePersistedGrantRepository _devicePersistedGrantRepository = devicePersistedGrantRepository;
@@ -41,36 +42,13 @@ public sealed class DeviceAuthorizationApplicationService(
 
         var client = await _clientRepository.Get(request.ClientId);
 
-        var response = ValidateRequest(request, client);
+        var response = _deviceAuthorizationValidator.ValidateRequest(request, client);
         if (response != null)
         {
             return response;
         }
 
         return await Handle(request, client!);
-    }
-
-    private DeviceAuthorizationBadRequestResponse? ValidateRequest(DeviceAuthorizationInternalRequest request, Client? client)
-    {
-        if (client is null)
-        {
-            _logger.LogWarning("Unknown client with identifier [{ClientId}]", request.ClientId);
-            return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
-        }
-
-        if (!request.ClientSecret.EqualsTo(client.ClientSecret))
-        {
-            _logger.LogWarning("Invalid client secret for client [{ClientId}]", request.ClientId);
-            return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
-        }
-
-        if (!client.GrantTypes.ToHashSet().Contains(GrantType.DeviceCode))
-        {
-            _logger.LogWarning("Invalid grant for client [{ClientId}]", request.ClientId);
-            return new DeviceAuthorizationBadRequestResponse(Error.InvalidGrant);
-        }
-
-        return null;
     }
 
     private async Task<DeviceAuthorizationResponse> Handle(DeviceAuthorizationInternalRequest request, Client client)

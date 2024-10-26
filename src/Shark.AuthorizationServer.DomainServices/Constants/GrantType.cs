@@ -23,4 +23,14 @@ public static class GrantType
         GrantType.ClientCredentials,
         GrantType.DeviceCode,
     ];
+
+    public readonly static string[] SupportedGrantTypes =
+    [
+        GrantType.AuthorizationCode,
+        GrantType.RefreshToken,
+        GrantType.Implicit,
+        GrantType.ClientCredentials,
+        GrantType.ResourceOwnerCredentials,
+        GrantType.DeviceCode
+    ];
 }

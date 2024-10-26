@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
+using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Authorize;
@@ -16,6 +17,7 @@ using Shark.AuthorizationServer.DomainServices.Constants;
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class AuthorizeApplicationService(
+    IAuthorizeValidator authorizeValidator,
     IStringGeneratorService stringGeneratorService,
     IAccessTokenGeneratorService accessTokenGeneratorService,
     IRedirectionService redirectionService,
@@ -27,6 +29,7 @@ public sealed class AuthorizeApplicationService(
 {
     private const int AuthorizationCodeExpirationInSeconds = 30;
 
+    private readonly IAuthorizeValidator _authorizeValidator = authorizeValidator;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IRedirectionService _redirectionService = redirectionService;
@@ -42,7 +45,7 @@ public sealed class AuthorizeApplicationService(
 
         var client = await _clientRepository.Get(request.ClientId);
 
-        var response = ValidateRequest(request, client);
+        var response = _authorizeValidator.ValidateRequest(request, client);
         if (response != null)
         {
             return response;
@@ -58,40 +61,6 @@ public sealed class AuthorizeApplicationService(
         }
 
         return HandleUnsupportedResponseType(request.ResponseType, client!);
-    }
-
-    private AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request, Client? client)
-    {
-        if (client is null)
-        {
-            _logger.LogWarning("Unknown client with identifier [{ClientId}]", request.ClientId);
-            return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
-        }
-
-        if (!client.RedirectUris.Contains(request.RedirectUri))
-        {
-            _logger.LogWarning(
-                "Mismatched redirect URL [{RedirectUri}] for client [{ClientId}]",
-                request.RedirectUri,
-                request.ClientId);
-            return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
-        }
-
-        var allowedClientScopes = client.Scope.ToHashSet();
-        var scopes = request.Scopes;
-        foreach (var scope in scopes)
-        {
-            if (!allowedClientScopes.Contains(scope))
-            {
-                _logger.LogWarning(
-                    "Mismatched scope [{Scope}] for client [{ClientId}]",
-                    scope,
-                    request.ClientId);
-                return new AuthorizeInternalBadRequestResponse(Error.InvalidScope);
-            }
-        }
-
-        return null;
     }
 
     private static bool IsResponseType(string responseType, string expectedResponseType)

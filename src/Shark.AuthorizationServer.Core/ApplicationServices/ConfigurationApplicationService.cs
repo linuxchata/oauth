@@ -56,8 +56,8 @@ public sealed class ConfigurationApplicationService(
             DeviceAuthorizationEndpoint = deviceAuthorizationEndpoint.ToString(),
             ScopesSupported = [Scope.OpenId, Scope.Profile, Scope.Email, Scope.Address, Scope.Phone],
             ClaimsSupported = [JwtRegisteredClaimNames.Sub, JwtRegisteredClaimNames.Name],
-            GrantTypesSupported = [GrantType.AuthorizationCode, GrantType.RefreshToken, GrantType.Implicit, GrantType.ClientCredentials, GrantType.ResourceOwnerCredentials, GrantType.DeviceCode],
-            ResponseTypesSupported = [ResponseType.Code, ResponseType.Token],
+            GrantTypesSupported = GrantType.SupportedGrantTypes,
+            ResponseTypesSupported = ResponseType.SupportedResponseTypes,
             SubjectTypesSupported = ["public"],
             TokenEndpointAuthMethodsSupported = [ClientAuthMethod.ClientSecretBasic],
             TokenEndpointAuthSigningAlgValuesSupported = [_configuration.SecurityAlgorithms],
@@ -79,7 +79,8 @@ public sealed class ConfigurationApplicationService(
             return GetHs256Response();
         }
 
-        throw new InvalidOperationException($"Unsupported signature algorithms {_securityConfiguration.SecurityAlgorithms}");
+        throw new InvalidOperationException(
+            $"Unsupported signature algorithms {_securityConfiguration.SecurityAlgorithms}");
     }
 
     private Task<ConfigurationJwksResponse> GetRs256Response()

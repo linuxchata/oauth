@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
+using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.ApplicationServices;
 using Shark.AuthorizationServer.Core.Services;
+using Shark.AuthorizationServer.Core.Validators;
 
 namespace Shark.AuthorizationServer.Core;
 
@@ -10,6 +12,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
     {
+        services.AddTransient<IAuthorizeValidator, AuthorizeValidator>();
+        services.AddTransient<IDeviceAuthorizationValidator, DeviceAuthorizationValidator>();
+
         services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
         services.AddTransient<ITokenApplicationService, TokenApplicationService>();
         services.AddTransient<IIntrospectApplicationService, IntrospectApplicationService>();
