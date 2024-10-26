@@ -2,14 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
-using Shark.AuthorizationServer.Client.Authentication;
-using Shark.AuthorizationServer.Client.Constants;
-using Shark.AuthorizationServer.Client.Models;
-using Shark.AuthorizationServer.Client.Services;
 using Shark.AuthorizationServer.Common;
 using Shark.AuthorizationServer.Common.Abstractions;
+using Shark.AuthorizationServer.Sdk.Authentication;
+using Shark.AuthorizationServer.Sdk.Constants;
+using Shark.AuthorizationServer.Sdk.Models;
+using Shark.AuthorizationServer.Sdk.Services;
 
-namespace Shark.AuthorizationServer.Client.Extensions;
+namespace Shark.AuthorizationServer.Sdk.Extensions;
 
 public static class ApplicationBuilderExtentions
 {

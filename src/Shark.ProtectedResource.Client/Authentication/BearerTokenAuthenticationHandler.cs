@@ -3,11 +3,11 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shark.AuthorizationServer.Client.Constants;
-using Shark.AuthorizationServer.Client.Models;
-using Shark.AuthorizationServer.Client.Services;
+using Shark.AuthorizationServer.Sdk.Constants;
+using Shark.AuthorizationServer.Sdk.Models;
+using Shark.AuthorizationServer.Sdk.Services;
 
-namespace Shark.AuthorizationServer.Client.Authentication;
+namespace Shark.AuthorizationServer.Sdk.Authentication;
 
 public sealed class BearerTokenAuthenticationHandler(
     IBearerTokenHandlingService bearerTokenHandlingService,

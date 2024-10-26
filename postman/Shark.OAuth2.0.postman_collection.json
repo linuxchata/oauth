@@ -1043,7 +1043,7 @@
 	"variable": [
 		{
 			"key": "HostUri",
-			"value": "https://localhost:9000",
+			"value": "https://localhost:7000",
 			"type": "string"
 		},
 		{

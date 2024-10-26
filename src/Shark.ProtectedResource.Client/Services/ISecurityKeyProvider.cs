@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 
-namespace Shark.AuthorizationServer.Client.Services;
+namespace Shark.AuthorizationServer.Sdk.Services;
 
 public interface ISecurityKeyProvider
 {

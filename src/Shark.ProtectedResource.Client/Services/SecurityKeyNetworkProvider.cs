@@ -2,10 +2,10 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Shark.AuthorizationServer.Client.Models;
 using Shark.AuthorizationServer.Common.Extensions;
+using Shark.AuthorizationServer.Sdk.Models;
 
-namespace Shark.AuthorizationServer.Client.Services;
+namespace Shark.AuthorizationServer.Sdk.Services;
 
 /// <summary>
 /// SecurityKey provider for authorization server clients.

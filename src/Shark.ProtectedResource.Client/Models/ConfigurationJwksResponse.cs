@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Shark.AuthorizationServer.Client.Models;
+namespace Shark.AuthorizationServer.Sdk.Models;
 
 public sealed class ConfigurationJwksResponse
 {

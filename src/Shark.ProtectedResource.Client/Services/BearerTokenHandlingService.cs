@@ -4,11 +4,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
-using Shark.AuthorizationServer.Client.Constants;
-using Shark.AuthorizationServer.Client.Models;
 using Shark.AuthorizationServer.Common.Abstractions;
+using Shark.AuthorizationServer.Sdk.Constants;
+using Shark.AuthorizationServer.Sdk.Models;
 
-namespace Shark.AuthorizationServer.Client.Services;
+namespace Shark.AuthorizationServer.Sdk.Services;
 
 public sealed class BearerTokenHandlingService(
     SecurityKey securityKey,

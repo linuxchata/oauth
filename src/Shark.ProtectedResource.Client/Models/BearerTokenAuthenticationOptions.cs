@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 
-namespace Shark.AuthorizationServer.Client.Models;
+namespace Shark.AuthorizationServer.Sdk.Models;
 
 public sealed class BearerTokenAuthenticationOptions : AuthenticationSchemeOptions
 {
