@@ -44,7 +44,10 @@ public static class ApplicationBuilderExtentions
         // However, this approach does not support non-browser-based flows.
         services
             .AddAuthentication(Scheme.Cookies)
-            .AddCookie();
+            .AddCookie(options =>
+            {
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
 
         // Basic authentication.
         services

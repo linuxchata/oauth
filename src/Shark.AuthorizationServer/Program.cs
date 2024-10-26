@@ -58,6 +58,20 @@ app.UseSwaggerUI();
 app.UseHsts();
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+    // Add anti-clickjacking headers
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'none'");
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+
+    // Remove proxy disclosure headers
+    context.Response.Headers.Remove("Server");
+    context.Response.Headers.Remove("X-Powered-By");
+
+    await next();
+});
+
 app.UseStaticFiles();
 
 app.UseRouting();
