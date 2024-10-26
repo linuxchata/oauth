@@ -1,4 +1,6 @@
 using System.Security.Authentication;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Prometheus;
 using Shark.AuthorizationServer.Core;
 using Shark.AuthorizationServer.DomainServices;
@@ -42,6 +44,8 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 app.UseMetricServer();
@@ -81,5 +85,16 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    AllowCachingResponses = false,
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+        [HealthStatus.Degraded] = StatusCodes.Status200OK,
+        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
+    },
+});
 
 await app.RunAsync();
