@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.Sample.ProtectedResou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.Sample.Client", "Shark.Sample.Client\Shark.Sample.Client.csproj", "{9F07AE1E-40A0-432E-9EC7-D5BC9B6129D8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.Sdk", "Shark.ProtectedResource.Client\Shark.AuthorizationServer.Sdk.csproj", "{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.Sdk", "Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj", "{E3DF3ACD-B57A-4939-9133-B8DE6685F3D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.Core", "Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj", "{968D7017-2893-49FB-900C-6A73C9B748BA}"
 EndProject

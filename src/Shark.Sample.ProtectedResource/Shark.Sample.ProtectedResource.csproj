@@ -6,7 +6,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shark.ProtectedResource.Client\Shark.AuthorizationServer.Sdk.csproj" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" />
   </ItemGroup>
 
 </Project>
