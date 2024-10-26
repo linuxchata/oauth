@@ -7,6 +7,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Keys\RS256.Private.pem" />
+    <None Remove="Keys\RS256.Public.pem" />
+    <None Remove="Keys\shark-dev.crt" />
+    <None Remove="Keys\shark-dev.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Keys\RS256.Private.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Keys\RS256.Public.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Keys\shark-dev.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Keys\shark-dev.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="prometheus-net" Version="8.2.1" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
@@ -22,7 +44,6 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Keys\" />
   </ItemGroup>
 
   <ItemGroup>
