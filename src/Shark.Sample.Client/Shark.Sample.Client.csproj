@@ -4,4 +4,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" />
+  </ItemGroup>
+
 </Project>

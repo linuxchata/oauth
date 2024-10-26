@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using Shark.AuthorizationServer.Common;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Constants;
@@ -18,22 +17,6 @@ public sealed class ProofKeyForCodeExchangeService : IProofKeyForCodeExchangeSer
             throw new ArgumentException("Unknown code challenge method");
         }
 
-        return GetCodeChallenge(codeVerifier);
-    }
-
-    private static string GetCodeChallenge(string codeVerifier)
-    {
-        var bytes = Encoding.ASCII.GetBytes(codeVerifier);
-        var hash = SHA256.HashData(bytes);
-        return Base64UrlEncode(hash);
-    }
-
-    private static string Base64UrlEncode(byte[] input)
-    {
-        // Convert to base64, then replace URL-unsafe characters and trim padding.
-        return Convert.ToBase64String(input)
-            .Replace('+', '-')
-            .Replace('/', '_')
-            .TrimEnd('=');
+        return ProofKeyForCodeExchangeProvider.GetCodeChallenge(codeVerifier);
     }
 }

@@ -1,7 +1,7 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
+using Shark.AuthorizationServer.Common;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Models;
 
@@ -22,7 +22,7 @@ public sealed class ProofKeyForCodeExchangeService(
         ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
 
         var codeVerifier = _stringGeneratorService.GenerateCodeVerifier();
-        var codeChallenge = GetCodeChallenge(codeVerifier);
+        var codeChallenge = ProofKeyForCodeExchangeProvider.GetCodeChallenge(codeVerifier);
 
         var pkce = new ProofKeyForCodeExchange
         {
@@ -53,22 +53,6 @@ public sealed class ProofKeyForCodeExchangeService(
         }
 
         return null;
-    }
-
-    private static string GetCodeChallenge(string codeVerifier)
-    {
-        var bytes = Encoding.ASCII.GetBytes(codeVerifier);
-        var hash = SHA256.HashData(bytes);
-        return Base64UrlEncode(hash);
-    }
-
-    private static string Base64UrlEncode(byte[] input)
-    {
-        // Convert to base64, then replace URL-unsafe characters and trim padding.
-        return Convert.ToBase64String(input)
-            .Replace('+', '-')
-            .Replace('/', '_')
-            .TrimEnd('=');
     }
 
     private static string GetKey(string state)
