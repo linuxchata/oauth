@@ -53,11 +53,11 @@ public sealed class AuthorizeApplicationService(
 
         if (IsResponseType(request.ResponseType, ResponseType.Code))
         {
-            return await HandleCodeResponseType(request, client!);
+            return await HandleCodeResponse(request, client!);
         }
         else if (IsResponseType(request.ResponseType, ResponseType.Token))
         {
-            return HandleTokenResponseType(request, client!);
+            return HandleTokenResponse(request, client!);
         }
 
         return HandleUnsupportedResponseType(request.ResponseType, client!);
@@ -68,7 +68,7 @@ public sealed class AuthorizeApplicationService(
         return responseType.EqualsTo(expectedResponseType);
     }
 
-    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponseType(
+    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponse(
         AuthorizeInternalRequest request,
         Client client)
     {
@@ -90,7 +90,7 @@ public sealed class AuthorizeApplicationService(
         return new AuthorizeInternalCodeResponse(redirectUrl);
     }
 
-    private AuthorizeInternalTokenResponse HandleTokenResponseType(AuthorizeInternalRequest request, Client client)
+    private AuthorizeInternalTokenResponse HandleTokenResponse(AuthorizeInternalRequest request, Client client)
     {
         _logger.LogInformation(
             "Issuing access token for client [{ClientId}]. Response type is {ResponseType}",

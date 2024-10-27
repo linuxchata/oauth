@@ -7,8 +7,7 @@ using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.Validators;
 
-public sealed class AuthorizeValidator(
-    ILogger<AuthorizeValidator> logger) : IAuthorizeValidator
+public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAuthorizeValidator
 {
     private readonly ILogger<AuthorizeValidator> _logger = logger;
 
