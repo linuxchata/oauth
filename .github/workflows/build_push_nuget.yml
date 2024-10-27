@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - src/**
+      - src/Shark.AuthorizationServer.Sdk/**
+      - src/Shark.AuthorizationServer.Common/**
   workflow_dispatch:
 
 jobs:
@@ -25,10 +26,10 @@ jobs:
       run: dotnet build ./src/Shark.AuthorizationServer.Sdk/Shark.AuthorizationServer.Sdk.csproj --configuration Release --no-restore
 
     - name: Pack with dotnet
-      run: dotnet pack ./src/Shark.AuthorizationServer.Sdk/Shark.AuthorizationServer.Sdk.csproj --configuration Release --no-restore
+      run: dotnet pack ./src/Shark.AuthorizationServer.Sdk/Shark.AuthorizationServer.Sdk.csproj --configuration Release --no-restore --output ./nupkg
 
     - name: Add nuget source
       run: dotnet nuget add source --username linuxchata --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/linuxchata/index.json"
 
     - name: Push nuget
-      run: dotnet nuget push "Shark.AuthorizationServer.Sdk.1.0.0.nupkg" --source "github"
+      run: dotnet nuget push "./nupkg/Shark.AuthorizationServer.Sdk.*.nupkg" --api-key ${{ secrets.OAUTH_GITHUB_PAT }} --source "github"
