@@ -2,11 +2,11 @@ name: build_push_nuget
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
     paths:
       - src/**
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
