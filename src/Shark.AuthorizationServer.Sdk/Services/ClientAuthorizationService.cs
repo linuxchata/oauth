@@ -14,8 +14,30 @@ public sealed class ClientAuthorizationService(
 
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public string BuildLoginPageUrl(string responseType, string? state, ProofKeyForCodeExchange? pkce = null)
+    public string BuildLoginPageUrl(string responseType, string state)
     {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
+
+        return BuildLoginPageUrlInternal(responseType, state);
+    }
+
+    public string BuildLoginPageUrl(string responseType, string state, ProofKeyForCodeExchange pkce)
+    {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
+        ArgumentNullException.ThrowIfNull(pkce, nameof(pkce));
+
+        return BuildLoginPageUrlInternal(responseType, state, pkce);
+    }
+
+    public string BuildLoginPageUrl(string responseType)
+    {
+        return BuildLoginPageUrlInternal(responseType, null);
+    }
+
+    private string BuildLoginPageUrlInternal(string responseType, string? state, ProofKeyForCodeExchange? pkce = null)
+    {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(responseType, nameof(responseType));
+
         // Create Return URL
         var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);

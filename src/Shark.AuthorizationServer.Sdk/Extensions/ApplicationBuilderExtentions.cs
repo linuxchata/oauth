@@ -41,6 +41,19 @@ public static class ApplicationBuilderExtentions
         return services;
     }
 
+    public static IServiceCollection AddSharkClient(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<AuthorizationServerConfiguration>(
+            configuration.GetSection(AuthorizationServerConfiguration.Name));
+
+        services.AddTransient<IClientAuthorizationService, ClientAuthorizationService>();
+        services.AddTransient<IClientAccessTokenService, ClientAccessTokenService>();
+
+        return services;
+    }
+
     private static async Task<SecurityKey> GetSecurityKey(IServiceCollection services)
     {
         services.AddHttpClient();
