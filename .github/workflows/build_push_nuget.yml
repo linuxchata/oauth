@@ -1,0 +1,34 @@
+name: build_push_nuget
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - src/**
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore ./src/Shark.AuthorizationServer.Sdk/Shark.AuthorizationServer.Sdk.csproj
+
+    - name: Build with dotnet
+      run: dotnet build ./src/Shark.AuthorizationServer.Sdk/Shark.AuthorizationServer.Sdk.csproj --configuration Release --no-restore
+
+    - name: Pack with dotnet
+      run: dotnet pack ./src/Shark.AuthorizationServer.Sdk/Shark.AuthorizationServer.Sdk.csproj --configuration Release --no-restore
+
+    - name: Add nuget source
+      run: dotnet nuget add source --username linuxchata --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/linuxchata/index.json"
+
+    - name: Push nuget
+      run: dotnet nuget push "Shark.AuthorizationServer.Sdk.1.0.0.nupkg" --source "github"
