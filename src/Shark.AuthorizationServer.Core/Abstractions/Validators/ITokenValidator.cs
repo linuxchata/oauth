@@ -11,9 +11,11 @@ public interface ITokenValidator
         TokenInternalRequest request,
         Client? client,
         ClaimsPrincipal claimsPrincipal);
+
     TokenInternalBadRequestResponse? ValidateCodeGrant(
         PersistedGrant? persistedGrant,
         TokenInternalRequest request);
+
     TokenInternalBadRequestResponse? ValidateRefreshTokenGrant(
         PersistedGrant? persistedGrant,
         TokenInternalRequest request);
