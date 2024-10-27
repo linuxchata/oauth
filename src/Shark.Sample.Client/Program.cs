@@ -11,6 +11,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     {
         listenOptions.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
     });
+    serverOptions.AddServerHeader = false;
 });
 
 // Add services to the container.

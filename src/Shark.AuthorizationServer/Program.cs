@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -52,6 +53,12 @@ builder.Services.AddHsts(options =>
     options.MaxAge = TimeSpan.FromDays(30);
 });
 
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+    options.HttpsPort = 443;
+});
+
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
@@ -62,12 +69,12 @@ app.UseMetricServer();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHsts();
 app.UseHttpsRedirection();
 
 app.Use(async (context, next) =>
