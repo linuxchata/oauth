@@ -14,6 +14,7 @@ public static class DependencyInjection
     {
         services.AddTransient<IAuthorizeValidator, AuthorizeValidator>();
         services.AddTransient<IDeviceAuthorizationValidator, DeviceAuthorizationValidator>();
+        services.AddTransient<ITokenValidator, TokenValidator>();
 
         services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
         services.AddTransient<ITokenApplicationService, TokenApplicationService>();
