@@ -6,6 +6,7 @@ using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Token;
 using Shark.AuthorizationServer.Domain;
+using Shark.AuthorizationServer.Domain.Extensions;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Constants;
 
@@ -129,6 +130,13 @@ public sealed class TokenValidator(
             }
         }
 
+        // Validate expiration
+        if (persistedGrant.HasExpired())
+        {
+            _logger.LogWarning("Persisted grant {GrantType} has expired", GrantType.AuthorizationCode);
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
         return null;
     }
 
@@ -157,29 +165,36 @@ public sealed class TokenValidator(
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
+        // Validate expiration
+        if (persistedGrant.HasExpired())
+        {
+            _logger.LogWarning("Persisted grant {GrantType} has expired", GrantType.RefreshToken);
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
         return null;
     }
 
     public TokenInternalBadRequestResponse? ValidateDeviceCodeGrant(
-        DevicePersistedGrant? persistedGrant,
+        DevicePersistedGrant? devicePersistedGrant,
         TokenInternalRequest request)
     {
         // Validate grant
-        if (persistedGrant is null)
+        if (devicePersistedGrant is null)
         {
             _logger.LogWarning("Persistent grant was not found");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate grant's client
-        if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
+        if (!devicePersistedGrant.ClientId.EqualsTo(request.ClientId))
         {
             _logger.LogWarning("Mismatched client identifier for {GrantType} persisted grant", GrantType.DeviceCode);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate grant's scopes
-        var allowedScopes = persistedGrant.Scopes.ToHashSet();
+        var allowedScopes = devicePersistedGrant.Scopes.ToHashSet();
         foreach (var scope in request.Scopes)
         {
             if (!allowedScopes.Contains(scope))
@@ -190,9 +205,16 @@ public sealed class TokenValidator(
         }
 
         // Validate grant's device code
-        if (!persistedGrant.DeviceCode.EqualsTo(request.DeviceCode))
+        if (!devicePersistedGrant.DeviceCode.EqualsTo(request.DeviceCode))
         {
             _logger.LogWarning("Mismatched device code for {GrantType} persisted grant", GrantType.DeviceCode);
+            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
+        }
+
+        // Validate expiration
+        if (devicePersistedGrant.HasExpired())
+        {
+            _logger.LogWarning("Persisted grant {GrantType} has expired", GrantType.DeviceCode);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
