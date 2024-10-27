@@ -14,6 +14,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     {
         listenOptions.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
     });
+    serverOptions.AddServerHeader = false;
 });
 
 // Add services to the container.
@@ -78,10 +79,6 @@ app.Use(async (context, next) =>
 
     // Restrict from unauthorized access or usage of browser / client features by web resources
     context.Response.Headers.Append("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
-
-    // Remove proxy disclosure headers
-    context.Response.Headers.Remove("Server");
-    context.Response.Headers.Remove("X-Powered-By");
 
     await next();
 });
