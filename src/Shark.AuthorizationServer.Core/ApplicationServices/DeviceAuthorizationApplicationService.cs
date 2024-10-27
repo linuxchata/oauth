@@ -105,7 +105,7 @@ public sealed class DeviceAuthorizationApplicationService(
             DeviceCode = deviceCode,
             UserCode = userCode,
             IsAuthorized = false,
-            CreatedDate = DateTime.Now,
+            CreatedDate = DateTime.UtcNow,
             ExpiredIn = expiresIn,
         };
 

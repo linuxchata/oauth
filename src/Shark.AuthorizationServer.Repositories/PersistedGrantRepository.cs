@@ -30,7 +30,7 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
     {
         var cacheEntryOptions = new DistributedCacheEntryOptions
         {
-            AbsoluteExpiration = DateTime.Now.AddSeconds(item.ExpiredIn),
+            AbsoluteExpiration = item.CreatedDate.AddSeconds(item.ExpiredIn),
         };
 
         var serializedItem = JsonSerializer.Serialize(item);

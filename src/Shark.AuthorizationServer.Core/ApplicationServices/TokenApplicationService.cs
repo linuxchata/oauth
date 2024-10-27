@@ -221,6 +221,7 @@ public sealed class TokenApplicationService(
             AccessTokenId = accessToken.Id, // Jti (token identifier) is needed to revoke refresh token when access token is revoked
             Value = refreshToken,
             UserName = userName,
+            CreatedDate = DateTime.UtcNow,
             ExpiredIn = _configuration.AccessTokenExpirationInSeconds * 24,
         };
 

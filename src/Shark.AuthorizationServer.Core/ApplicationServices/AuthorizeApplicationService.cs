@@ -113,6 +113,7 @@ public sealed class AuthorizeApplicationService(
             "Unsupported response type {ResponseType}. Client is [{ClientId}]",
             responseType,
             client.ClientId);
+
         return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
     }
 
@@ -130,6 +131,7 @@ public sealed class AuthorizeApplicationService(
             UserName = userName,
             CodeChallenge = request.CodeChallenge,
             CodeChallengeMethod = request.CodeChallengeMethod,
+            CreatedDate = DateTime.UtcNow,
             ExpiredIn = AuthorizationCodeExpirationInSeconds,
         };
 
