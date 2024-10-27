@@ -3,9 +3,9 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
-using Shark.AuthorizationServer.Sdk.Services;
 
 namespace Shark.AuthorizationServer.Sdk.Authentication;
 
@@ -46,7 +46,7 @@ public sealed class BearerTokenAuthenticationHandler(
         }
 
         // Add scopes claims
-        var scopeClaims = tokenIdentity.Scopes?.Select(s => new Claim(ClaimType.Scope, s)) ?? Enumerable.Empty<Claim>();
+        var scopeClaims = tokenIdentity.Scopes?.Select(s => new Claim(ClaimType.Scope, s)) ?? [];
         claims.AddRange(scopeClaims);
 
         var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);

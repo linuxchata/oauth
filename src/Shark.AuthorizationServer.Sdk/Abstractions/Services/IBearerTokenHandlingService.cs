@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Shark.AuthorizationServer.Sdk.Models;
 
-namespace Shark.AuthorizationServer.Sdk.Services;
+namespace Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
 public interface IBearerTokenHandlingService
 {
