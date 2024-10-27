@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
+using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Mappers;
 using Shark.AuthorizationServer.Core.Requests;
@@ -10,11 +10,11 @@ using Shark.AuthorizationServer.Core.Responses.Register;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class RegisterApplicationService(
+    IRegisterValidator registerValidator,
     IStringGeneratorService stringGeneratorService,
     IClientRepository clientRepository,
     IOptions<AuthorizationServerConfiguration> options) : IRegisterApplicationService
@@ -22,6 +22,7 @@ public sealed class RegisterApplicationService(
     private const int DefaultAccessTokenLifetimeInSeconds = 3600;
     private const int DefaultRefreshTokenLifetimeInSeconds = 3600 * 24;
 
+    private readonly IRegisterValidator _registerValidator = registerValidator;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
@@ -43,7 +44,7 @@ public sealed class RegisterApplicationService(
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        var response = ValidatePostRequest(request);
+        var response = _registerValidator.ValidatePostRequest(request);
         if (response != null)
         {
             return response;
@@ -59,7 +60,7 @@ public sealed class RegisterApplicationService(
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        var response = ValidateClientId(clientId, request.ClientId);
+        var response = _registerValidator.ValidateClientId(clientId, request.ClientId);
         if (response != null)
         {
             return response;
@@ -71,13 +72,13 @@ public sealed class RegisterApplicationService(
             return new RegisterInternalNotFoundResponse();
         }
 
-        response = ValidateClientSecret(client.ClientSecret, request.ClientSecret);
+        response = _registerValidator.ValidateClientSecret(client.ClientSecret, request.ClientSecret);
         if (response != null)
         {
             return response;
         }
 
-        response = ValidatePutRequest(request);
+        response = _registerValidator.ValidatePutRequest(request);
         if (response != null)
         {
             return response;
@@ -101,237 +102,6 @@ public sealed class RegisterApplicationService(
         await _clientRepository.Remove(clientId);
 
         return new RegisterInternalNoContentResponse();
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidatePostRequest(RegisterInternalRequest request)
-    {
-        var response = ValidateRedirectUris(request.RedirectUris);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateTokenEndpointAuthMethod(request.TokenEndpointAuthMethod);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateGrandTypesAndResponseTypes(request.GrantTypes, request.ResponseTypes);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateClientName(request.ClientName);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateClientUri(request.ClientUri);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateLogoUri(request.LogoUri);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateAudience(request.Audience);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidatePutRequest(RegisterUpdateInternalRequest request)
-    {
-        var response = ValidateRedirectUris(request.RedirectUris);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateTokenEndpointAuthMethod(request.TokenEndpointAuthMethod);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateGrandTypesAndResponseTypes(request.GrantTypes, request.ResponseTypes);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateClientName(request.ClientName);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateClientUri(request.ClientUri);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateLogoUri(request.LogoUri);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        response = ValidateAudience(request.Audience);
-        if (response is not null)
-        {
-            return response;
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateClientId(string clientId, string requestClientId)
-    {
-        if (!clientId.EqualsTo(requestClientId))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateClientSecret(string clientSecret, string? requestClientSecret)
-    {
-        if (!string.IsNullOrWhiteSpace(requestClientSecret) &&
-            !requestClientSecret.EqualsTo(clientSecret))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateRedirectUris(string[] redirectUris)
-    {
-        if (redirectUris is null || redirectUris.Length == 0)
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidRedirectUri);
-        }
-
-        foreach (var redirectUri in redirectUris)
-        {
-            if (!Uri.IsWellFormedUriString(redirectUri, UriKind.Absolute))
-            {
-                return new RegisterInternalBadRequestResponse(Error.InvalidRedirectUri);
-            }
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateTokenEndpointAuthMethod(string? tokenEndpointAuthMethod)
-    {
-        if (!string.IsNullOrWhiteSpace(tokenEndpointAuthMethod) &&
-            !tokenEndpointAuthMethod.EqualsTo(ClientAuthMethod.ClientSecretBasic))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateGrandTypesAndResponseTypes(string grantTypes, string responseTypes)
-    {
-        if (string.IsNullOrWhiteSpace(grantTypes))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        if (string.IsNullOrWhiteSpace(responseTypes))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        var grandTypesList = grantTypes.Split(' ').ToList();
-        var responseTypesList = responseTypes.Split(' ').ToList();
-        foreach (var grandType in grandTypesList)
-        {
-            if (!GrantType.AllowedGrandTypes.Contains(grandType))
-            {
-                return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-            }
-
-            if (grandType.EqualsTo(GrantType.AuthorizationCode))
-            {
-                var codeResponseType = responseTypesList.Find(t => t.EqualsTo(ResponseType.Code));
-
-                if (codeResponseType is null)
-                {
-                    return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-                }
-            }
-            else if (grandType.EqualsTo(GrantType.Implicit))
-            {
-                var tokenResponseType = responseTypesList.Find(t => t.EqualsTo(ResponseType.Token));
-
-                if (tokenResponseType is null)
-                {
-                    return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateClientName(string clientName)
-    {
-        if (string.IsNullOrWhiteSpace(clientName))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateClientUri(string? clientUri)
-    {
-        if (!string.IsNullOrWhiteSpace(clientUri) &&
-            !Uri.IsWellFormedUriString(clientUri, UriKind.Absolute))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateLogoUri(string? logoUri)
-    {
-        if (!string.IsNullOrWhiteSpace(logoUri) &&
-            !Uri.IsWellFormedUriString(logoUri, UriKind.Absolute))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        return null;
-    }
-
-    private static RegisterInternalBadRequestResponse? ValidateAudience(string audience)
-    {
-        if (string.IsNullOrWhiteSpace(audience) ||
-            !Uri.IsWellFormedUriString(audience, UriKind.Absolute))
-        {
-            return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
-        }
-
-        return null;
     }
 
     private async Task<Client> CreateAndStoreClient(RegisterInternalRequest request)

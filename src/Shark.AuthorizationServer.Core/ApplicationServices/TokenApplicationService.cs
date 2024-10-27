@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
+using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Token;
@@ -15,6 +16,7 @@ using Shark.AuthorizationServer.DomainServices.Constants;
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class TokenApplicationService(
+    ITokenValidator tokenValidator,
     IClientRepository clientRepository,
     IPersistedGrantRepository persistedGrantRepository,
     IDevicePersistedGrantRepository devicePersistedGrantRepository,
@@ -22,10 +24,10 @@ public sealed class TokenApplicationService(
     IAccessTokenGeneratorService accessTokenGeneratorService,
     IIdTokenGeneratorService idTokenGeneratorService,
     IResourceOwnerCredentialsValidationService resourceOwnerCredentialsValidationService,
-    IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<TokenApplicationService> logger) : ITokenApplicationService
 {
+    private readonly ITokenValidator _tokenValidator = tokenValidator;
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly IDevicePersistedGrantRepository _devicePersistedGrantRepository = devicePersistedGrantRepository;
@@ -33,7 +35,6 @@ public sealed class TokenApplicationService(
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IIdTokenGeneratorService _idTokenGeneratorService = idTokenGeneratorService;
     private readonly IResourceOwnerCredentialsValidationService _resourceOwnerCredentialsValidationService = resourceOwnerCredentialsValidationService;
-    private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
@@ -50,7 +51,7 @@ public sealed class TokenApplicationService(
 
         var client = await _clientRepository.Get(request.ClientId);
 
-        var response = ValidateRequest(request, client, claimsPrincipal);
+        var response = _tokenValidator.ValidateRequest(request, client, claimsPrincipal);
         if (response != null)
         {
             return response;
@@ -58,68 +59,26 @@ public sealed class TokenApplicationService(
 
         if (IsGrantType(request.GrantType, GrantType.AuthorizationCode))
         {
-            return await HandleAuthorizationCodeGrantType(request, client!);
+            return await HandleAuthorizationCode(request, client!);
         }
         else if (IsGrantType(request.GrantType, GrantType.RefreshToken))
         {
-            return await HandleRefreshTokenGrantType(request, client!);
+            return await HandleRefreshTokenGrant(request, client!);
         }
         else if (IsGrantType(request.GrantType, GrantType.ClientCredentials))
         {
-            return HandleClientCredentialsGrantType(request, client!);
+            return HandleClientCredentialsGrant(request, client!);
         }
         else if (IsGrantType(request.GrantType, GrantType.ResourceOwnerCredentials))
         {
-            return await HandleResourceOwnerCredentialsGrantType(request, client!);
+            return await HandleResourceOwnerCredentialsGrant(request, client!);
         }
         else if (IsGrantType(request.GrantType, GrantType.DeviceCode))
         {
-            return await HandleDeviceCodeGrantType(request, client!);
+            return await HandleDeviceCodeGrant(request, client!);
         }
 
         return HandleUnsupportedGrantType(request);
-    }
-
-    private TokenInternalBadRequestResponse? ValidateRequest(
-        TokenInternalRequest request,
-        Client? client,
-        ClaimsPrincipal claimsPrincipal)
-    {
-        // Validate client
-        if (client is null)
-        {
-            _logger.LogWarning("Unknown client");
-            return new TokenInternalBadRequestResponse(Error.InvalidClient);
-        }
-
-        // Validate client secret
-        if ((!claimsPrincipal.Identity?.IsAuthenticated ?? true) &&
-            !client.ClientSecret.EqualsTo(request.ClientSecret))
-        {
-            _logger.LogWarning("Invalid client secret");
-            return new TokenInternalBadRequestResponse(Error.InvalidClient);
-        }
-
-        // Validate redirect URI
-        if (!string.IsNullOrWhiteSpace(request.RedirectUri) &&
-            !client.RedirectUris.Contains(request.RedirectUri))
-        {
-            _logger.LogWarning("Mismatched redirect URL [{RedirectUri}]", request.RedirectUri);
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        // Validate requested scopes against client's allowed scopes
-        var allowedClientScopes = client.Scope.ToHashSet();
-        foreach (var scope in request.Scopes)
-        {
-            if (!allowedClientScopes.Contains(scope))
-            {
-                _logger.LogWarning("Mismatched scope [{Scope}]", scope);
-                return new TokenInternalBadRequestResponse(Error.InvalidScope);
-            }
-        }
-
-        return null;
     }
 
     private static bool IsGrantType(string? grantType, string expectedGrantType)
@@ -127,13 +86,11 @@ public sealed class TokenApplicationService(
         return grantType.EqualsTo(expectedGrantType);
     }
 
-    private async Task<ITokenInternalResponse> HandleAuthorizationCodeGrantType(
-        TokenInternalRequest request,
-        Client client)
+    private async Task<ITokenInternalResponse> HandleAuthorizationCode(TokenInternalRequest request, Client client)
     {
         var persistedGrant = await _persistedGrantRepository.Get(request.Code);
 
-        var response = ValidateCodeGrant(persistedGrant, request);
+        var response = _tokenValidator.ValidateCodeGrant(persistedGrant, request);
         if (response != null)
         {
             return response;
@@ -151,13 +108,11 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
-    private async Task<ITokenInternalResponse> HandleRefreshTokenGrantType(
-        TokenInternalRequest request,
-        Client client)
+    private async Task<ITokenInternalResponse> HandleRefreshTokenGrant(TokenInternalRequest request, Client client)
     {
         var persistedGrant = await _persistedGrantRepository.Get(request.RefreshToken);
 
-        var response = ValidateRefreshTokenGrant(persistedGrant, request);
+        var response = _tokenValidator.ValidateRefreshTokenGrant(persistedGrant, request);
         if (response != null)
         {
             // Remove refresh token persisted grant if it exists, since it can be compromised
@@ -178,7 +133,7 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
-    private TokenInternalResponse HandleClientCredentialsGrantType(TokenInternalRequest request, Client client)
+    private TokenInternalResponse HandleClientCredentialsGrant(TokenInternalRequest request, Client client)
     {
         _logger.LogInformation("Issuing access token for {GrantType} grant", GrantType.ClientCredentials);
 
@@ -186,9 +141,7 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
-    private async Task<ITokenInternalResponse> HandleResourceOwnerCredentialsGrantType(
-        TokenInternalRequest request,
-        Client client)
+    private async Task<ITokenInternalResponse> HandleResourceOwnerCredentialsGrant(TokenInternalRequest request, Client client)
     {
         if (!_resourceOwnerCredentialsValidationService.ValidateCredentials(request.Username, request.Password))
         {
@@ -201,7 +154,7 @@ public sealed class TokenApplicationService(
         return new TokenInternalResponse(token);
     }
 
-    private async Task<ITokenInternalResponse> HandleDeviceCodeGrantType(TokenInternalRequest request, Client client)
+    private async Task<ITokenInternalResponse> HandleDeviceCodeGrant(TokenInternalRequest request, Client client)
     {
         if (string.IsNullOrWhiteSpace(request.DeviceCode))
         {
@@ -210,7 +163,7 @@ public sealed class TokenApplicationService(
 
         var devicePersistedGrant = await _devicePersistedGrantRepository.GetByDeviceCode(request.DeviceCode);
 
-        var response = ValidateDeviceCodeGrant(devicePersistedGrant, request);
+        var response = _tokenValidator.ValidateDeviceCodeGrant(devicePersistedGrant, request);
         if (response != null)
         {
             return response;
@@ -237,145 +190,6 @@ public sealed class TokenApplicationService(
     {
         _logger.LogWarning("Unsupported grant type {GrantType}", request.GrantType);
         return new TokenInternalBadRequestResponse(Error.InvalidGrantType);
-    }
-
-    private TokenInternalBadRequestResponse? ValidateCodeGrant(
-        PersistedGrant? persistedGrant,
-        TokenInternalRequest request)
-    {
-        // Validate grant
-        if (persistedGrant is null)
-        {
-            _logger.LogWarning("Persistent grant was not found");
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        // Validate grant's client
-        if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
-        {
-            _logger.LogWarning("Mismatched client identifier for {GrantType} persisted grant", GrantType.AuthorizationCode);
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        // Validate grant's redirect URI
-        if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
-        {
-            _logger.LogWarning("Mismatched redirect URI for {GrantType} persisted grant", GrantType.AuthorizationCode);
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        // Validate grant's scopes
-        var allowedScopes = persistedGrant.Scopes.ToHashSet();
-        foreach (var scope in request.Scopes)
-        {
-            if (!allowedScopes.Contains(scope))
-            {
-                _logger.LogWarning("Mismatched scope for {GrantType} persisted grant", GrantType.AuthorizationCode);
-                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-            }
-        }
-
-        // Validate grant's code verifier
-        if (!string.IsNullOrWhiteSpace(persistedGrant.CodeChallenge))
-        {
-            if (string.IsNullOrWhiteSpace(request.CodeVerifier))
-            {
-                _logger.LogWarning("Code verifier was not found in request");
-                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-            }
-
-            string codeChallenge;
-
-            if (persistedGrant.CodeChallengeMethod.EqualsTo(CodeChallengeMethod.Plain))
-            {
-                codeChallenge = request.CodeVerifier;
-            }
-            else if (persistedGrant.CodeChallengeMethod.EqualsTo(CodeChallengeMethod.Sha256))
-            {
-                codeChallenge = _proofKeyForCodeExchangeService.GetCodeChallenge(
-                    request.CodeVerifier,
-                    persistedGrant.CodeChallengeMethod!);
-            }
-            else
-            {
-                return new TokenInternalBadRequestResponse(Error.InvalidRequest);
-            }
-
-            if (!persistedGrant.CodeChallenge.EqualsTo(codeChallenge))
-            {
-                _logger.LogWarning("Mismatched code challenge for {GrantType} persisted grant", GrantType.AuthorizationCode);
-                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-            }
-        }
-
-        return null;
-    }
-
-    private TokenInternalBadRequestResponse? ValidateRefreshTokenGrant(
-        PersistedGrant? persistedGrant,
-        TokenInternalRequest request)
-    {
-        // Validate grant
-        if (persistedGrant is null)
-        {
-            _logger.LogWarning("Persistent grant was not found");
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        // Validate grant's client
-        if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
-        {
-            _logger.LogWarning("Mismatched client identifier for {GrantType} persisted grant", GrantType.RefreshToken);
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        // Validate grant's redirect URI
-        if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
-        {
-            _logger.LogWarning("Mismatched redirect URI for {GrantType} persisted grant", GrantType.RefreshToken);
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        return null;
-    }
-
-    private TokenInternalBadRequestResponse? ValidateDeviceCodeGrant(
-        DevicePersistedGrant? persistedGrant,
-        TokenInternalRequest request)
-    {
-        // Validate grant
-        if (persistedGrant is null)
-        {
-            _logger.LogWarning("Persistent grant was not found");
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        // Validate grant's client
-        if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
-        {
-            _logger.LogWarning("Mismatched client identifier for {GrantType} persisted grant", GrantType.DeviceCode);
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        // Validate grant's scopes
-        var allowedScopes = persistedGrant.Scopes.ToHashSet();
-        foreach (var scope in request.Scopes)
-        {
-            if (!allowedScopes.Contains(scope))
-            {
-                _logger.LogWarning("Mismatched scope for {GrantType} persisted grant", GrantType.DeviceCode);
-                return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-            }
-        }
-
-        // Validate grant's device code
-        if (!persistedGrant.DeviceCode.EqualsTo(request.DeviceCode))
-        {
-            _logger.LogWarning("Mismatched device code for {GrantType} persisted grant", GrantType.DeviceCode);
-            return new TokenInternalBadRequestResponse(Error.InvalidGrant);
-        }
-
-        return null;
     }
 
     private async Task<TokenResponse> GenerateAndStoreBearerToken(
