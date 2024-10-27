@@ -44,6 +44,13 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(30);
+});
+
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
@@ -68,6 +75,9 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("X-Frame-Options", "DENY");
     context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'none'");
     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+
+    // Restrict from unauthorized access or usage of browser / client features by web resources
+    context.Response.Headers.Append("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
 
     // Remove proxy disclosure headers
     context.Response.Headers.Remove("Server");
