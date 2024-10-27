@@ -13,8 +13,9 @@ public static class DependencyInjection
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
     {
         services.AddTransient<IAuthorizeValidator, AuthorizeValidator>();
-        services.AddTransient<IDeviceAuthorizationValidator, DeviceAuthorizationValidator>();
         services.AddTransient<ITokenValidator, TokenValidator>();
+        services.AddTransient<IRegisterValidator, RegisterValidator>();
+        services.AddTransient<IDeviceAuthorizationValidator, DeviceAuthorizationValidator>();
 
         services.AddTransient<IAuthorizeApplicationService, AuthorizeApplicationService>();
         services.AddTransient<ITokenApplicationService, TokenApplicationService>();
