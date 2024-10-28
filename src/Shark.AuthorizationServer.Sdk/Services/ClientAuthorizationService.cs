@@ -1,43 +1,64 @@
 ﻿using System.Web;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
+using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
 using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
 public sealed class ClientAuthorizationService(
+    IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
+    IStateStore stateStore,
+    IHttpContextAccessor httpContextAccessor,
     IOptions<AuthorizationServerConfiguration> options) : IClientAuthorizationService
 {
     private const string LoginPagePath = "login";
     private const string AuthorizeEndpointPath = "authorize";
 
+    private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
+    private readonly IStateStore _stateStore = stateStore;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public string BuildLoginPageUrl(string responseType, string state)
+    public void LoginAuthorizationCodeFlow()
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
+        var state = GetState();
 
-        return BuildLoginPageUrlInternal(responseType, state);
+        var redirectUrl = BuildLoginPageUrlInternal(Security.CodeResponseType, state);
+
+        RedirectInternal(redirectUrl);
     }
 
-    public string BuildLoginPageUrl(string responseType, string state, ProofKeyForCodeExchange pkce)
+    public void LoginAuthorizationCodeFlowWithPkce()
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
-        ArgumentNullException.ThrowIfNull(pkce, nameof(pkce));
+        var state = GetState();
 
-        return BuildLoginPageUrlInternal(responseType, state, pkce);
+        var pkce = _proofKeyForCodeExchangeService.Generate(state);
+
+        var redirectUrl = BuildLoginPageUrlInternal(Security.CodeResponseType, state, pkce);
+
+        RedirectInternal(redirectUrl);
     }
 
-    public string BuildLoginPageUrl(string responseType)
+    public void LoginImplicitFlow()
     {
-        return BuildLoginPageUrlInternal(responseType, null);
+        var redirectUrl = BuildLoginPageUrlInternal(Security.TokenResponseType, null);
+
+        RedirectInternal(redirectUrl);
+    }
+
+    private string GetState()
+    {
+        var state = Guid.NewGuid().ToString("N").ToLower();
+        _stateStore.Add(GrantType.AuthorizationCode, state);
+
+        return state;
     }
 
     private string BuildLoginPageUrlInternal(string responseType, string? state, ProofKeyForCodeExchange? pkce = null)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(responseType, nameof(responseType));
-
         // Create Return URL
         var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
@@ -64,5 +85,10 @@ public sealed class ClientAuthorizationService(
         query[QueryParam.ReturnUrl] = returnUrl;
         loginPageUriBuilder.Query = query.ToString();
         return loginPageUriBuilder.ToString();
+    }
+
+    private void RedirectInternal(string redirectUrl)
+    {
+        _httpContextAccessor.HttpContext?.Response.Redirect(redirectUrl);
     }
 }

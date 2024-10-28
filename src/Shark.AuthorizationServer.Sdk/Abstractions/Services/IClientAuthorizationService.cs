@@ -1,12 +1,10 @@
-﻿using Shark.AuthorizationServer.Sdk.Models;
-
-namespace Shark.AuthorizationServer.Sdk.Abstractions.Services;
+﻿namespace Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
 public interface IClientAuthorizationService
 {
-    string BuildLoginPageUrl(string responseType, string state);
+    void LoginAuthorizationCodeFlow();
 
-    string BuildLoginPageUrl(string responseType, string state, ProofKeyForCodeExchange pkce);
+    void LoginAuthorizationCodeFlowWithPkce();
 
-    string BuildLoginPageUrl(string responseType);
+    void LoginImplicitFlow();
 }

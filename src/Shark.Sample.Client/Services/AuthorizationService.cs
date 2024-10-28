@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.Json;
 using System.Web;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Constants;

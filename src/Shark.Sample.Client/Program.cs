@@ -1,4 +1,5 @@
 using System.Security.Authentication;
+using Shark.AuthorizationServer.Sdk.Extensions;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.ApplicationServices;
 using Shark.Sample.Client.Models;
@@ -39,6 +40,8 @@ builder.Services.AddTransient<ICallBackApplicationService, CallBackApplicationSe
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IStateStore, StateStore>();
 builder.Services.AddSingleton<ISecureTokenStore, SecureTokenStore>();
+
+builder.Services.AddSharkClient(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
