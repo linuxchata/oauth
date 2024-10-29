@@ -1,14 +1,14 @@
-using Shark.Sample.Client.ApplicationServices;
 using Microsoft.AspNetCore.Mvc;
+using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
 namespace Shark.Sample.Client.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public sealed class CallbackController(
-    ICallBackApplicationService callBackApplicationService) : ControllerBase
+    ICallBackClientService callBackService) : ControllerBase
 {
-    private readonly ICallBackApplicationService _callBackApplicationService = callBackApplicationService;
+    private readonly ICallBackClientService _callBackService = callBackService;
 
     [HttpGet]
     public async Task<IActionResult> Callback(
@@ -18,7 +18,7 @@ public sealed class CallbackController(
         [FromQuery] string? access_token,
         [FromQuery] string? token_type)
     {
-        await _callBackApplicationService.Execute(access_token, token_type, code, scope, state);
+        await _callBackService.Execute(access_token, token_type, code, scope, state);
 
         return RedirectToPage("/Index");
     }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using Shark.Sample.Client.Abstractions.Services;
+using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
 
-namespace Shark.Sample.Client.Services;
+namespace Shark.AuthorizationServer.Sdk.Stores;
 
 public sealed class StateStore(IDistributedCache cache) : IStateStore
 {

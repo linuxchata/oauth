@@ -1,6 +1,6 @@
-﻿using Shark.Sample.Client.Models;
+﻿using Shark.AuthorizationServer.Sdk.Models;
 
-namespace Shark.Sample.Client.Abstractions.Services;
+namespace Shark.AuthorizationServer.Sdk.Abstractions.Stores;
 
 public interface ISecureTokenStore
 {

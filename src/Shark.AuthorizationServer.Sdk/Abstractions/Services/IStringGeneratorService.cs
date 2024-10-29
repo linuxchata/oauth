@@ -1,4 +1,4 @@
-﻿namespace Shark.Sample.Client.Abstractions.Services;
+﻿namespace Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
 public interface IStringGeneratorService
 {

@@ -5,19 +5,19 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Common.Abstractions;
+using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class BearerTokenHandlingService(
+internal sealed class BearerTokenHandlingService(
     SecurityKey securityKey,
     ICertificateValidator certificateValidator,
     IOptions<BearerTokenAuthenticationOptions> options,
     ILogger<BearerTokenHandlingService> logger) : IBearerTokenHandlingService
 {
     private const string HeaderKeyName = "Authorization";
-    private const string BearerTokenName = "Bearer";
 
     private readonly SecurityKey _securityKey = securityKey;
     private readonly ICertificateValidator _certificateValidator = certificateValidator;
@@ -38,13 +38,13 @@ public sealed class BearerTokenHandlingService(
 
         var authorization = headerValue.ToString();
 
-        if (!authorization.StartsWith(BearerTokenName, StringComparison.OrdinalIgnoreCase))
+        if (!authorization.StartsWith(Scheme.Bearer, StringComparison.OrdinalIgnoreCase))
         {
             return null;
         }
 
-        var startIndexOfAccessToken = authorization.IndexOf(BearerTokenName) + 1;
-        var accessToken = authorization[(startIndexOfAccessToken + BearerTokenName.Length)..];
+        var startIndexOfAccessToken = authorization.IndexOf(Scheme.Bearer) + 1;
+        var accessToken = authorization[(startIndexOfAccessToken + Scheme.Bearer.Length)..];
 
         return accessToken;
     }

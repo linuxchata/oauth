@@ -1,62 +1,24 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Web;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shark.Sample.Client.Abstractions.Services;
-using Shark.Sample.Client.Constants;
-using Shark.Sample.Client.Models;
+using Shark.AuthorizationServer.Sdk.Abstractions.Services;
+using Shark.AuthorizationServer.Sdk.Constants;
+using Shark.AuthorizationServer.Sdk.Models;
 
-namespace Shark.Sample.Client.Services;
+namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class AuthorizationService(
+internal sealed class AccessTokenClientInternalService(
     IHttpClientFactory httpClientFactory,
     IOptions<AuthorizationServerConfiguration> options,
-    ILogger<AuthorizationService> logger) : IAuthorizationService
+    ILogger<AccessTokenClientInternalService> logger) : IAccessTokenClientInternalService
 {
-    private const string LoginPagePath = "login";
-    private const string AuthorizeEndpointPath = "authorize";
-    private const string TokenEndpointPath = "token";
-
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
-    private readonly ILogger<AuthorizationService> _logger = logger;
+    private readonly ILogger<AccessTokenClientInternalService> _logger = logger;
 
-    public string BuildLoginPageUrl(string responseType, string? state, ProofKeyForCodeExchange? pkce = null)
-    {
-        // Create Return URL
-        var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
-        var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
-        returnUrlBuilderQuery[QueryParam.ResponseType] = responseType;
-        returnUrlBuilderQuery[QueryParam.ClientId] = _configuration.ClientId;
-        returnUrlBuilderQuery[QueryParam.RedirectUri] = _configuration.ClientCallbackEndpoint;
-        returnUrlBuilderQuery[QueryParam.State] = state;
-
-        if (pkce != null)
-        {
-            returnUrlBuilderQuery[QueryParam.CodeChallenge] = pkce.CodeChallenge;
-            returnUrlBuilderQuery[QueryParam.CodeChallengeMethod] = pkce.CodeChallengeMethod;
-        }
-
-        returnUrlBuilder.Query = returnUrlBuilderQuery.ToString();
-        var returnUrl = returnUrlBuilder.ToString();
-
-        // Create authorization server login page URL
-        var loginPageUriBuilder = new UriBuilder(_configuration.Address)
-        {
-            Path = LoginPagePath,
-        };
-        var query = HttpUtility.ParseQueryString(loginPageUriBuilder.Query);
-        query[QueryParam.ReturnUrl] = returnUrl;
-        loginPageUriBuilder.Query = query.ToString();
-        return loginPageUriBuilder.ToString();
-    }
-
-    /// <summary>
-    /// Request access token for authorization_code flow
-    /// </summary>
-    public async Task<SecureToken> RequestAccessToken(
+    public async Task<SecureToken> RequestForAuthorizationCodeFlow(
         string code,
         string? scope,
         string? state,
@@ -93,10 +55,7 @@ public sealed class AuthorizationService(
         return await RequestAccessTokenInternal(formData);
     }
 
-    /// <summary>
-    /// Request access token for refresh_token flow
-    /// </summary>
-    public async Task<SecureToken> RequestAccessToken(string refreshToken, string? scope)
+    public async Task<SecureToken> RequestForRefreshTokenFlow(string refreshToken, string? scope)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(refreshToken, nameof(refreshToken));
 
@@ -117,10 +76,7 @@ public sealed class AuthorizationService(
         return await RequestAccessTokenInternal(formData);
     }
 
-    /// <summary>
-    /// Request access token for client_credentials flow
-    /// </summary>
-    public async Task<SecureToken> RequestAccessToken(string? scope)
+    public async Task<SecureToken> RequestForClientCredentialsFlow(string? scope)
     {
         var formData = new List<KeyValuePair<string, string>>
         {
@@ -137,10 +93,7 @@ public sealed class AuthorizationService(
         return await RequestAccessTokenInternal(formData);
     }
 
-    /// <summary>
-    /// Request access token for password flow
-    /// </summary>
-    public async Task<SecureToken> RequestAccessToken(string username, string password, string? scope)
+    public async Task<SecureToken> RequestForPasswordFlow(string username, string password, string? scope)
     {
         var formData = new List<KeyValuePair<string, string>>
         {
@@ -194,7 +147,7 @@ public sealed class AuthorizationService(
     {
         var tokenEndpointUriBuilder = new UriBuilder(_configuration.Address)
         {
-            Path = TokenEndpointPath,
+            Path = AuthorizationServerEndpoint.Token,
         };
 
         return tokenEndpointUriBuilder.ToString();

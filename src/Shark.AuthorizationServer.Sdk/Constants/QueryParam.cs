@@ -1,4 +1,4 @@
-﻿namespace Shark.Sample.Client.Constants;
+﻿namespace Shark.AuthorizationServer.Sdk.Constants;
 
 public static class QueryParam
 {

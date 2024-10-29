@@ -1,4 +1,4 @@
-﻿namespace Shark.Sample.Client.Models;
+﻿namespace Shark.AuthorizationServer.Sdk.Models;
 
 public sealed class ProofKeyForCodeExchange
 {

@@ -1,6 +1,7 @@
 using System.Security.Authentication;
+using Microsoft.Extensions.Configuration;
+using Shark.AuthorizationServer.Sdk.Extensions;
 using Shark.Sample.Client.Abstractions.Services;
-using Shark.Sample.Client.ApplicationServices;
 using Shark.Sample.Client.Models;
 using Shark.Sample.Client.Services;
 
@@ -22,23 +23,15 @@ builder.Logging.AddSimpleConsole(options =>
     options.SingleLine = true;
 });
 
-builder.Services.Configure<AuthorizationServerConfiguration>(
-    builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
+builder.Services.Configure<ProtectedResourceConfiguration>(
+    builder.Configuration.GetSection(ProtectedResourceConfiguration.Name));
 
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSharkClient(builder.Configuration);
 
-builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
-builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
-builder.Services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
 builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
-builder.Services.AddTransient<ICallBackApplicationService, CallBackApplicationService>();
-
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSingleton<IStateStore, StateStore>();
-builder.Services.AddSingleton<ISecureTokenStore, SecureTokenStore>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.DomainServices.Configurations;
-using Shark.AuthorizationServer.Sdk.Services;
+using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
 namespace Shark.AuthorizationServer.Authentication;
 

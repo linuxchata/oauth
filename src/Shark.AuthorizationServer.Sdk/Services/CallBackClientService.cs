@@ -1,22 +1,23 @@
-﻿using Shark.Sample.Client.Abstractions.Services;
-using Shark.Sample.Client.Constants;
-using Shark.Sample.Client.Models;
-using Shark.Sample.Client.Services;
+﻿using Microsoft.Extensions.Logging;
+using Shark.AuthorizationServer.Sdk.Abstractions.Services;
+using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
+using Shark.AuthorizationServer.Sdk.Constants;
+using Shark.AuthorizationServer.Sdk.Models;
 
-namespace Shark.Sample.Client.ApplicationServices;
+namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class CallBackApplicationService(
-    IAuthorizationService authorizationService,
+public sealed class CallBackClientService(
+    IAccessTokenClientInternalService clientAccessTokenService,
     IStateStore stateStore,
     ISecureTokenStore securityStore,
     IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
-    ILogger<AuthorizationService> logger) : ICallBackApplicationService
+    ILogger<CallBackClientService> logger) : ICallBackClientService
 {
-    private readonly IAuthorizationService _authorizationService = authorizationService;
+    private readonly IAccessTokenClientInternalService _clientAccessTokenService = clientAccessTokenService;
     private readonly IStateStore _stateStore = stateStore;
     private readonly ISecureTokenStore _securityStore = securityStore;
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
-    private readonly ILogger<AuthorizationService> _logger = logger;
+    private readonly ILogger<CallBackClientService> _logger = logger;
 
     public async Task Execute(string? accessToken, string? tokenType, string? code, string? scope, string? state)
     {
@@ -54,7 +55,7 @@ public sealed class CallBackApplicationService(
 
         var proofKeyForCodeExchange = _proofKeyForCodeExchangeService.Get(expectedState);
 
-        var secureToken = await _authorizationService.RequestAccessToken(
+        var secureToken = await _clientAccessTokenService.RequestForAuthorizationCodeFlow(
             code!,
             scope,
             state,

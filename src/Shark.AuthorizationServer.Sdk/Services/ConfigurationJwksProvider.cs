@@ -1,15 +1,15 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Sdk.Abstractions.Services;
+using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class PublicKeyProvider(
+internal sealed class ConfigurationJwksProvider(
     IHttpClientFactory httpClientFactory,
-    IOptions<BearerTokenAuthenticationOptions> options) : IPublicKeyProvider
+    IOptions<BearerTokenAuthenticationOptions> options) : IConfigurationJwksProvider
 {
-    private const string WellKnownConfigurationPath = ".well-known/openid-configuration";
-
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly BearerTokenAuthenticationOptions _configuration = options.Value;
 
@@ -23,7 +23,7 @@ public sealed class PublicKeyProvider(
     private async Task<string> GetJsonWebKeySetEndpoint()
     {
         var baseUri = new Uri(_configuration.AuthorizationServerUri);
-        var wellKnownConfigurationEndpoint = new Uri(baseUri, WellKnownConfigurationPath);
+        var wellKnownConfigurationEndpoint = new Uri(baseUri, AuthorizationServerEndpoint.WellKnownConfigurationPath);
 
         using var httpClient = _httpClientFactory.CreateClient();
         var response = await httpClient.GetAsync(wellKnownConfigurationEndpoint);
@@ -33,7 +33,7 @@ public sealed class PublicKeyProvider(
 
         var configurationResponse =
             JsonSerializer.Deserialize<ConfigurationResponse>(result) ??
-            throw new ArgumentException("Response from .well-known/openid-configuration endpoint is empty");
+            throw new ArgumentException($"Response from {AuthorizationServerEndpoint.WellKnownConfigurationPath} endpoint is empty");
 
         return configurationResponse.JsonWebKeySetEndpoint!;
     }
