@@ -1,7 +1,6 @@
 using System.Security.Authentication;
 using Shark.AuthorizationServer.Sdk.Extensions;
 using Shark.Sample.Client.Abstractions.Services;
-using Shark.Sample.Client.Models;
 using Shark.Sample.Client.Services;
 
 var builder = WebApplication.CreateBuilder(args);
