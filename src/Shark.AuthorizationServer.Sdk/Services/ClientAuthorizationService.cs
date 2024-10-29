@@ -14,9 +14,6 @@ public sealed class ClientAuthorizationService(
     IHttpContextAccessor httpContextAccessor,
     IOptions<AuthorizationServerConfiguration> options) : IClientAuthorizationService
 {
-    private const string LoginPagePath = "login";
-    private const string AuthorizeEndpointPath = "authorize";
-
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
     private readonly IStateStore _stateStore = stateStore;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -60,7 +57,7 @@ public sealed class ClientAuthorizationService(
     private string BuildLoginPageUrlInternal(string responseType, string? state, ProofKeyForCodeExchange? pkce = null)
     {
         // Create Return URL
-        var returnUrlBuilder = new UriBuilder(null, AuthorizeEndpointPath);
+        var returnUrlBuilder = new UriBuilder(null, AuthorizationServerEndpoint.Authorize);
         var returnUrlBuilderQuery = HttpUtility.ParseQueryString(returnUrlBuilder.Query);
         returnUrlBuilderQuery[QueryParam.ResponseType] = responseType;
         returnUrlBuilderQuery[QueryParam.ClientId] = _configuration.ClientId;
@@ -79,7 +76,7 @@ public sealed class ClientAuthorizationService(
         // Create authorization server login page URL
         var loginPageUriBuilder = new UriBuilder(_configuration.Address)
         {
-            Path = LoginPagePath,
+            Path = AuthorizationServerEndpoint.LoginPagePath,
         };
         var query = HttpUtility.ParseQueryString(loginPageUriBuilder.Query);
         query[QueryParam.ReturnUrl] = returnUrl;

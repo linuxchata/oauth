@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Shark.AuthorizationServer.Common;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
+using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
@@ -11,7 +12,6 @@ public sealed class ProofKeyForCodeExchangeService(
     IStringGeneratorService stringGeneratorService,
     IDistributedCache cache) : IProofKeyForCodeExchangeService
 {
-    private const string CodeChallengeMethod = "S256";
     private const int ExpirationInSeconds = 60;
 
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
@@ -42,7 +42,7 @@ public sealed class ProofKeyForCodeExchangeService(
         {
             CodeVerifier = codeVerifier,
             CodeChallenge = codeChallenge,
-            CodeChallengeMethod = CodeChallengeMethod,
+            CodeChallengeMethod = CodeChallengeMethod.Sha256,
         };
 
         var cacheEntryOptions = new DistributedCacheEntryOptions

@@ -14,8 +14,6 @@ public sealed class ClientAccessTokenService(
     IOptions<AuthorizationServerConfiguration> options,
     ILogger<ClientAccessTokenService> logger) : IClientAccessTokenService
 {
-    private const string TokenEndpointPath = "token";
-
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<ClientAccessTokenService> _logger = logger;
@@ -149,7 +147,7 @@ public sealed class ClientAccessTokenService(
     {
         var tokenEndpointUriBuilder = new UriBuilder(_configuration.Address)
         {
-            Path = TokenEndpointPath,
+            Path = AuthorizationServerEndpoint.Token,
         };
 
         return tokenEndpointUriBuilder.ToString();

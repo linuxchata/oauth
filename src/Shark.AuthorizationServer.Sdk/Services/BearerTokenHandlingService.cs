@@ -18,7 +18,6 @@ public sealed class BearerTokenHandlingService(
     ILogger<BearerTokenHandlingService> logger) : IBearerTokenHandlingService
 {
     private const string HeaderKeyName = "Authorization";
-    private const string BearerTokenName = "Bearer";
 
     private readonly SecurityKey _securityKey = securityKey;
     private readonly ICertificateValidator _certificateValidator = certificateValidator;
@@ -39,13 +38,13 @@ public sealed class BearerTokenHandlingService(
 
         var authorization = headerValue.ToString();
 
-        if (!authorization.StartsWith(BearerTokenName, StringComparison.OrdinalIgnoreCase))
+        if (!authorization.StartsWith(Scheme.Bearer, StringComparison.OrdinalIgnoreCase))
         {
             return null;
         }
 
-        var startIndexOfAccessToken = authorization.IndexOf(BearerTokenName) + 1;
-        var accessToken = authorization[(startIndexOfAccessToken + BearerTokenName.Length)..];
+        var startIndexOfAccessToken = authorization.IndexOf(Scheme.Bearer) + 1;
+        var accessToken = authorization[(startIndexOfAccessToken + Scheme.Bearer.Length)..];
 
         return accessToken;
     }
