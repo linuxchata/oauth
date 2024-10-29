@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
-using Shark.Sample.Client.Abstractions.Services;
-using Shark.Sample.Client.Models;
+using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
+using Shark.AuthorizationServer.Sdk.Models;
 
-namespace Shark.Sample.Client.Services;
+namespace Shark.AuthorizationServer.Sdk.Stores;
 
 public sealed class SecureTokenStore(IDistributedCache cache) : ISecureTokenStore
 {

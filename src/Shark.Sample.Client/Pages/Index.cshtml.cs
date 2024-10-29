@@ -1,25 +1,17 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
+using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.Sample.Client.Abstractions.Services;
-using Shark.Sample.Client.Constants;
 using Shark.Sample.Client.Models;
 
 namespace Shark.Sample.Client.Pages;
 
 public class IndexModel(
     IClientAuthorizationService clientAuthorizationService,
-    IWeatherForecastService weatherForecastService,
-    IAuthorizationService authorizationService,
-    Abstractions.Services.IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
-    IStateStore stateStore,
-    IHttpContextAccessor httpContextAccessor) : PageModel
+    IWeatherForecastService weatherForecastService) : PageModel
 {
     private readonly IClientAuthorizationService _clientAuthorizationService = clientAuthorizationService;
     private readonly IWeatherForecastService _weatherForecastService = weatherForecastService;
-    private readonly IAuthorizationService _authorizationService = authorizationService;
-    private readonly Abstractions.Services.IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
-    private readonly IStateStore _stateStore = stateStore;
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public List<WeatherForecast>? Data { get; private set; }
 
@@ -55,7 +47,7 @@ public class IndexModel(
 
     public async Task OnPostGetDataResourceOwnerCredentials()
     {
-        Data = await _weatherForecastService.Get(GrantType.ResourceOwnerCredentials);
+        Data = await _weatherForecastService.Get(GrantType.ResourceOwnerCredentials, "alice", "secret");
     }
 
     public async Task OnPostGetDataClientCredentials()

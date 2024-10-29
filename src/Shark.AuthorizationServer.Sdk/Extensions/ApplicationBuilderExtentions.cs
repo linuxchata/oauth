@@ -62,6 +62,7 @@ public static class ApplicationBuilderExtentions
         services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
         services.AddTransient<IClientAuthorizationService, ClientAuthorizationService>();
         services.AddTransient<IClientAccessTokenService, ClientAccessTokenService>();
+        services.AddTransient<IClientAccessTokenCachedService, ClientAccessTokenCachedService>();
         services.AddTransient<ICallBackService, CallBackService>();
 
         return services;

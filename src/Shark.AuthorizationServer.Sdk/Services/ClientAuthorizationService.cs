@@ -26,7 +26,7 @@ public sealed class ClientAuthorizationService(
     {
         var state = GetState();
 
-        var redirectUrl = BuildLoginPageUrlInternal(Security.CodeResponseType, state);
+        var redirectUrl = BuildLoginPageUrlInternal(ResponseType.Code, state);
 
         RedirectInternal(redirectUrl);
     }
@@ -37,14 +37,14 @@ public sealed class ClientAuthorizationService(
 
         var pkce = _proofKeyForCodeExchangeService.Generate(state);
 
-        var redirectUrl = BuildLoginPageUrlInternal(Security.CodeResponseType, state, pkce);
+        var redirectUrl = BuildLoginPageUrlInternal(ResponseType.Code, state, pkce);
 
         RedirectInternal(redirectUrl);
     }
 
     public void LoginImplicitFlow()
     {
-        var redirectUrl = BuildLoginPageUrlInternal(Security.TokenResponseType, null);
+        var redirectUrl = BuildLoginPageUrlInternal(ResponseType.Token, null);
 
         RedirectInternal(redirectUrl);
     }

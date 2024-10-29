@@ -1,7 +1,6 @@
 using System.Security.Authentication;
 using Shark.AuthorizationServer.Sdk.Extensions;
 using Shark.Sample.Client.Abstractions.Services;
-using Shark.Sample.Client.ApplicationServices;
 using Shark.Sample.Client.Models;
 using Shark.Sample.Client.Services;
 
@@ -29,19 +28,9 @@ builder.Services.Configure<AuthorizationServerConfiguration>(
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
-builder.Services.AddTransient<IStringGeneratorService, StringGeneratorService>();
-builder.Services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
-builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
-builder.Services.AddTransient<ICallBackApplicationService, CallBackApplicationService>();
-
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSingleton<IStateStore, StateStore>();
-builder.Services.AddSingleton<ISecureTokenStore, SecureTokenStore>();
-
 builder.Services.AddSharkClient(builder.Configuration);
+
+builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
