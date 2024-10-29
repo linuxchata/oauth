@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
-public interface IClientAccessTokenService
+public interface IAccessTokenClientInternalService
 {
     Task<SecureToken> RequestForAuthorizationCodeFlow(string code, string? scope, string? state, string? expectedState, string? codeVerifier);
 

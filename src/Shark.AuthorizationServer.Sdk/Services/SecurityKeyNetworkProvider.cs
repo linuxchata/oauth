@@ -11,14 +11,14 @@ namespace Shark.AuthorizationServer.Sdk.Services;
 /// <summary>
 /// SecurityKey provider for authorization server clients.
 /// </summary>
-/// <param name="publicKeyProvider">Represents a public key provider.</param>
-public sealed class SecurityKeyNetworkProvider(IPublicKeyProvider publicKeyProvider) : ISecurityKeyProvider
+/// <param name="configurationJwksProvider">Represents configuration provider.</param>
+internal sealed class SecurityKeyNetworkProvider(IConfigurationJwksProvider configurationJwksProvider) : ISecurityKeyProvider
 {
-    private readonly IPublicKeyProvider _publicKeyProvider = publicKeyProvider;
+    private readonly IConfigurationJwksProvider _configurationJwksProvider = configurationJwksProvider;
 
     public async Task<SecurityKey> GetSecurityKey()
     {
-        var configurationJwksResponse = await _publicKeyProvider.Get() ??
+        var configurationJwksResponse = await _configurationJwksProvider.Get() ??
             throw new InvalidOperationException("JSON Web Key Set configuration is empty");
 
         if (configurationJwksResponse.Algorithm == SecurityAlgorithms.RsaSha256)

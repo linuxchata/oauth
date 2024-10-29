@@ -11,7 +11,7 @@ using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class BearerTokenHandlingService(
+internal sealed class BearerTokenHandlingService(
     SecurityKey securityKey,
     ICertificateValidator certificateValidator,
     IOptions<BearerTokenAuthenticationOptions> options,

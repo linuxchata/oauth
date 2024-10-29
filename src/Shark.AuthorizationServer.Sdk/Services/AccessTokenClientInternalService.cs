@@ -9,14 +9,14 @@ using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class ClientAccessTokenService(
+internal sealed class AccessTokenClientInternalService(
     IHttpClientFactory httpClientFactory,
     IOptions<AuthorizationServerConfiguration> options,
-    ILogger<ClientAccessTokenService> logger) : IClientAccessTokenService
+    ILogger<AccessTokenClientInternalService> logger) : IAccessTokenClientInternalService
 {
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
-    private readonly ILogger<ClientAccessTokenService> _logger = logger;
+    private readonly ILogger<AccessTokenClientInternalService> _logger = logger;
 
     public async Task<SecureToken> RequestForAuthorizationCodeFlow(
         string code,

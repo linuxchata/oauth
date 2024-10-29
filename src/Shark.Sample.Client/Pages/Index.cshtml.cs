@@ -7,10 +7,10 @@ using Shark.Sample.Client.Models;
 namespace Shark.Sample.Client.Pages;
 
 public class IndexModel(
-    IClientAuthorizationService clientAuthorizationService,
+    IAuthorizationClientService clientAuthorizationService,
     IWeatherForecastService weatherForecastService) : PageModel
 {
-    private readonly IClientAuthorizationService _clientAuthorizationService = clientAuthorizationService;
+    private readonly IAuthorizationClientService _clientAuthorizationService = clientAuthorizationService;
     private readonly IWeatherForecastService _weatherForecastService = weatherForecastService;
 
     public List<WeatherForecast>? Data { get; private set; }

@@ -8,11 +8,11 @@ using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class ClientAuthorizationService(
+public sealed class AuthorizationClientService(
     IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
     IStateStore stateStore,
     IHttpContextAccessor httpContextAccessor,
-    IOptions<AuthorizationServerConfiguration> options) : IClientAuthorizationService
+    IOptions<AuthorizationServerConfiguration> options) : IAuthorizationClientService
 {
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
     private readonly IStateStore _stateStore = stateStore;

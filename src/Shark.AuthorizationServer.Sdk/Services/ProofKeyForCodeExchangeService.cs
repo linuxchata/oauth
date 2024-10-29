@@ -8,7 +8,7 @@ using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class ProofKeyForCodeExchangeService(
+internal sealed class ProofKeyForCodeExchangeService(
     IStringGeneratorService stringGeneratorService,
     IDistributedCache cache) : IProofKeyForCodeExchangeService
 {

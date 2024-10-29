@@ -6,9 +6,9 @@ using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class PublicKeyProvider(
+internal sealed class ConfigurationJwksProvider(
     IHttpClientFactory httpClientFactory,
-    IOptions<BearerTokenAuthenticationOptions> options) : IPublicKeyProvider
+    IOptions<BearerTokenAuthenticationOptions> options) : IConfigurationJwksProvider
 {
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly BearerTokenAuthenticationOptions _configuration = options.Value;
@@ -33,7 +33,7 @@ public sealed class PublicKeyProvider(
 
         var configurationResponse =
             JsonSerializer.Deserialize<ConfigurationResponse>(result) ??
-            throw new ArgumentException("Response from .well-known/openid-configuration endpoint is empty");
+            throw new ArgumentException($"Response from {AuthorizationServerEndpoint.WellKnownConfigurationPath} endpoint is empty");
 
         return configurationResponse.JsonWebKeySetEndpoint!;
     }

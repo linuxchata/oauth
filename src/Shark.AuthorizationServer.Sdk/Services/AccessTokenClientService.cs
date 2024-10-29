@@ -4,15 +4,15 @@ using Shark.AuthorizationServer.Sdk.Constants;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class ClientAccessTokenCachedService(
+public sealed class AccessTokenClientService(
     ISecureTokenStore secureTokenStore,
-    IClientAccessTokenService clientAccessTokenService) : IClientAccessTokenCachedService
+    IAccessTokenClientInternalService clientAccessTokenService) : IAccessTokenClientService
 {
     private const string MissingAccessTokenErrorMessage = "Missing access token";
     private const string MissingAccessTokenAndRefreshTokenErrorMessage = "Missing access token and refresh token";
 
     private readonly ISecureTokenStore _secureTokenStore = secureTokenStore;
-    private readonly IClientAccessTokenService _clientAccessTokenService = clientAccessTokenService;
+    private readonly IAccessTokenClientInternalService _clientAccessTokenService = clientAccessTokenService;
 
     public async Task<string> Get(
         string grantType,

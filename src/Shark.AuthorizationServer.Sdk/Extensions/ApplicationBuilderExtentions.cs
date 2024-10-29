@@ -60,10 +60,10 @@ public static class ApplicationBuilderExtentions
 
         services.AddTransient<IStringGeneratorService, StringGeneratorService>();
         services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
-        services.AddTransient<IClientAuthorizationService, ClientAuthorizationService>();
-        services.AddTransient<IClientAccessTokenService, ClientAccessTokenService>();
-        services.AddTransient<IClientAccessTokenCachedService, ClientAccessTokenCachedService>();
-        services.AddTransient<ICallBackService, CallBackService>();
+        services.AddTransient<IAuthorizationClientService, AuthorizationClientService>();
+        services.AddTransient<IAccessTokenClientInternalService, AccessTokenClientInternalService>();
+        services.AddTransient<IAccessTokenClientService, AccessTokenClientService>();
+        services.AddTransient<ICallBackClientService, CallBackClientService>();
 
         return services;
     }
@@ -71,7 +71,7 @@ public static class ApplicationBuilderExtentions
     private static async Task<SecurityKey> GetSecurityKey(IServiceCollection services)
     {
         services.AddHttpClient();
-        services.TryAddTransient<IPublicKeyProvider, PublicKeyProvider>();
+        services.TryAddTransient<IConfigurationJwksProvider, ConfigurationJwksProvider>();
         services.TryAddTransient<ISecurityKeyProvider, SecurityKeyNetworkProvider>();
 
         var serviceProvider = services.BuildServiceProvider();

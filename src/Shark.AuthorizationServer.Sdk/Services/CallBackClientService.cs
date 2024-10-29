@@ -6,18 +6,18 @@ using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class CallBackService(
-    IClientAccessTokenService clientAccessTokenService,
+public sealed class CallBackClientService(
+    IAccessTokenClientInternalService clientAccessTokenService,
     IStateStore stateStore,
     ISecureTokenStore securityStore,
     IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
-    ILogger<CallBackService> logger) : ICallBackService
+    ILogger<CallBackClientService> logger) : ICallBackClientService
 {
-    private readonly IClientAccessTokenService _clientAccessTokenService = clientAccessTokenService;
+    private readonly IAccessTokenClientInternalService _clientAccessTokenService = clientAccessTokenService;
     private readonly IStateStore _stateStore = stateStore;
     private readonly ISecureTokenStore _securityStore = securityStore;
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
-    private readonly ILogger<CallBackService> _logger = logger;
+    private readonly ILogger<CallBackClientService> _logger = logger;
 
     public async Task Execute(string? accessToken, string? tokenType, string? code, string? scope, string? state)
     {

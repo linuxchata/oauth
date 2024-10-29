@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
-public interface IPublicKeyProvider
+public interface IConfigurationJwksProvider
 {
     Task<ConfigurationJwksResponse> Get();
 }

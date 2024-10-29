@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
-public interface IClientAuthorizationService
+public interface IAuthorizationClientService
 {
     void LoginAuthorizationCodeFlow();
 

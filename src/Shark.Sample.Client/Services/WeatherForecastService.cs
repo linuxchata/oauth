@@ -10,13 +10,13 @@ namespace Shark.Sample.Client.Services;
 
 public sealed class WeatherForecastService(
     IHttpClientFactory httpClientFactory,
-    IClientAccessTokenCachedService clientAccessTokenCachedService) : IWeatherForecastService
+    IAccessTokenClientService clientAccessTokenCachedService) : IWeatherForecastService
 {
     private const string ScopeRead = "read";
     private const string ProtectedResourceEndpoint = "https://localhost:9002/weatherforecast";
 
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-    private readonly IClientAccessTokenCachedService _clientAccessTokenCachedService = clientAccessTokenCachedService;
+    private readonly IAccessTokenClientService _clientAccessTokenCachedService = clientAccessTokenCachedService;
 
     public async Task<List<WeatherForecast>> Get(
         string grantType,

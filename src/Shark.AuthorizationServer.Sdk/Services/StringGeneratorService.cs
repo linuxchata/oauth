@@ -2,7 +2,7 @@
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 
-public sealed class StringGeneratorService : IStringGeneratorService
+internal sealed class StringGeneratorService : IStringGeneratorService
 {
     private const string CodeVerifierChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~abcdefghijklmnopqrstuvwxyz";
 
