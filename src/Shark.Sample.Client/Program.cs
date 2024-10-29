@@ -1,6 +1,8 @@
 using System.Security.Authentication;
+using Microsoft.Extensions.Configuration;
 using Shark.AuthorizationServer.Sdk.Extensions;
 using Shark.Sample.Client.Abstractions.Services;
+using Shark.Sample.Client.Models;
 using Shark.Sample.Client.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,9 @@ builder.Logging.AddSimpleConsole(options =>
     options.TimestampFormat = "dd-MM-yyyy HH:mm:ss ";
     options.SingleLine = true;
 });
+
+builder.Services.Configure<ProtectedResourceConfiguration>(
+    builder.Configuration.GetSection(ProtectedResourceConfiguration.Name));
 
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();

@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.Sample.Client.Abstractions.Services;
@@ -10,20 +11,19 @@ namespace Shark.Sample.Client.Services;
 
 public sealed class WeatherForecastService(
     IHttpClientFactory httpClientFactory,
-    IAccessTokenClientService clientAccessTokenCachedService) : IWeatherForecastService
+    IAccessTokenClientService clientAccessTokenCachedService,
+    IOptions<ProtectedResourceConfiguration> options) : IWeatherForecastService
 {
-    private const string ScopeRead = "read";
-    private const string ProtectedResourceEndpoint = "https://localhost:9002/weatherforecast";
-
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly IAccessTokenClientService _clientAccessTokenCachedService = clientAccessTokenCachedService;
+    private readonly ProtectedResourceConfiguration _configuration = options.Value;
 
     public async Task<List<WeatherForecast>> Get(
         string grantType,
         string? username = null,
         string? password = null)
     {
-        var header = await GetAuthenticationHeader(grantType, ScopeRead, username, password);
+        var header = await GetAuthenticationHeader(grantType, _configuration.Scope, username, password);
         return await GetInternal(header, grantType);
     }
 
@@ -35,7 +35,7 @@ public sealed class WeatherForecastService(
         {
             using var httpClient = _httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = authorizationHeaderValue;
-            var response = await httpClient.GetAsync(ProtectedResourceEndpoint);
+            var response = await httpClient.GetAsync(_configuration.Endpoint);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
