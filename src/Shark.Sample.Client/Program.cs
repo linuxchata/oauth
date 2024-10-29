@@ -22,9 +22,6 @@ builder.Logging.AddSimpleConsole(options =>
     options.SingleLine = true;
 });
 
-builder.Services.Configure<AuthorizationServerConfiguration>(
-    builder.Configuration.GetSection(AuthorizationServerConfiguration.Name));
-
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 
