@@ -53,7 +53,7 @@ public sealed class SecureTokenStore(IDistributedCache cache) : ISecureTokenStor
     private SecureToken? GetSecureToken(string key)
     {
         var serializedItem = _cache.GetString(key);
-        if(serializedItem != null)
+        if (serializedItem != null)
         {
             return JsonSerializer.Deserialize<SecureToken>(serializedItem!);
         }
