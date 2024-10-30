@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
+using Shark.AuthorizationServer.Sdk.Configurations;
 using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
 
@@ -12,11 +13,11 @@ namespace Shark.AuthorizationServer.Sdk.Services;
 
 internal sealed class AccessTokenClientInternalService(
     IHttpClientFactory httpClientFactory,
-    IOptions<AuthorizationServerConfiguration> options,
+    IOptions<AuthorizationConfiguration> options,
     ILogger<AccessTokenClientInternalService> logger) : IAccessTokenClientInternalService
 {
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-    private readonly AuthorizationServerConfiguration _configuration = options.Value;
+    private readonly AuthorizationConfiguration _configuration = options.Value;
     private readonly ILogger<AccessTokenClientInternalService> _logger = logger;
 
     public async Task<SecureToken> RequestForAuthorizationCodeFlow(
@@ -146,7 +147,7 @@ internal sealed class AccessTokenClientInternalService(
 
     private string BuildTokenEndpointUri()
     {
-        var tokenEndpointUriBuilder = new UriBuilder(_configuration.Address)
+        var tokenEndpointUriBuilder = new UriBuilder(_configuration.AuthorizationServerUri)
         {
             Path = AuthorizationServerEndpoint.Token,
         };

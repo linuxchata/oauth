@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
+using Shark.AuthorizationServer.Sdk.Configurations;
 using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
 
@@ -13,12 +14,12 @@ public sealed class AuthorizationClientService(
     IProofKeyForCodeExchangeService proofKeyForCodeExchangeService,
     IStateStore stateStore,
     IHttpContextAccessor httpContextAccessor,
-    IOptions<AuthorizationServerConfiguration> options) : IAuthorizationClientService
+    IOptions<AuthorizationConfiguration> options) : IAuthorizationClientService
 {
     private readonly IProofKeyForCodeExchangeService _proofKeyForCodeExchangeService = proofKeyForCodeExchangeService;
     private readonly IStateStore _stateStore = stateStore;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly AuthorizationServerConfiguration _configuration = options.Value;
+    private readonly AuthorizationConfiguration _configuration = options.Value;
 
     public void LoginAuthorizationCodeFlow()
     {
@@ -75,7 +76,7 @@ public sealed class AuthorizationClientService(
         var returnUrl = returnUrlBuilder.ToString();
 
         // Create authorization server login page URL
-        var loginPageUriBuilder = new UriBuilder(_configuration.Address)
+        var loginPageUriBuilder = new UriBuilder(_configuration.AuthorizationServerUri)
         {
             Path = AuthorizationServerEndpoint.LoginPagePath,
         };

@@ -3,13 +3,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using Polly;
+using Polly.Retry;
 using Shark.AuthorizationServer.Common;
 using Shark.AuthorizationServer.Common.Abstractions;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
 using Shark.AuthorizationServer.Sdk.Authentication;
-using Shark.AuthorizationServer.Sdk.Models;
+using Shark.AuthorizationServer.Sdk.Configurations;
 using Shark.AuthorizationServer.Sdk.Services;
 using Shark.AuthorizationServer.Sdk.Stores;
 
@@ -29,7 +31,7 @@ public static class ApplicationBuilderExtentions
         var bearerTokenAuthenticationOptions = new BearerTokenAuthenticationOptions();
         configuration.GetSection(BearerTokenAuthenticationOptions.Name).Bind(bearerTokenAuthenticationOptions);
 
-        var securityKey = GetSecurityKey(services).GetAwaiter().GetResult();
+        var securityKey = GetSecurityKey(services, bearerTokenAuthenticationOptions).GetAwaiter().GetResult();
         services.AddSingleton(securityKey);
 
         services.AddTransient<ICertificateValidator, CertificateValidator>();
@@ -48,8 +50,8 @@ public static class ApplicationBuilderExtentions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<AuthorizationServerConfiguration>(
-            configuration.GetSection(AuthorizationServerConfiguration.Name));
+        services.Configure<AuthorizationConfiguration>(
+            configuration.GetSection(AuthorizationConfiguration.Name));
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -68,9 +70,26 @@ public static class ApplicationBuilderExtentions
         return services;
     }
 
-    private static async Task<SecurityKey> GetSecurityKey(IServiceCollection services)
+    private static async Task<SecurityKey> GetSecurityKey(
+        IServiceCollection services,
+        BearerTokenAuthenticationOptions options)
     {
         services.AddHttpClient();
+
+        if (options.RetryConfiguration?.Enabled ?? false)
+        {
+            services.AddResiliencePipeline("configuration", builder =>
+            {
+                builder
+                    .AddRetry(new RetryStrategyOptions
+                    {
+                        Delay = TimeSpan.FromSeconds(options.RetryConfiguration.DelayInSeconds),
+                        MaxRetryAttempts = options.RetryConfiguration.MaxAttempts,
+                    })
+                    .AddTimeout(TimeSpan.FromSeconds(options.RetryConfiguration.TimeoutInSeconds));
+            });
+        }
+
         services.TryAddTransient<IConfigurationJwksProvider, ConfigurationJwksProvider>();
         services.TryAddTransient<ISecurityKeyProvider, SecurityKeyNetworkProvider>();
 
