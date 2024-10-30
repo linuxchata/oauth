@@ -4,11 +4,11 @@ using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
+using Shark.AuthorizationServer.Core.Abstractions.Services;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Authorize;
-using Shark.AuthorizationServer.Core.Responses.Token;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
@@ -19,7 +19,7 @@ namespace Shark.AuthorizationServer.Core.ApplicationServices;
 public sealed class AuthorizeApplicationService(
     IAuthorizeValidator authorizeValidator,
     IStringGeneratorService stringGeneratorService,
-    IAccessTokenGeneratorService accessTokenGeneratorService,
+    ITokenResponseService tokenResponseService,
     IRedirectionService redirectionService,
     IClientRepository clientRepository,
     IPersistedGrantRepository persistedGrantRepository,
@@ -31,7 +31,7 @@ public sealed class AuthorizeApplicationService(
 
     private readonly IAuthorizeValidator _authorizeValidator = authorizeValidator;
     private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
-    private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
+    private readonly ITokenResponseService _tokenResponseService = tokenResponseService;
     private readonly IRedirectionService _redirectionService = redirectionService;
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
@@ -97,12 +97,13 @@ public sealed class AuthorizeApplicationService(
             client.ClientId,
             ResponseType.Token);
 
-        var token = GenerateBearerToken(client!, request.Scopes);
+        var userId = Guid.NewGuid().ToString();
+        var tokenResponse = _tokenResponseService.GenerateForAccessTokenOnly(client.Audience, request.Scopes, userId);
 
         var redirectUrl = _redirectionService.BuildClientCallbackUrl(
             request.RedirectUri,
-            token.AccessToken,
-            token.TokenType);
+            tokenResponse.AccessToken,
+            tokenResponse.TokenType);
 
         return new AuthorizeInternalTokenResponse(redirectUrl);
     }
@@ -136,20 +137,5 @@ public sealed class AuthorizeApplicationService(
         };
 
         await _persistedGrantRepository.Add(persistedGrant);
-    }
-
-    private TokenResponse GenerateBearerToken(Client client, string[] scopes)
-    {
-        var userId = Guid.NewGuid().ToString();
-        var accessToken = _accessTokenGeneratorService.Generate(userId, null, scopes, client.Audience);
-
-        var tokenResponse = new TokenResponse
-        {
-            AccessToken = accessToken.Value,
-            TokenType = AccessTokenType.Bearer,
-            ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
-        };
-
-        return tokenResponse;
     }
 }
