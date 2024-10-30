@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Responses.Configuration;
@@ -54,7 +55,7 @@ public sealed class ConfigurationApplicationService(
             RegistrationEndpoint = registrationEndpointUri.ToString(),
             UserInfoEndpoint = userInfoEndpoint.ToString(),
             DeviceAuthorizationEndpoint = deviceAuthorizationEndpoint.ToString(),
-            ScopesSupported = [Scope.OpenId, Scope.Profile, Scope.Email, Scope.Address, Scope.Phone],
+            ScopesSupported = [Scope.OfflineAccess, Scope.OpenId, Scope.Profile, Scope.Email, Scope.Address, Scope.Phone],
             ClaimsSupported = [JwtRegisteredClaimNames.Sub, JwtRegisteredClaimNames.Name],
             GrantTypesSupported = GrantType.SupportedGrantTypes,
             ResponseTypesSupported = ResponseType.SupportedResponseTypes,

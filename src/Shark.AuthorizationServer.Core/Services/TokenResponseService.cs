@@ -11,12 +11,12 @@ namespace Shark.AuthorizationServer.Core.Services;
 public sealed class TokenResponseService(
     IAccessTokenGeneratorService accessTokenGeneratorService,
     IIdTokenGeneratorService idTokenGeneratorService,
-    IStringGeneratorService stringGeneratorService,
+    IRefreshTokenGeneratorService refreshTokenGeneratorService,
     IOptions<AuthorizationServerConfiguration> options) : ITokenResponseService
 {
     private readonly IAccessTokenGeneratorService _accessTokenGeneratorService = accessTokenGeneratorService;
     private readonly IIdTokenGeneratorService _idTokenGeneratorService = idTokenGeneratorService;
-    private readonly IStringGeneratorService _stringGeneratorService = stringGeneratorService;
+    private readonly IRefreshTokenGeneratorService _refreshTokenGeneratorService = refreshTokenGeneratorService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
     public (TokenResponse TokenResponse, AccessToken AccessToken) Generate(
@@ -32,8 +32,8 @@ public sealed class TokenResponseService(
         ArgumentNullException.ThrowIfNullOrWhiteSpace(userId, nameof(userId));
 
         var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, audience);
+        var refreshToken = _refreshTokenGeneratorService.Generate(scopes);
         var idToken = _idTokenGeneratorService.Generate(userId, userName, clientId, scopes);
-        var refreshToken = _stringGeneratorService.GenerateRefreshToken();
 
         var tokenResponse = new TokenResponse
         {
