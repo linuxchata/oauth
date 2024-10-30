@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddTransient<IDeviceAuthorizationApplicationService, DeviceAuthorizationApplicationService>();
 
         services.AddTransient<IDeviceService, DeviceService>();
+        services.AddTransient<ITokenResponseService, TokenResponseService>();
 
         return services;
     }
