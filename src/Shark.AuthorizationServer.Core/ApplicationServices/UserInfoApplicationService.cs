@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
-using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Extensions;
 using Shark.AuthorizationServer.Core.Responses.UserInfo;
 using Shark.AuthorizationServer.DomainServices.Abstractions;

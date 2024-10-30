@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
-using Shark.AuthorizationServer.Core.Constants;
 
 namespace Shark.AuthorizationServer.Core.Extensions;
 

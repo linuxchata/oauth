@@ -1,6 +1,7 @@
 using System.Security.Authentication;
 using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Extensions;
+using Shark.Sample.ProtectedResource.Constants;
 using Shark.Sample.ProtectedResource.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

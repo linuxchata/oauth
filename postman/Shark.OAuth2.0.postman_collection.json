@@ -36,7 +36,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{HostUri}}/authorize/?response_type=code&client_id={{ClientIdPermanent}}&state={{State}}}&redirect_uri=https%3a%2f%2foauth.pstmn.io%2fv1%2fcallback&scope=read add update delete openid profile email address phone",
+							"raw": "{{HostUri}}/authorize/?response_type=code&client_id={{ClientIdPermanent}}&state={{State}}}&redirect_uri=https%3a%2f%2foauth.pstmn.io%2fv1%2fcallback&scope=offline_access read add update delete openid profile email address phone",
 							"host": [
 								"{{HostUri}}"
 							],
@@ -63,7 +63,7 @@
 								},
 								{
 									"key": "scope",
-									"value": "read add update delete openid profile email address phone"
+									"value": "offline_access read add update delete openid profile email address phone"
 								}
 							]
 						}
@@ -135,7 +135,7 @@
 								},
 								{
 									"key": "scope",
-									"value": "read add update delete openid profile email address phone",
+									"value": "offline_access read add update delete openid profile email address phone",
 									"type": "text"
 								}
 							]
@@ -214,7 +214,7 @@
 								},
 								{
 									"key": "scope",
-									"value": "read add update delete openid profile email address phone",
+									"value": "offline_access read add update delete openid profile email address phone",
 									"type": "text"
 								}
 							]

@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddTransient<ISigningCredentialsService, SigningCredentialsService>();
         services.AddTransient<IAccessTokenGeneratorService, AccessTokenGeneratorService>();
         services.AddTransient<IIdTokenGeneratorService, IdTokenGeneratorService>();
+        services.AddTransient<IRefreshTokenGeneratorService, RefreshTokenGeneratorService>();
         services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
         services.AddTransient<ILoginService, LoginService>();
         services.AddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();

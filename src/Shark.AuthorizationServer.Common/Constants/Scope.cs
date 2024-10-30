@@ -1,8 +1,10 @@
-﻿namespace Shark.AuthorizationServer.Core.Constants;
+﻿namespace Shark.AuthorizationServer.Common.Constants;
 
 public static class Scope
 {
     public const string Name = "scope";
+
+    public const string OfflineAccess = "offline_access";
 
     public const string OpenId = "openid";
 

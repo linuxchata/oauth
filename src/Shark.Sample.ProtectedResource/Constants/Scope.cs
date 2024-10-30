@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Sdk.Constants;
+﻿namespace Shark.Sample.ProtectedResource.Constants;
 
 public static class Scope
 {
@@ -9,6 +9,4 @@ public static class Scope
     public const string Update = "update";
 
     public const string Delete = "delete";
-
-    public const string OpenId = "openid";
 }
