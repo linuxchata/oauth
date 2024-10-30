@@ -1,6 +1,7 @@
 ﻿using System.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
@@ -9,7 +10,6 @@ using Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 

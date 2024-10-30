@@ -1,6 +1,6 @@
-﻿using Shark.AuthorizationServer.Sdk.Abstractions.Services;
+﻿using Shark.AuthorizationServer.Common.Constants;
+using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
-using Shark.AuthorizationServer.Sdk.Constants;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
 

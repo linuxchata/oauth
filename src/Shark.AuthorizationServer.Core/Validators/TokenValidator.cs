@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.Constants;

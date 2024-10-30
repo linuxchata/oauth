@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
@@ -12,7 +13,6 @@ using Shark.AuthorizationServer.Core.Responses.Authorize;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
@@ -24,7 +24,6 @@ public sealed class AuthorizeApplicationService(
     IClientRepository clientRepository,
     IPersistedGrantRepository persistedGrantRepository,
     IHttpContextAccessor httpContextAccessor,
-    IOptions<AuthorizationServerConfiguration> options,
     ILogger<AuthorizeApplicationService> logger) : IAuthorizeApplicationService
 {
     private const int AuthorizationCodeExpirationInSeconds = 30;
@@ -36,7 +35,6 @@ public sealed class AuthorizeApplicationService(
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<AuthorizeApplicationService> _logger = logger;
 
     public async Task<IAuthorizeInternalResponse> Execute(AuthorizeInternalRequest request)

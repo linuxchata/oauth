@@ -12,7 +12,8 @@ namespace Shark.AuthorizationServer.Sdk.Services;
 /// SecurityKey provider for authorization server clients.
 /// </summary>
 /// <param name="configurationJwksProvider">Represents configuration provider.</param>
-internal sealed class SecurityKeyNetworkProvider(IConfigurationJwksProvider configurationJwksProvider) : ISecurityKeyProvider
+internal sealed class SecurityKeyNetworkProvider(
+    IConfigurationJwksProvider configurationJwksProvider) : ISecurityKeyProvider
 {
     private readonly IConfigurationJwksProvider _configurationJwksProvider = configurationJwksProvider;
 

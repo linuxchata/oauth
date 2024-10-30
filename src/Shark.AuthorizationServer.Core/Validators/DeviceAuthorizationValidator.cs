@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 using Shark.AuthorizationServer.Domain;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.Core.Validators;
 public sealed class DeviceAuthorizationValidator(

@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Constants;
+﻿namespace Shark.AuthorizationServer.Common.Constants;
 
 public static class Scheme
 {

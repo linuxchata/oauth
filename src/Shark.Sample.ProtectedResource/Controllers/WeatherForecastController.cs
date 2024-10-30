@@ -27,7 +27,7 @@ public sealed class WeatherForecastController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Scope.Read)]
+    [Authorize(CustomScope.Read)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType<WeatherForecast[]>(StatusCodes.Status200OK)]
     public IActionResult Get()
@@ -36,7 +36,7 @@ public sealed class WeatherForecastController : ControllerBase
     }
 
     [HttpDelete]
-    [Authorize(Scope.Delete)]
+    [Authorize(CustomScope.Delete)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult Delete()
     {

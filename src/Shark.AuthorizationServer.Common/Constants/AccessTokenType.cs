@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Sdk.Constants;
+﻿namespace Shark.AuthorizationServer.Common.Constants;
 
 public static class AccessTokenType
 {

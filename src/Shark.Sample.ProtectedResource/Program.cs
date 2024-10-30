@@ -1,4 +1,5 @@
 using System.Security.Authentication;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Extensions;
 using Shark.Sample.ProtectedResource.Constants;
@@ -26,17 +27,17 @@ builder.Services.AddSharkAuthentication(builder.Configuration);
 
 builder.Services
     .AddAuthorizationBuilder()
-    .AddPolicy(Scope.Read, policy =>
+    .AddPolicy(CustomScope.Read, policy =>
     {
         policy.AddAuthenticationSchemes(Scheme.Bearer);
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim(ClaimType.Scope, Scope.Read);
+        policy.RequireClaim(ClaimType.Scope, CustomScope.Read);
     })
-    .AddPolicy(Scope.Delete, policy =>
+    .AddPolicy(CustomScope.Delete, policy =>
     {
         policy.AddAuthenticationSchemes(Scheme.Bearer);
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim(ClaimType.Scope, Scope.Delete);
+        policy.RequireClaim(ClaimType.Scope, CustomScope.Delete);
     });
 
 builder.Services.AddControllers();

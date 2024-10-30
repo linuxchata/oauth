@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.DomainServices.Constants;
+﻿namespace Shark.AuthorizationServer.Common.Constants;
 
 public static class GrantType
 {

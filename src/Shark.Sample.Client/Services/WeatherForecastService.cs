@@ -2,8 +2,8 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
-using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Models;
 
