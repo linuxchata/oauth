@@ -2,8 +2,8 @@
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Shark.AuthorizationServer.Common;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
-using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;

@@ -1,14 +1,13 @@
 ﻿using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Authentication;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Configurations;
-using Shark.AuthorizationServer.Constants;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Services;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Extensions;
-using Shark.AuthorizationServer.Sdk.Services;
 
 namespace Shark.AuthorizationServer.Extensions;
 

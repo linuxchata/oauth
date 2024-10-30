@@ -2,7 +2,7 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shark.AuthorizationServer.Constants;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Responses.Token;
 using Shark.AuthorizationServer.Mappers;

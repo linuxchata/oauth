@@ -1,7 +1,7 @@
 ﻿using Shark.AuthorizationServer.Common;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.DomainServices.Services;
 

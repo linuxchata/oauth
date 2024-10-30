@@ -3,8 +3,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.DomainServices.Services;
 

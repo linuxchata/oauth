@@ -3,10 +3,10 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Configurations;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
-using Shark.AuthorizationServer.Sdk.Constants;
 
 namespace Shark.AuthorizationServer.Authentication;
 
@@ -52,7 +52,7 @@ public sealed class BasicAuthenticationHandler(
             return null;
         }
 
-        if (!authorizationHeaderValue.StartsWith(Constants.Scheme.Basic + ' ', StringComparison.OrdinalIgnoreCase))
+        if (!authorizationHeaderValue.StartsWith(Common.Constants.Scheme.Basic + ' ', StringComparison.OrdinalIgnoreCase))
         {
             return null;
         }
@@ -64,7 +64,7 @@ public sealed class BasicAuthenticationHandler(
     {
         try
         {
-            var credentials = authorizationHeaderValue[Constants.Scheme.Basic.Length..].Trim();
+            var credentials = authorizationHeaderValue[Common.Constants.Scheme.Basic.Length..].Trim();
 
             var decodedCredentials = Encoding.UTF8.GetString(Convert.FromBase64String(credentials));
 

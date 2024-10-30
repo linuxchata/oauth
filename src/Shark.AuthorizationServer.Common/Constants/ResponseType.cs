@@ -1,4 +1,4 @@
-﻿namespace Shark.AuthorizationServer.Core.Constants;
+﻿namespace Shark.AuthorizationServer.Common.Constants;
 
 public static class ResponseType
 {

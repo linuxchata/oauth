@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Logging;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
-using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Revoke;
 using Shark.AuthorizationServer.Domain;

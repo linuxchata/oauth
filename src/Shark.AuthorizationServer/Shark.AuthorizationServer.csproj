@@ -43,10 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" />

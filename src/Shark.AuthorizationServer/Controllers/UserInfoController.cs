@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Responses.UserInfo;
-using Shark.AuthorizationServer.Sdk.Constants;
 
 namespace Shark.AuthorizationServer.Controllers;
 

@@ -2,10 +2,10 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.DomainServices.Services;
 

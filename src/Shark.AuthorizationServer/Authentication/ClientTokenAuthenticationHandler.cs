@@ -48,7 +48,7 @@ public sealed class ClientTokenAuthenticationHandler(
             return null;
         }
 
-        if (!authorizationHeaderValue.StartsWith(Constants.Scheme.Bearer + ' ', StringComparison.OrdinalIgnoreCase))
+        if (!authorizationHeaderValue.StartsWith(Common.Constants.Scheme.Bearer + ' ', StringComparison.OrdinalIgnoreCase))
         {
             return null;
         }
@@ -66,8 +66,8 @@ public sealed class ClientTokenAuthenticationHandler(
                 return false;
             }
 
-            var startIndexOfAccessToken = authorizationHeaderValue.IndexOf(Constants.Scheme.Bearer) + 1;
-            var accessToken = authorizationHeaderValue[(startIndexOfAccessToken + Constants.Scheme.Bearer.Length)..];
+            var startIndexOfAccessToken = authorizationHeaderValue.IndexOf(Common.Constants.Scheme.Bearer) + 1;
+            var accessToken = authorizationHeaderValue[(startIndexOfAccessToken + Common.Constants.Scheme.Bearer.Length)..];
 
             var client = await _clientRepository.Get(clientId);
             if (client is null || !client.RegistrationAccessToken.EqualsTo(accessToken))

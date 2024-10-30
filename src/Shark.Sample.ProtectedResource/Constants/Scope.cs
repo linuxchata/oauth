@@ -1,6 +1,6 @@
 ﻿namespace Shark.Sample.ProtectedResource.Constants;
 
-public static class Scope
+public static class CustomScope
 {
     public const string Read = "read";
 
