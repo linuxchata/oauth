@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 
-namespace Shark.AuthorizationServer.Sdk.Models;
+namespace Shark.AuthorizationServer.Sdk.Configurations;
 
 public sealed class BearerTokenAuthenticationOptions : AuthenticationSchemeOptions
 {
-    public const string Name = nameof(BearerTokenAuthenticationOptions);
+    public const string Name = "BearerTokenAuthentication";
 
     public string AuthorizationServerUri { get; set; } = null!;
 
@@ -16,7 +16,5 @@ public sealed class BearerTokenAuthenticationOptions : AuthenticationSchemeOptio
 
     public bool ValidateAudience { get; set; }
 
-    public string KeyId { get; set; } = null!;
-
-    public string SymmetricSecurityKey { get; set; } = null!;
+    public RetryOnGetConfigurationOptions? RetryConfiguration { get; set; }
 }
