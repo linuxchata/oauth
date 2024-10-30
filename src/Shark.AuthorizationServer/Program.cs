@@ -6,6 +6,7 @@ using Prometheus;
 using Shark.AuthorizationServer.Core;
 using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.Extensions;
+using Shark.AuthorizationServer.Middleware;
 using Shark.AuthorizationServer.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,8 +90,9 @@ app.Use(async (context, next) =>
 
     await next();
 });
-
 app.UseStaticFiles();
+
+app.UseMiddleware<DisableTrackMiddleware>();
 
 app.UseRouting();
 

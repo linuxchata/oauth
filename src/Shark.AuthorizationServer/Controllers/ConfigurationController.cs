@@ -16,6 +16,7 @@ public class ConfigurationController(
     /// <returns>HTTP response.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ResponseCache(NoStore = true, Duration = 0, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> Get()
     {
         var internalResponse = await _applicationService.Get();
@@ -29,6 +30,7 @@ public class ConfigurationController(
     /// <returns>HTTP response.</returns>
     [HttpGet("jwks")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ResponseCache(NoStore = true, Duration = 0, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> GetJsonWebKeySet()
     {
         var internalResponse = await _applicationService.GetJsonWebKeySet();

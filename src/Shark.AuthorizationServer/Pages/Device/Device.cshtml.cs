@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
@@ -10,6 +11,7 @@ public sealed class DeviceModel(IDeviceService deviceService) : PageModel
 
     private readonly IDeviceService _deviceService = deviceService;
 
+    [Required]
     public string? UserCode { get; set; }
 
     public async Task<IActionResult> OnGet([FromQuery(Name = "user_code")] string userCode)
@@ -24,9 +26,12 @@ public sealed class DeviceModel(IDeviceService deviceService) : PageModel
 
     public async Task<IActionResult> OnPost(string userCode)
     {
-        if (!string.IsNullOrEmpty(userCode))
+        if (ModelState.IsValid)
         {
-            return await RedirectToDeviceAuthorizePage(userCode);
+            if (!string.IsNullOrEmpty(userCode))
+            {
+                return await RedirectToDeviceAuthorizePage(userCode);
+            }
         }
 
         return RedirectToPage("Error");
