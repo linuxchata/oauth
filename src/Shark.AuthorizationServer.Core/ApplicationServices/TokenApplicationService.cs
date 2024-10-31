@@ -13,7 +13,6 @@ using Shark.AuthorizationServer.Core.Responses.Token;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
@@ -76,7 +75,7 @@ public sealed class TokenApplicationService(
             return await HandleDeviceCodeGrant(request, client!);
         }
 
-        return HandleUnsupportedGrantType(request);
+        throw new InvalidOperationException($"Unsupported grant type {request.GrantType}");
     }
 
     private static bool IsGrantType(string? grantType, string expectedGrantType)
@@ -190,12 +189,6 @@ public sealed class TokenApplicationService(
         var tokenResponse = await GenerateAndStoreBearerToken(client.ClientId, client.Audience, null, request.Scopes);
 
         return new TokenInternalResponse(tokenResponse);
-    }
-
-    private TokenInternalBadRequestResponse HandleUnsupportedGrantType(TokenInternalRequest request)
-    {
-        _logger.LogWarning("Unsupported grant type {GrantType}", request.GrantType);
-        return new TokenInternalBadRequestResponse(Error.InvalidGrantType);
     }
 
     private async Task<TokenResponse> GenerateAndStoreBearerToken(

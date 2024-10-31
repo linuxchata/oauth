@@ -1,4 +1,6 @@
-﻿namespace Shark.AuthorizationServer.Domain;
+﻿using Shark.AuthorizationServer.Domain.Enumerations;
+
+namespace Shark.AuthorizationServer.Domain;
 
 public record Client
 {
@@ -13,6 +15,8 @@ public record Client
     public required long ClientIdIssuedAt { get; set; }
 
     public required long ClientSecretExpiresAt { get; set; }
+
+    public required ClientType ClientType { get; set; }
 
     public required string[] RedirectUris { get; set; }
 
