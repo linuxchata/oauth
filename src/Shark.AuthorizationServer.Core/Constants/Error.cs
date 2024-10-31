@@ -2,13 +2,17 @@
 
 public static class Error
 {
-    public const string InvalidResponseType = "invalid_response_type";
+    public const string UnsupportedResponseType = "unsupported_response_type";
+
+    public const string UnauthorizedClient = "unauthorized_client";
 
     public const string InvalidClient = "invalid_client";
 
     public const string InvalidGrant = "invalid_grant";
 
     public const string InvalidGrantType = "invalid_grant_type";
+
+    public const string UnsupportedGrantType = "unsupported_grant_type";
 
     public const string InvalidScope = "invalid_scope";
 

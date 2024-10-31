@@ -29,7 +29,8 @@ public sealed class BasicAuthenticationHandler(
         var authorizationHeaderValue = GetAndValidateAuthorizationHeader();
         if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
         {
-            return AuthenticateResult.Fail(UnauthorizedMessage);
+            // Revert statement - authenticate the client if client authentication is included (RFC 6749)
+            return AuthenticateResult.Success(CreateAuthenticationTicket());
         }
 
         var (clientId, clientSecret) = GetCredentials(authorizationHeaderValue);
@@ -39,9 +40,7 @@ public sealed class BasicAuthenticationHandler(
             return AuthenticateResult.Fail(UnauthorizedMessage);
         }
 
-        var claimsPrincipal = CreateClaimsPrincipal(clientId!);
-        var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
-        return AuthenticateResult.Success(authenticationTicket);
+        return AuthenticateResult.Success(CreateAuthenticationTicket(clientId!));
     }
 
     private string? GetAndValidateAuthorizationHeader()
@@ -101,14 +100,16 @@ public sealed class BasicAuthenticationHandler(
         return true;
     }
 
-    private ClaimsPrincipal CreateClaimsPrincipal(string clientId)
+    private AuthenticationTicket CreateAuthenticationTicket(string? clientId = null)
     {
-        var claims = new List<Claim>
+        var claims = new List<Claim>();
+
+        if (!string.IsNullOrWhiteSpace(clientId))
         {
-            new(ClaimType.ClientId, clientId),
-        };
+            claims.Add(new(ClaimType.ClientId, clientId));
+        }
 
         var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
-        return new ClaimsPrincipal(claimsIdentity);
+        return new AuthenticationTicket(new ClaimsPrincipal(claimsIdentity), Scheme.Name);
     }
 }

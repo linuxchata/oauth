@@ -8,7 +8,10 @@ namespace Shark.AuthorizationServer.Authentication;
 /// <summary>
 /// SecurityKey provider for authorization server itself.
 /// </summary>
+/// <param name="securityOptions">Security configuration.</param>
 /// <param name="rsaSecurityKey">Represents a RSA security key.</param>
+/// <param name="x509SecurityKey">Represents a x509 security key.</param>
+/// <param name="symmetricSecurityKey">Represents a symmetric security key.</param>
 public sealed class SecurityKeyLocalProvider(
     IOptions<AuthorizationServerSecurityConfiguration> securityOptions,
     [FromKeyedServices("public")] RsaSecurityKey? rsaSecurityKey = null,
