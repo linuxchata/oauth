@@ -37,7 +37,7 @@ public sealed class TokenController(
         switch (internalResponse)
         {
             case TokenInternalBadRequestResponse badRequestResponse:
-                return BadRequest(badRequestResponse.Message);
+                return BadRequest(badRequestResponse.Error);
             case TokenInternalResponse response:
                 return Ok(response.TokenResponse);
             default:

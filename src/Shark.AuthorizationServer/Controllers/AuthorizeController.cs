@@ -57,7 +57,7 @@ public sealed class AuthorizeController(
         switch (internalResponse)
         {
             case AuthorizeInternalBadRequestResponse badRequestResponse:
-                return BadRequest(badRequestResponse.Message);
+                return BadRequest(badRequestResponse.Error);
             case AuthorizeInternalCodeResponse response:
                 _httpContextAccessor.HttpContext?.Response.Redirect(response.RedirectUrl);
                 return new StatusCodeResult((int)HttpStatusCode.Redirect);

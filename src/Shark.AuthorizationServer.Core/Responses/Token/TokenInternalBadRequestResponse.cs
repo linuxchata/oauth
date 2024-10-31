@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Core.Responses.Token;
 
-public sealed class TokenInternalBadRequestResponse(string message) : ITokenInternalResponse
+public sealed class TokenInternalBadRequestResponse(string error) : ITokenInternalResponse
 {
-    public string Message { get; init; } = message;
+    public ErrorResponseBody Error { get; init; } = new ErrorResponseBody(error);
 }
