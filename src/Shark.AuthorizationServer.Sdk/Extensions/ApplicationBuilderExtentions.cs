@@ -46,9 +46,7 @@ public static class ApplicationBuilderExtentions
         return services;
     }
 
-    public static IServiceCollection AddSharkClient(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddSharkClient(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<AuthorizationConfiguration>(
             configuration.GetSection(AuthorizationConfiguration.Name));
@@ -76,6 +74,21 @@ public static class ApplicationBuilderExtentions
     {
         services.AddHttpClient();
 
+        AddConfigurationRetries(services, options);
+
+        services.TryAddTransient<IConfigurationJwksProvider, ConfigurationJwksProvider>();
+        services.TryAddTransient<ISecurityKeyProvider, SecurityKeyNetworkProvider>();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var securityKeyProvider =
+            serviceProvider.GetService(typeof(ISecurityKeyProvider)) as ISecurityKeyProvider ??
+            throw new InvalidOperationException("Security key provider cannot be resolved");
+
+        return await securityKeyProvider.GetSecurityKey();
+    }
+
+    private static void AddConfigurationRetries(IServiceCollection services, BearerTokenAuthenticationOptions options)
+    {
         if (options.RetryConfiguration?.Enabled ?? false)
         {
             services.AddResiliencePipeline("configuration", builder =>
@@ -89,15 +102,5 @@ public static class ApplicationBuilderExtentions
                     .AddTimeout(TimeSpan.FromSeconds(options.RetryConfiguration.TimeoutInSeconds));
             });
         }
-
-        services.TryAddTransient<IConfigurationJwksProvider, ConfigurationJwksProvider>();
-        services.TryAddTransient<ISecurityKeyProvider, SecurityKeyNetworkProvider>();
-
-        var serviceProvider = services.BuildServiceProvider();
-        var securityKeyProvider =
-            serviceProvider.GetService(typeof(ISecurityKeyProvider)) as ISecurityKeyProvider ??
-            throw new InvalidOperationException("Security key provider cannot be resolved");
-
-        return await securityKeyProvider.GetSecurityKey();
     }
 }

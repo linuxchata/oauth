@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Domain;
 
-namespace Shark.AuthorizationServer.Repositories;
+namespace Shark.AuthorizationServer.Repositories.InMemory;
 
 public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : IDevicePersistedGrantRepository
 {

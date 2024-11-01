@@ -2,7 +2,7 @@
 
 public static class Scheme
 {
-    public const string Cookies = nameof(Cookies);
+    public const string Cookies = "authserver";
 
     public const string Basic = nameof(Basic);
 
