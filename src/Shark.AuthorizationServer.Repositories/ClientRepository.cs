@@ -1,10 +1,9 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
-using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Domain;
 
-namespace Shark.AuthorizationServer.Repositories;
+namespace Shark.AuthorizationServer.Repositories.InMemory;
 
 public sealed class ClientRepository(IDistributedCache cache) : IClientRepository
 {
@@ -17,22 +16,11 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
             return null;
         }
 
-        // Read from cache
         var serializedItem = await _cache.GetStringAsync(value);
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {
             return JsonSerializer.Deserialize<Client>(serializedItem);
-        }
-
-        // Read from file
-        using var streamReader = new StreamReader("Data/clients.json");
-        var clients = await streamReader.ReadToEndAsync();
-        var deserializedClients = JsonSerializer.Deserialize<List<Client>>(clients);
-
-        if (deserializedClients is not null)
-        {
-            return deserializedClients.Find(c => c.ClientId.EqualsTo(value));
         }
 
         throw new InvalidOperationException($"Client with identifier {value} cannot be found");

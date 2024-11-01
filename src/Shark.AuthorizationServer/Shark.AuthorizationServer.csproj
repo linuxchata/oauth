@@ -12,13 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Keys\RS256.Private.pem" />
-    <None Remove="Keys\RS256.Public.pem" />
-    <None Remove="Keys\shark-dev.crt" />
-    <None Remove="Keys\shark-dev.pfx" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Keys\RS256.Private.pem">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -49,14 +42,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" />
-    <ProjectReference Include="..\Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.csproj" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.InMemory.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Data\clients.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>

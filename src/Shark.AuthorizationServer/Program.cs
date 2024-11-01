@@ -1,4 +1,3 @@
-using System.Net;
 using System.Reflection;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -8,7 +7,7 @@ using Shark.AuthorizationServer.Core;
 using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.Extensions;
 using Shark.AuthorizationServer.Middleware;
-using Shark.AuthorizationServer.Repositories;
+using Shark.AuthorizationServer.Repositories.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(serverOptions =>
@@ -69,6 +68,8 @@ builder.Services.AddHttpsRedirection(options =>
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+app.UseMockClients();
 
 app.UseMetricServer();
 

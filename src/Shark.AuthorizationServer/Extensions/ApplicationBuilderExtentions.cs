@@ -77,36 +77,60 @@ public static class ApplicationBuilderExtentions
 
         if (securityConfiguration.SecurityAlgorithms == SecurityAlgorithms.HmacSha256)
         {
-            var key = Encoding.UTF8.GetBytes(securityConfiguration.SymmetricSecurityKey!);
-            var symmetricSecurityKey = new SymmetricSecurityKey(key);
-
-            services.AddSingleton(symmetricSecurityKey);
+            AddSymmerticKey(services, securityConfiguration);
         }
         else if (securityConfiguration.SecurityAlgorithms == SecurityAlgorithms.RsaSha256)
         {
             if (securityConfiguration.UseRsaCertificate)
             {
-                var publicX509SecurityKey = SecurityKeyProvider.GetFromPublicCertificate(
-                    securityConfiguration.PublicCertificatePath!);
-                var privateX509SecurityKey = SecurityKeyProvider.GetFromPrivateCertificate(
-                    securityConfiguration.PrivateCertificatePath!, securityConfiguration.PrivateCertificatePassword!);
-                var signingCertificate = SigningCertificateProvider.Get(securityConfiguration.PublicCertificatePath!);
-
-                services.AddKeyedSingleton(Public, publicX509SecurityKey);
-                services.AddKeyedSingleton(Private, privateX509SecurityKey);
-                services.AddTransient(s => signingCertificate);
+                AddCertificateKey(services, securityConfiguration);
             }
             else
             {
-                var publicRsaSecurityKey = SecurityKeyProvider.GetFromPublicKey(
-                    securityConfiguration.PublicKeyPath!);
-                var privateRsaSecurityKey = SecurityKeyProvider.GetFromPrivateKey(
-                    securityConfiguration.PrivateKeyPath!);
-
-                services.AddKeyedSingleton(Public, publicRsaSecurityKey);
-                services.AddKeyedSingleton(Private, privateRsaSecurityKey);
-                services.AddTransient(s => new SigningCertificate());
+                AddAsymmerticKey(services, securityConfiguration);
             }
         }
+    }
+
+    private static void AddSymmerticKey(
+        IServiceCollection services,
+        AuthorizationServerSecurityConfiguration securityConfiguration)
+    {
+        var key = Encoding.UTF8.GetBytes(securityConfiguration.SymmetricSecurityKey!);
+        var symmetricSecurityKey = new SymmetricSecurityKey(key);
+
+        services.AddSingleton(symmetricSecurityKey);
+    }
+
+    private static void AddCertificateKey(
+        IServiceCollection services,
+        AuthorizationServerSecurityConfiguration securityConfiguration)
+    {
+        var publicX509SecurityKey = SecurityKeyProvider.GetFromPublicCertificate(
+            securityConfiguration.PublicCertificatePath!);
+
+        var privateX509SecurityKey = SecurityKeyProvider.GetFromPrivateCertificate(
+            securityConfiguration.PrivateCertificatePath!, securityConfiguration.PrivateCertificatePassword!);
+
+        var signingCertificate = SigningCertificateProvider.Get(securityConfiguration.PublicCertificatePath!);
+
+        services.AddKeyedSingleton(Public, publicX509SecurityKey);
+        services.AddKeyedSingleton(Private, privateX509SecurityKey);
+        services.AddTransient(s => signingCertificate);
+    }
+
+    private static void AddAsymmerticKey(
+        IServiceCollection services,
+        AuthorizationServerSecurityConfiguration securityConfiguration)
+    {
+        var publicRsaSecurityKey = SecurityKeyProvider.GetFromPublicKey(
+            securityConfiguration.PublicKeyPath!);
+
+        var privateRsaSecurityKey = SecurityKeyProvider.GetFromPrivateKey(
+            securityConfiguration.PrivateKeyPath!);
+
+        services.AddKeyedSingleton(Public, publicRsaSecurityKey);
+        services.AddKeyedSingleton(Private, privateRsaSecurityKey);
+        services.AddTransient(s => new SigningCertificate());
     }
 }
