@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
-using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Authorize;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
-using Shark.AuthorizationServer.DomainServices.Configurations;
 
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
@@ -41,6 +38,8 @@ public sealed class AuthorizeApplicationService(
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
+        using var scope = _logger.BeginScope("ClientId: {ClientId} =>", request.ClientId!);
+
         var client = await _clientRepository.Get(request.ClientId);
 
         var response = _authorizeValidator.ValidateRequest(request, client);
@@ -51,14 +50,14 @@ public sealed class AuthorizeApplicationService(
 
         if (IsResponseType(request.ResponseType, ResponseType.Code))
         {
-            return await HandleCodeResponse(request, client!);
+            return await HandleCodeResponse(request);
         }
         else if (IsResponseType(request.ResponseType, ResponseType.Token))
         {
             return HandleTokenResponse(request, client!);
         }
 
-        return HandleUnsupportedResponseType(request.ResponseType, client!);
+        throw new InvalidOperationException($"Unsupported response type {request.ResponseType}");
     }
 
     private static bool IsResponseType(string responseType, string expectedResponseType)
@@ -66,14 +65,9 @@ public sealed class AuthorizeApplicationService(
         return responseType.EqualsTo(expectedResponseType);
     }
 
-    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponse(
-        AuthorizeInternalRequest request,
-        Client client)
+    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponse(AuthorizeInternalRequest request)
     {
-        _logger.LogInformation(
-            "Issuing authorization code for client [{ClientId}]. Response type is {ResponseType}",
-            client.ClientId,
-            ResponseType.Code);
+        _logger.LogInformation("Issuing authorization code. Response type is {ResponseType}", ResponseType.Code);
 
         var code = _stringGeneratorService.GenerateCode();
 
@@ -90,10 +84,7 @@ public sealed class AuthorizeApplicationService(
 
     private AuthorizeInternalTokenResponse HandleTokenResponse(AuthorizeInternalRequest request, Client client)
     {
-        _logger.LogInformation(
-            "Issuing access token for client [{ClientId}]. Response type is {ResponseType}",
-            client.ClientId,
-            ResponseType.Token);
+        _logger.LogInformation("Issuing access token. Response type is {ResponseType}", ResponseType.Token);
 
         var userId = Guid.NewGuid().ToString();
         var tokenResponse = _tokenResponseService.GenerateForAccessTokenOnly(client.Audience, request.Scopes, userId);
@@ -104,16 +95,6 @@ public sealed class AuthorizeApplicationService(
             tokenResponse.TokenType);
 
         return new AuthorizeInternalTokenResponse(redirectUrl);
-    }
-
-    private AuthorizeInternalBadRequestResponse HandleUnsupportedResponseType(string responseType, Client client)
-    {
-        _logger.LogWarning(
-            "Unsupported response type {ResponseType}. Client is [{ClientId}]",
-            responseType,
-            client.ClientId);
-
-        return new AuthorizeInternalBadRequestResponse(Error.InvalidResponseType);
     }
 
     private async Task StorePersistedGrant(AuthorizeInternalRequest request, string code)

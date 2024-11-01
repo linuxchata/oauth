@@ -9,7 +9,6 @@ using Shark.AuthorizationServer.Core.Responses.Token;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.Domain.Extensions;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
-using Shark.AuthorizationServer.DomainServices.Constants;
 
 namespace Shark.AuthorizationServer.Core.Validators;
 
@@ -32,12 +31,36 @@ public sealed class TokenValidator(
             return new TokenInternalBadRequestResponse(Error.InvalidClient);
         }
 
+        // Validate grant type
+        if (string.IsNullOrWhiteSpace(request.GrantType) ||
+            !GrantType.AllowedGrandTypes.Contains(request.GrantType))
+        {
+            _logger.LogWarning("Unsupported grant type {GrantType}", request.GrantType);
+            return new TokenInternalBadRequestResponse(Error.UnsupportedGrantType);
+        }
+
+        if (!client.GrantTypes.ToHashSet().Contains(request.GrantType))
+        {
+            _logger.LogWarning("Invalid grant for client");
+            return new TokenInternalBadRequestResponse(Error.UnauthorizedClient);
+        }
+
         // Validate client secret
         if ((!claimsPrincipal.Identity?.IsAuthenticated ?? true) &&
             !client.ClientSecret.EqualsTo(request.ClientSecret))
         {
             _logger.LogWarning("Invalid client secret");
-            return new TokenInternalBadRequestResponse(Error.InvalidClient);
+            return new TokenInternalBadRequestResponse(Error.UnauthorizedClient);
+        }
+
+        // Validate that Confidential client is authenticated
+        // <cref="BasicAuthenticationHandler" includes clientid claim when it is available
+        if (client.ClientType == Domain.Enumerations.ClientType.Confidential &&
+            (claimsPrincipal.Identity?.IsAuthenticated ?? true) &&
+            !claimsPrincipal.Claims.Any(c => c.Type.EqualsTo(ClaimType.ClientId)))
+        {
+            _logger.LogWarning("Invalid client authentication for confidential client");
+            return new TokenInternalBadRequestResponse(Error.UnauthorizedClient);
         }
 
         // Validate redirect URI

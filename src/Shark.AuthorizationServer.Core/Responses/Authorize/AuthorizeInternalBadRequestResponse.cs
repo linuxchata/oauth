@@ -1,6 +1,6 @@
 ﻿namespace Shark.AuthorizationServer.Core.Responses.Authorize;
 
-public sealed class AuthorizeInternalBadRequestResponse(string message) : IAuthorizeInternalResponse
+public sealed class AuthorizeInternalBadRequestResponse(string error) : IAuthorizeInternalResponse
 {
-    public string Message { get; init; } = message;
+    public ErrorResponseBody Error { get; init; } = new ErrorResponseBody(error);
 }

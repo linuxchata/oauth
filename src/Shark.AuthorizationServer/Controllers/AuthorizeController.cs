@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Requests;
@@ -56,7 +57,7 @@ public sealed class AuthorizeController(
         switch (internalResponse)
         {
             case AuthorizeInternalBadRequestResponse badRequestResponse:
-                return BadRequest(badRequestResponse.Message);
+                return BadRequest(badRequestResponse.Error);
             case AuthorizeInternalCodeResponse response:
                 _httpContextAccessor.HttpContext?.Response.Redirect(response.RedirectUrl);
                 return new StatusCodeResult((int)HttpStatusCode.Redirect);
