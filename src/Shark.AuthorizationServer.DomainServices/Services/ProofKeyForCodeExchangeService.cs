@@ -1,6 +1,4 @@
 ﻿using Shark.AuthorizationServer.Common;
-using Shark.AuthorizationServer.Common.Constants;
-using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 
 namespace Shark.AuthorizationServer.DomainServices.Services;
@@ -12,11 +10,6 @@ public sealed class ProofKeyForCodeExchangeService : IProofKeyForCodeExchangeSer
         ArgumentException.ThrowIfNullOrWhiteSpace(codeVerifier, nameof(codeVerifier));
         ArgumentException.ThrowIfNullOrWhiteSpace(codeChallengeMethod, nameof(codeChallengeMethod));
 
-        if (!codeChallengeMethod.EqualsTo(CodeChallengeMethod.Sha256))
-        {
-            throw new ArgumentException("Unknown code challenge method");
-        }
-
-        return ProofKeyForCodeExchangeProvider.GetCodeChallenge(codeVerifier);
+        return ProofKeyForCodeExchangeProvider.GetCodeChallenge(codeVerifier, codeChallengeMethod);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
@@ -101,6 +102,14 @@ public sealed class AuthorizeApplicationService(
     {
         var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
 
+        // code_challenge_method defaults to "plain" if not present in the request
+        var codeChallengeMethod = request.CodeChallengeMethod;
+        if (!string.IsNullOrWhiteSpace(request.CodeChallenge) &&
+            string.IsNullOrWhiteSpace(request.CodeChallengeMethod))
+        {
+            codeChallengeMethod = CodeChallengeMethod.Plain;
+        }
+
         var persistedGrant = new PersistedGrant
         {
             Type = GrantType.AuthorizationCode,
@@ -110,7 +119,7 @@ public sealed class AuthorizeApplicationService(
             Value = code,
             UserName = userName,
             CodeChallenge = request.CodeChallenge,
-            CodeChallengeMethod = request.CodeChallengeMethod,
+            CodeChallengeMethod = codeChallengeMethod,
             CreatedDate = DateTime.UtcNow,
             ExpiredIn = AuthorizationCodeExpirationInSeconds,
         };

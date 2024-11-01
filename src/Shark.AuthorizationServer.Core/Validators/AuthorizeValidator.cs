@@ -22,15 +22,15 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
         }
 
         // Validate response type
-        if (!ResponseType.SupportedResponseTypes.Contains(request.ResponseType))
+        if (!ResponseType.Supported.ToHashSet().Contains(request.ResponseType))
         {
-            _logger.LogWarning("Unsupported response type {ResponseType}", request.ResponseType);
+            _logger.LogWarning("Unsupported response type [{ResponseType}]", request.ResponseType);
             return new AuthorizeInternalBadRequestResponse(Error.UnsupportedResponseType);
         }
 
         if (!client.ResponseTypes.ToHashSet().Contains(request.ResponseType))
         {
-            _logger.LogWarning("Unsupported response type {ResponseType} by the client", request.ResponseType);
+            _logger.LogWarning("Unsupported response type [{ResponseType}] by the client", request.ResponseType);
             return new AuthorizeInternalBadRequestResponse(Error.UnauthorizedClient);
         }
 
@@ -51,6 +51,16 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
                 _logger.LogWarning("Mismatched scope [{Scope}] for the client", scope);
                 return new AuthorizeInternalBadRequestResponse(Error.InvalidScope);
             }
+        }
+
+        // Validate code challenge method
+        if (!string.IsNullOrWhiteSpace(request.CodeChallengeMethod) &&
+            !CodeChallengeMethod.Supported.Contains(request.CodeChallengeMethod))
+        {
+            _logger.LogWarning(
+                "Unsupported code challenge method [{CodeChallengeMethod}] by the server",
+                request.CodeChallengeMethod);
+            return new AuthorizeInternalBadRequestResponse(Error.InvalidRequest);
         }
 
         return null;

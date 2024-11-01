@@ -1,15 +1,28 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Shark.AuthorizationServer.Common.Constants;
+using Shark.AuthorizationServer.Common.Extensions;
 
 namespace Shark.AuthorizationServer.Common;
 
 public sealed class ProofKeyForCodeExchangeProvider
 {
-    public static string GetCodeChallenge(string codeVerifier)
+    public static string GetCodeChallenge(string codeVerifier, string codeChallengeMethod)
     {
-        var bytes = Encoding.ASCII.GetBytes(codeVerifier);
-        var hash = SHA256.HashData(bytes);
-        return Base64UrlEncode(hash);
+        if (codeChallengeMethod.EqualsTo(CodeChallengeMethod.Plain))
+        {
+            return codeVerifier;
+        }
+        else if (codeChallengeMethod.EqualsTo(CodeChallengeMethod.Sha256))
+        {
+            var bytes = Encoding.ASCII.GetBytes(codeVerifier);
+            var hash = SHA256.HashData(bytes);
+            return Base64UrlEncode(hash);
+        }
+        else
+        {
+            throw new ArgumentException($"Unsupported code challenge method [{codeChallengeMethod}]");
+        }
     }
 
     public static string Base64UrlEncode(byte[] input)

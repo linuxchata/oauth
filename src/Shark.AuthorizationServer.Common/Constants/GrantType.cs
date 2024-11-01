@@ -14,23 +14,23 @@ public static class GrantType
 
     public const string DeviceCode = "urn:ietf:params:oauth:grant-type:device_code";
 
-    public readonly static HashSet<string> AllowedGrandTypes =
+    public readonly static HashSet<string> Allowed =
     [
-        GrantType.AuthorizationCode,
-        GrantType.RefreshToken,
-        GrantType.Implicit,
-        GrantType.ResourceOwnerCredentials,
-        GrantType.ClientCredentials,
-        GrantType.DeviceCode,
+        AuthorizationCode,
+        RefreshToken,
+        Implicit,
+        ResourceOwnerCredentials,
+        ClientCredentials,
+        DeviceCode,
     ];
 
-    public readonly static string[] SupportedGrantTypes =
+    public readonly static string[] Supported =
     [
-        GrantType.AuthorizationCode,
-        GrantType.RefreshToken,
-        GrantType.Implicit,
-        GrantType.ClientCredentials,
-        GrantType.ResourceOwnerCredentials,
-        GrantType.DeviceCode
+        AuthorizationCode,
+        RefreshToken,
+        Implicit,
+        ClientCredentials,
+        ResourceOwnerCredentials,
+        DeviceCode
     ];
 }

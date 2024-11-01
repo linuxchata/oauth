@@ -8,7 +8,7 @@ internal sealed class StringGeneratorService : IStringGeneratorService
 
     private static readonly Random Random = new();
 
-    public string GenerateCodeVerifier(byte length = 83)
+    public string GenerateCodeVerifier(byte length = 43)
     {
         return new string(Enumerable.Repeat(CodeVerifierChars, length)
             .Select(s => s[Random.Next(s.Length)]).ToArray());

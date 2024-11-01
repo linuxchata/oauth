@@ -6,9 +6,9 @@ public static class ResponseType
 
     public const string Token = "token";
 
-    public readonly static string[] SupportedResponseTypes =
+    public readonly static string[] Supported =
     [
-        ResponseType.Code,
-        ResponseType.Token,
+        Code,
+        Token,
     ];
 }
