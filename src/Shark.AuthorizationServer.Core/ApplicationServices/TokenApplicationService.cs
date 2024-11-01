@@ -173,16 +173,8 @@ public sealed class TokenApplicationService(
             return response;
         }
 
-        if (!devicePersistedGrant!.IsAuthorized)
-        {
-            _logger.LogWarning(
-                "User did not authorize device code for {GrantType} grant",
-                GrantType.DeviceCode);
-            return new TokenInternalBadRequestResponse(Error.AuthorizationPending);
-        }
-
         // Remove device code persisted grant, since it can be considered consumed at this point
-        await _devicePersistedGrantRepository.Remove(devicePersistedGrant);
+        await _devicePersistedGrantRepository.Remove(devicePersistedGrant!);
 
         _logger.LogInformation("Issuing access token for {GrantType} grant", GrantType.DeviceCode);
 

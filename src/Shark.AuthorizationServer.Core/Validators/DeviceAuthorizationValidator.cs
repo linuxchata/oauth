@@ -17,19 +17,19 @@ public sealed class DeviceAuthorizationValidator(
     {
         if (client is null)
         {
-            _logger.LogWarning("Unknown client with identifier [{ClientId}]", request.ClientId);
+            _logger.LogWarning("Unknown client");
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
         }
 
         if (!request.ClientSecret.EqualsTo(client.ClientSecret))
         {
-            _logger.LogWarning("Invalid client secret for client [{ClientId}]", request.ClientId);
+            _logger.LogWarning("Invalid client secret");
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
         }
 
         if (!client.GrantTypes.ToHashSet().Contains(GrantType.DeviceCode))
         {
-            _logger.LogWarning("Invalid grant for client [{ClientId}]", request.ClientId);
+            _logger.LogWarning("Invalid grant");
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidGrant);
         }
 

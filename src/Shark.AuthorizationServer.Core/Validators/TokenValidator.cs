@@ -242,6 +242,24 @@ public sealed class TokenValidator(
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
+        // Validate whether grant was authorized
+        if (!devicePersistedGrant.IsAuthorized.HasValue)
+        {
+            _logger.LogWarning(
+                "The authorization request is still pending for {GrantType} grant",
+                GrantType.DeviceCode);
+            return new TokenInternalBadRequestResponse(Error.AuthorizationPending);
+        }
+
+        if (devicePersistedGrant.IsAuthorized.HasValue &&
+            !devicePersistedGrant.IsAuthorized.Value)
+        {
+            _logger.LogWarning(
+                "The authorization request was denied for {GrantType} grant",
+                GrantType.DeviceCode);
+            return new TokenInternalBadRequestResponse(Error.AccessDenied);
+        }
+
         return null;
     }
 }

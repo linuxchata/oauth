@@ -12,7 +12,7 @@ public record DevicePersistedGrant
 
     public required string UserCode { get; set; }
 
-    public required bool IsAuthorized { get; set; }
+    public required bool? IsAuthorized { get; set; }
 
     public required DateTime CreatedDate { get; set; }
 
