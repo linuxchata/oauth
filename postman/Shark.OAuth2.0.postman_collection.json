@@ -111,8 +111,8 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
+							"mode": "urlencoded",
+							"urlencoded": [
 								{
 									"key": "grant_type",
 									"value": "authorization_code",
@@ -400,8 +400,8 @@
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
+							"mode": "urlencoded",
+							"urlencoded": [
 								{
 									"key": "client_id",
 									"value": "{{DeviceClientId}}",
@@ -464,8 +464,8 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
+							"mode": "urlencoded",
+							"urlencoded": [
 								{
 									"key": "grant_type",
 									"value": "urn:ietf:params:oauth:grant-type:device_code",
