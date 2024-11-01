@@ -89,6 +89,8 @@ public sealed class TokenValidator(
         PersistedGrant? persistedGrant,
         TokenInternalRequest request)
     {
+        using var loggerScope = _logger.BeginScope("[{GrantType}]", GrantType.AuthorizationCode);
+
         // Validate grant
         if (persistedGrant is null)
         {
@@ -99,14 +101,14 @@ public sealed class TokenValidator(
         // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier for {GrantType} persisted grant", GrantType.AuthorizationCode);
+            _logger.LogWarning("Mismatched client identifier");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate grant's redirect URI
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URI for {GrantType} persisted grant", GrantType.AuthorizationCode);
+            _logger.LogWarning("Mismatched redirect URI");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -116,7 +118,7 @@ public sealed class TokenValidator(
         {
             if (!allowedScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope for {GrantType} persisted grant", GrantType.AuthorizationCode);
+                _logger.LogWarning("Mismatched scope");
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }
@@ -149,7 +151,7 @@ public sealed class TokenValidator(
 
             if (!persistedGrant.CodeChallenge.EqualsTo(codeChallenge))
             {
-                _logger.LogWarning("Mismatched code challenge for {GrantType} persisted grant", GrantType.AuthorizationCode);
+                _logger.LogWarning("Mismatched code challenge");
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }
@@ -157,7 +159,7 @@ public sealed class TokenValidator(
         // Validate expiration
         if (persistedGrant.HasExpired())
         {
-            _logger.LogWarning("Persisted grant {GrantType} has expired", GrantType.AuthorizationCode);
+            _logger.LogWarning("Persisted grant has expired");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -168,6 +170,8 @@ public sealed class TokenValidator(
         PersistedGrant? persistedGrant,
         TokenInternalRequest request)
     {
+        using var loggerScope = _logger.BeginScope("[{GrantType}]", GrantType.RefreshToken);
+
         // Validate grant
         if (persistedGrant is null)
         {
@@ -178,21 +182,21 @@ public sealed class TokenValidator(
         // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier for {GrantType} persisted grant", GrantType.RefreshToken);
+            _logger.LogWarning("Mismatched client identifier");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate grant's redirect URI
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URI for {GrantType} persisted grant", GrantType.RefreshToken);
+            _logger.LogWarning("Mismatched redirect URI");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate expiration
         if (persistedGrant.HasExpired())
         {
-            _logger.LogWarning("Persisted grant {GrantType} has expired", GrantType.RefreshToken);
+            _logger.LogWarning("Persisted grant has expired");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -203,6 +207,8 @@ public sealed class TokenValidator(
         DevicePersistedGrant? devicePersistedGrant,
         TokenInternalRequest request)
     {
+        using var loggerScope = _logger.BeginScope("[{GrantType}]", GrantType.DeviceCode);
+
         // Validate grant
         if (devicePersistedGrant is null)
         {
@@ -213,7 +219,7 @@ public sealed class TokenValidator(
         // Validate grant's client
         if (!devicePersistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier for {GrantType} persisted grant", GrantType.DeviceCode);
+            _logger.LogWarning("Mismatched client identifier");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -223,7 +229,7 @@ public sealed class TokenValidator(
         {
             if (!allowedScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope for {GrantType} persisted grant", GrantType.DeviceCode);
+                _logger.LogWarning("Mismatched scope");
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }
@@ -231,32 +237,28 @@ public sealed class TokenValidator(
         // Validate grant's device code
         if (!devicePersistedGrant.DeviceCode.EqualsTo(request.DeviceCode))
         {
-            _logger.LogWarning("Mismatched device code for {GrantType} persisted grant", GrantType.DeviceCode);
+            _logger.LogWarning("Mismatched device code");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate expiration
         if (devicePersistedGrant.HasExpired())
         {
-            _logger.LogWarning("Persisted grant {GrantType} has expired", GrantType.DeviceCode);
+            _logger.LogWarning("Persisted grant has expired");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate whether grant was authorized
         if (!devicePersistedGrant.IsAuthorized.HasValue)
         {
-            _logger.LogWarning(
-                "The authorization request is still pending for {GrantType} grant",
-                GrantType.DeviceCode);
+            _logger.LogWarning("The authorization request is still pending");
             return new TokenInternalBadRequestResponse(Error.AuthorizationPending);
         }
 
         if (devicePersistedGrant.IsAuthorized.HasValue &&
             !devicePersistedGrant.IsAuthorized.Value)
         {
-            _logger.LogWarning(
-                "The authorization request was denied for {GrantType} grant",
-                GrantType.DeviceCode);
+            _logger.LogWarning("The authorization request was denied");
             return new TokenInternalBadRequestResponse(Error.AccessDenied);
         }
 
