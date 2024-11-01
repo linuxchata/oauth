@@ -1,3 +1,10 @@
+## Build Status
+| Build server | Target |  Status |
+|-|-|-|
+| GitHub Actions | Build | [![build](https://github.com/linuxchata/oauth/actions/workflows/build.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build.yml) |
+| GitHub Actions | Build & Deploy | [![build_deploy](https://github.com/linuxchata/oauth/actions/workflows/build_deploy.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build_deploy.yml) |
+| GitHub Actions | Nuget | [![build_push_nuget](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget.yml) |
+
 # Specifications
 - [The OAuth 2.0 Authorization Framework](https://datatracker.ietf.org/doc/html/rfc6749)
 - [Proof Key for Code Exchange by OAuth Public Clients](https://datatracker.ietf.org/doc/html/rfc7636)
