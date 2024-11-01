@@ -40,6 +40,8 @@ public sealed class DeviceAuthorizationApplicationService(
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
+        using var scope = _logger.BeginScope("ClientId: {ClientId} =>", request.ClientId!);
+
         var client = await _clientRepository.Get(request.ClientId);
 
         var response = _deviceAuthorizationValidator.ValidateRequest(request, client);
@@ -53,7 +55,7 @@ public sealed class DeviceAuthorizationApplicationService(
 
     private async Task<DeviceAuthorizationResponse> Handle(DeviceAuthorizationInternalRequest request, Client client)
     {
-        _logger.LogInformation("Issuing device code for client [{ClientId}]", client.ClientId);
+        _logger.LogInformation("Issuing device code");
 
         var baseUri = new Uri(_configuration.AuthorizationServerUri);
         var deviceCode = _stringGeneratorService.GenerateDeviceCode();
@@ -104,7 +106,7 @@ public sealed class DeviceAuthorizationApplicationService(
             Scopes = request.Scopes,
             DeviceCode = deviceCode,
             UserCode = userCode,
-            IsAuthorized = false,
+            IsAuthorized = null,
             CreatedDate = DateTime.UtcNow,
             ExpiredIn = expiresIn,
         };

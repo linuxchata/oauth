@@ -23,4 +23,6 @@ public static class Error
     public const string InvalidClientMetadata = "invalid_client_metadata";
 
     public const string AuthorizationPending = "authorization_pending";
+
+    public const string AccessDenied = "access_denied";
 }

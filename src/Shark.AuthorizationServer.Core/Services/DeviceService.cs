@@ -1,6 +1,5 @@
 ﻿using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
-using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.Services;
 
@@ -22,38 +21,28 @@ public sealed class DeviceService(IDevicePersistedGrantRepository devicePersiste
 
     public async Task Authorize(string? userCode)
     {
+        await UpdateDevicePersistedGrant(userCode, true);
+    }
+
+    public async Task Deny(string? userCode)
+    {
+        await UpdateDevicePersistedGrant(userCode, false);
+    }
+
+    private async Task UpdateDevicePersistedGrant(string? userCode, bool isAuthorized)
+    {
         if (!string.IsNullOrWhiteSpace(userCode))
         {
             var devicePersistedGrant = await _devicePersistedGrantRepository.GetByUserCode(userCode);
 
-            if (devicePersistedGrant != null && !devicePersistedGrant.IsAuthorized)
+            if (devicePersistedGrant != null && !devicePersistedGrant.IsAuthorized.HasValue)
             {
-                var adjustedDevicePersistedGrant = AdjustDevicePersistedGrant(devicePersistedGrant);
+                var adjustedDevicePersistedGrant = devicePersistedGrant with { };
+                adjustedDevicePersistedGrant.IsAuthorized = isAuthorized;
 
                 await _devicePersistedGrantRepository.Remove(devicePersistedGrant);
                 await _devicePersistedGrantRepository.Add(adjustedDevicePersistedGrant);
             }
         }
-    }
-
-    public async Task Deny(string? userCode)
-    {
-        if (!string.IsNullOrWhiteSpace(userCode))
-        {
-            var devicePersistedGrant = await _devicePersistedGrantRepository.GetByUserCode(userCode);
-
-            if (devicePersistedGrant != null)
-            {
-                await _devicePersistedGrantRepository.Remove(devicePersistedGrant);
-            }
-        }
-    }
-
-    private static DevicePersistedGrant AdjustDevicePersistedGrant(DevicePersistedGrant devicePersistedGrant)
-    {
-        var adjustedDevicePersistedGrant = devicePersistedGrant with { };
-        adjustedDevicePersistedGrant.IsAuthorized = true;
-
-        return adjustedDevicePersistedGrant;
     }
 }
