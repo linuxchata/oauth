@@ -169,7 +169,7 @@ public sealed class RegisterValidator : IRegisterValidator
         var responseTypesList = responseTypes.Split(' ').ToList();
         foreach (var grandType in grandTypesList)
         {
-            if (!GrantType.AllowedGrandTypes.Contains(grandType))
+            if (!GrantType.Allowed.Contains(grandType))
             {
                 return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
             }

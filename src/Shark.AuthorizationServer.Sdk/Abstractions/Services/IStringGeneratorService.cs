@@ -2,5 +2,5 @@
 
 public interface IStringGeneratorService
 {
-    string GenerateCodeVerifier(byte length = 83);
+    string GenerateCodeVerifier(byte length = 43);
 }

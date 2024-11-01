@@ -33,7 +33,7 @@ public sealed class TokenValidator(
 
         // Validate grant type
         if (string.IsNullOrWhiteSpace(request.GrantType) ||
-            !GrantType.AllowedGrandTypes.Contains(request.GrantType))
+            !GrantType.Allowed.Contains(request.GrantType))
         {
             _logger.LogWarning("Unsupported grant type {GrantType}", request.GrantType);
             return new TokenInternalBadRequestResponse(Error.UnsupportedGrantType);

@@ -31,18 +31,24 @@ internal sealed class ProofKeyForCodeExchangeService(
         return null;
     }
 
-    public ProofKeyForCodeExchange Generate(string? state)
+    public ProofKeyForCodeExchange Generate(string? state, string codeChallengeMethod = CodeChallengeMethod.Sha256)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(state, nameof(state));
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(codeChallengeMethod, nameof(codeChallengeMethod));
+
+        if (!CodeChallengeMethod.Supported.Contains(codeChallengeMethod))
+        {
+            throw new ArgumentException($"Unsupported code challenge method [{codeChallengeMethod}]");
+        }
 
         var codeVerifier = _stringGeneratorService.GenerateCodeVerifier();
-        var codeChallenge = ProofKeyForCodeExchangeProvider.GetCodeChallenge(codeVerifier);
+        var codeChallenge = ProofKeyForCodeExchangeProvider.GetCodeChallenge(codeVerifier, codeChallengeMethod);
 
         var pkce = new ProofKeyForCodeExchange
         {
             CodeVerifier = codeVerifier,
             CodeChallenge = codeChallenge,
-            CodeChallengeMethod = CodeChallengeMethod.Sha256,
+            CodeChallengeMethod = codeChallengeMethod,
         };
 
         var cacheEntryOptions = new DistributedCacheEntryOptions
