@@ -23,7 +23,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
             return JsonSerializer.Deserialize<Client>(serializedItem);
         }
 
-        throw new InvalidOperationException($"Client with identifier {value} cannot be found");
+        return null;
     }
 
     public async Task Add(Client client)
