@@ -35,13 +35,13 @@ public sealed class TokenValidator(
         if (string.IsNullOrWhiteSpace(request.GrantType) ||
             !GrantType.Allowed.Contains(request.GrantType))
         {
-            _logger.LogWarning("Unsupported grant type {GrantType}", request.GrantType);
+            _logger.LogWarning("Unsupported grant type [{GrantType}] by server", request.GrantType);
             return new TokenInternalBadRequestResponse(Error.UnsupportedGrantType);
         }
 
         if (!client.GrantTypes.ToHashSet().Contains(request.GrantType))
         {
-            _logger.LogWarning("Invalid grant for client");
+            _logger.LogWarning("Invalid grant [{GrantType}] for client", request.GrantType);
             return new TokenInternalBadRequestResponse(Error.UnauthorizedClient);
         }
 
@@ -101,14 +101,14 @@ public sealed class TokenValidator(
         // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier");
+            _logger.LogWarning("Mismatched client identifier [{ClientId}]", request.ClientId);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate grant's redirect URI
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URI");
+            _logger.LogWarning("Mismatched redirect URI [{RedirectUri}]", request.RedirectUri);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -118,7 +118,7 @@ public sealed class TokenValidator(
         {
             if (!allowedScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope");
+                _logger.LogWarning("Mismatched scope [{Scope}]", scope);
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }
@@ -182,14 +182,14 @@ public sealed class TokenValidator(
         // Validate grant's client
         if (!persistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier");
+            _logger.LogWarning("Mismatched client identifier [{ClientId}]", request.ClientId);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
         // Validate grant's redirect URI
         if (!persistedGrant.RedirectUri.EqualsTo(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URI");
+            _logger.LogWarning("Mismatched redirect URI [{RedirectUri}]", request.RedirectUri);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -219,7 +219,7 @@ public sealed class TokenValidator(
         // Validate grant's client
         if (!devicePersistedGrant.ClientId.EqualsTo(request.ClientId))
         {
-            _logger.LogWarning("Mismatched client identifier");
+            _logger.LogWarning("Mismatched client identifier [{ClientId}]", request.ClientId);
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
@@ -229,7 +229,7 @@ public sealed class TokenValidator(
         {
             if (!allowedScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope");
+                _logger.LogWarning("Mismatched scope [{Scope}]", scope);
                 return new TokenInternalBadRequestResponse(Error.InvalidGrant);
             }
         }
