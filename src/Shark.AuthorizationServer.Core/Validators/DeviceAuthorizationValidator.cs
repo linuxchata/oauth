@@ -29,7 +29,7 @@ public sealed class DeviceAuthorizationValidator(
 
         if (!client.GrantTypes.ToHashSet().Contains(GrantType.DeviceCode))
         {
-            _logger.LogWarning("Invalid grant");
+            _logger.LogWarning("Unsupported grant [{GrantType}] by client", GrantType.DeviceCode);
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidGrant);
         }
 

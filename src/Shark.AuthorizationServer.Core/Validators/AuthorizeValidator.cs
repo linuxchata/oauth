@@ -24,20 +24,20 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
         // Validate response type
         if (!ResponseType.Supported.ToHashSet().Contains(request.ResponseType))
         {
-            _logger.LogWarning("Unsupported response type [{ResponseType}] by the server", request.ResponseType);
+            _logger.LogWarning("Unsupported response type [{ResponseType}] by server", request.ResponseType);
             return new AuthorizeInternalBadRequestResponse(Error.UnsupportedResponseType);
         }
 
         if (!client.ResponseTypes.ToHashSet().Contains(request.ResponseType))
         {
-            _logger.LogWarning("Unsupported response type [{ResponseType}] by the client", request.ResponseType);
+            _logger.LogWarning("Unsupported response type [{ResponseType}] by client", request.ResponseType);
             return new AuthorizeInternalBadRequestResponse(Error.UnauthorizedClient);
         }
 
         // Validate redirect URI
         if (!client.RedirectUris.Contains(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URL [{RedirectUri}] for the client ", request.RedirectUri);
+            _logger.LogWarning("Mismatched redirect URL [{RedirectUri}] for client", request.RedirectUri);
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
@@ -48,7 +48,7 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
         {
             if (!allowedClientScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope [{Scope}] for the client", scope);
+                _logger.LogWarning("Mismatched scope [{Scope}] for client", scope);
                 return new AuthorizeInternalBadRequestResponse(Error.InvalidScope);
             }
         }
@@ -58,7 +58,7 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
             !CodeChallengeMethod.Supported.Contains(request.CodeChallengeMethod))
         {
             _logger.LogWarning(
-                "Unsupported code challenge method [{CodeChallengeMethod}] by the server",
+                "Unsupported code challenge method [{CodeChallengeMethod}] by server",
                 request.CodeChallengeMethod);
             return new AuthorizeInternalBadRequestResponse(Error.InvalidRequest);
         }
