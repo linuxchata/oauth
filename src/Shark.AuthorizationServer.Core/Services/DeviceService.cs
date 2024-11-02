@@ -37,11 +37,7 @@ public sealed class DeviceService(IDevicePersistedGrantRepository devicePersiste
 
             if (devicePersistedGrant != null && !devicePersistedGrant.IsAuthorized.HasValue)
             {
-                var adjustedDevicePersistedGrant = devicePersistedGrant with { };
-                adjustedDevicePersistedGrant.IsAuthorized = isAuthorized;
-
-                await _devicePersistedGrantRepository.Remove(devicePersistedGrant);
-                await _devicePersistedGrantRepository.Add(adjustedDevicePersistedGrant);
+                await _devicePersistedGrantRepository.Update(devicePersistedGrant, isAuthorized);
             }
         }
     }

@@ -2,7 +2,7 @@
 
 public sealed class AuthorizationServerSecurityConfiguration
 {
-    public const string Name = nameof(AuthorizationServerConfiguration); // Name of the main configuration
+    public const string Name = "AuthorizationServer"; // Name of the main configuration
 
     public string KeyId { get; set; } = null!;
 

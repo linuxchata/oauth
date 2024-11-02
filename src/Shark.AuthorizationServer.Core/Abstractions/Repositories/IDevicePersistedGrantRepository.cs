@@ -10,5 +10,7 @@ public interface IDevicePersistedGrantRepository
 
     Task Add(DevicePersistedGrant item);
 
+    Task Update(DevicePersistedGrant item, bool isAuthorized);
+
     Task Remove(DevicePersistedGrant item);
 }

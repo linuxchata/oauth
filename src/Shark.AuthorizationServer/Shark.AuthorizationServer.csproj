@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Repositories.SqLite\Shark.AuthorizationServer.Repositories.SqLite.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.InMemory.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" />
   </ItemGroup>
