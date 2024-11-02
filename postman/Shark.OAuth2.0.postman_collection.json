@@ -164,7 +164,10 @@
 									"let responseData = pm.response.json();\r",
 									"\r",
 									"// Set the 'RefreshToken' from the response as a collection variable\r",
-									"pm.collectionVariables.set(\"RefreshToken\", responseData.refresh_token);"
+									"pm.collectionVariables.set(\"RefreshToken\", responseData.refresh_token);\r",
+									"\r",
+									"// Set the 'AccessToken' from the response as a collection variable\r",
+									"pm.collectionVariables.set(\"AccessToken\", responseData.access_token);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -190,8 +193,8 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
+							"mode": "urlencoded",
+							"urlencoded": [
 								{
 									"key": "grant_type",
 									"value": "refresh_token",
@@ -259,8 +262,8 @@
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
+							"mode": "urlencoded",
+							"urlencoded": [
 								{
 									"key": "client_id",
 									"value": "{{ClientIdPermanent}}",
@@ -332,8 +335,8 @@
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
+							"mode": "urlencoded",
+							"urlencoded": [
 								{
 									"key": "client_id",
 									"value": "{{ClientIdPermanent}}",

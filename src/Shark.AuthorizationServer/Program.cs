@@ -8,6 +8,7 @@ using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.Extensions;
 using Shark.AuthorizationServer.Middleware;
 using Shark.AuthorizationServer.Repositories.InMemory;
+using Shark.AuthorizationServer.Repositories.SqLite;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(serverOptions =>
@@ -39,7 +40,7 @@ builder.Services.AddCustomAuthentication(builder.Configuration);
 
 builder.Services.RegisterApplicationServices();
 builder.Services.RegisterDomainServices();
-builder.Services.RegisterRepositories();
+builder.Services.RegisterInMemoryRepositories();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();

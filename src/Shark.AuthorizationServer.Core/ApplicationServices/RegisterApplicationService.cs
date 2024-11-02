@@ -4,7 +4,6 @@ using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
-using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Mappers;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Register;

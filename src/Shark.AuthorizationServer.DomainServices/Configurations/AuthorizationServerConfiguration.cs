@@ -2,7 +2,7 @@
 
 public sealed class AuthorizationServerConfiguration
 {
-    public const string Name = nameof(AuthorizationServerConfiguration);
+    public const string Name = "AuthorizationServer";
 
     public string AuthorizationServerUri { get; set; } = null!;
 

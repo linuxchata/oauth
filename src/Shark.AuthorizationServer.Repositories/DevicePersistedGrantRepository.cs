@@ -32,6 +32,15 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
         await _cache.SetStringAsync(item.DeviceCode, serializedItem, cacheEntryOptions);
     }
 
+    public async Task Update(DevicePersistedGrant item, bool isAuthorized)
+    {
+        var adjustedItem = item with { };
+        adjustedItem.IsAuthorized = isAuthorized;
+
+        await Remove(item);
+        await Add(adjustedItem);
+    }
+
     public async Task Remove(DevicePersistedGrant item)
     {
         if (!string.IsNullOrWhiteSpace(item.UserCode))
