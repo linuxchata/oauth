@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Mappers;
 using Shark.AuthorizationServer.Requests;
@@ -22,6 +23,7 @@ public class IntrospectController(
     public async Task<IActionResult> Post([FromForm] IntrospectRequest request)
     {
         var internalResponse = await _applicationService.Execute(request.ToInternalRequest());
+
         return Ok(internalResponse);
     }
 }

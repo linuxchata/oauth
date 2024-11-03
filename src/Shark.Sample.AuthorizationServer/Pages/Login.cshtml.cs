@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 
-namespace Shark.AuthorizationServer.Pages;
+namespace Shark.Sample.AuthorizationServer.Pages;
 
 public sealed class LoginModel(
     IClientRepository clientRepository,

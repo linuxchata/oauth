@@ -1,5 +1,4 @@
 using System.Security.Authentication;
-using Microsoft.Extensions.Configuration;
 using Shark.AuthorizationServer.Sdk.Extensions;
 using Shark.Sample.Client.Abstractions.Services;
 using Shark.Sample.Client.Models;

@@ -1,9 +1,14 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Authentication;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Configurations;
+using Shark.AuthorizationServer.Core;
 using Shark.AuthorizationServer.Domain;
+using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.DomainServices.Configurations;
 using Shark.AuthorizationServer.DomainServices.Services;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
@@ -16,7 +21,20 @@ public static class ApplicationBuilderExtentions
     private const string Public = "public";
     private const string Private = "private";
 
-    public static IServiceCollection AddCustomAuthentication(
+    public static IServiceCollection AddSharkAuthorizationServer(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddHttpClient();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddCustomAuthentication(configuration);
+        services.RegisterApplicationServices();
+        services.RegisterDomainServices();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCustomAuthentication(
         this IServiceCollection services,
         IConfiguration configuration)
     {

@@ -8,6 +8,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection RegisterInMemoryRepositories(this IServiceCollection services)
     {
+        services.AddDistributedMemoryCache();
+
         services.AddSingleton<IClientRepository, ClientRepository>();
         services.AddSingleton<IPersistedGrantRepository, PersistedGrantRepository>();
         services.AddSingleton<IRevokeTokenRepository, RevokeTokenRepository>();
