@@ -43,9 +43,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.IncludeXmlComments(Path.Combine(
-        AppContext.BaseDirectory,
-        $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Shark.AuthorizationServer.xml"));
 });
 
 // Security
