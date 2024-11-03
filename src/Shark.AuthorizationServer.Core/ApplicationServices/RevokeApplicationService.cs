@@ -53,7 +53,7 @@ public sealed class RevokeApplicationService(
         if (!handler.CanReadToken(token))
         {
             // Do not log token value, since it can be a refresh token
-            _logger.LogWarning("Token is not a valid access token");
+            _logger.LogWarning("Token is not a well formed Json Web Token");
             return false;
         }
 

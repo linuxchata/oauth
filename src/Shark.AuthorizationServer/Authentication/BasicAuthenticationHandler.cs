@@ -2,6 +2,8 @@
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
@@ -30,8 +32,16 @@ public sealed class BasicAuthenticationHandler(
         var authorizationHeaderValue = GetAndValidateAuthorizationHeader();
         if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
         {
-            // Revert statement - authenticate the client if client authentication is included (RFC 6749)
-            return AuthenticateResult.Success(CreateAuthenticationTicket());
+            var policy = Context.GetEndpoint()?.Metadata.GetMetadata<AuthorizeAttribute>()?.Policy;
+            if (policy != null && !policy.EqualsTo(Policy.Strict))
+            {
+                // Revert statement - authenticate the client if client authentication is included (RFC 6749)
+                return AuthenticateResult.Success(CreateAuthenticationTicket());
+            }
+            else
+            {
+                return AuthenticateResult.Fail(UnauthorizedMessage);
+            }
         }
 
         var (clientId, clientSecret) = GetCredentials(authorizationHeaderValue);
