@@ -30,10 +30,11 @@ builder.Logging.Configure(options =>
     options.ActivityTrackingOptions = ActivityTrackingOptions.None;
 });
 
+// Authorization server
 builder.Services.AddSharkAuthorizationServer(builder.Configuration);
 builder.Services.RegisterInMemoryRepositories();
 
-// Add pages and controllers
+// Pages and controllers
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
@@ -47,7 +48,7 @@ builder.Services.AddSwaggerGen(c =>
         $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
 
-// Add security
+// Security
 builder.Services.AddHsts(options =>
 {
     options.Preload = true;
