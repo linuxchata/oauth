@@ -24,7 +24,7 @@ public sealed class TokenController(
     /// </summary>
     /// <param name="request">Token request.</param>
     /// <returns>HTTP response.</returns>
-    [Authorize(AuthenticationSchemes = Scheme.Basic)]
+    [Authorize(AuthenticationSchemes = Scheme.Basic, Policy = Policy.AllowPublic)]
     [HttpPost]
     [Consumes(MediaTypeNames.Application.FormUrlEncoded)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

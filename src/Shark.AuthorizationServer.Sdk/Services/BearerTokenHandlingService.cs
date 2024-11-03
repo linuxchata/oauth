@@ -60,13 +60,13 @@ internal sealed class BearerTokenHandlingService(
             return false;
         }
 
-        //// TODO: Add token inspection via the network and wrap it around configuration flag
-
         var jwtToken = handler.ReadJwtToken(accessToken);
         if (!ValidateAccessToken(handler, accessToken, ref tokenIdentity))
         {
             return false;
         }
+
+        //// TODO: Add token inspection via the network and wrap it around configuration flag
 
         var userId = jwtToken.Subject;
         var scopes = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimType.Scope)?.Value?.Split(' ');

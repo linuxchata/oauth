@@ -74,6 +74,17 @@ public static class ApplicationBuilderExtentions
                 Scheme.Basic,
                 options => options = basicAuthenticationOptions);
 
+        services.AddAuthorization(options =>
+        {
+            // Token endpoint.
+            options.AddPolicy(Policy.AllowPublic, policy =>
+                policy.AddRequirements(new AllowPublicAuthorizationRequirement()));
+
+            // Introspect endpoint.
+            options.AddPolicy(Policy.Strict, policy =>
+                policy.RequireAuthenticatedUser());
+        });
+
         // Client registration authentication.
         services
             .AddAuthentication(Scheme.ClientToken)

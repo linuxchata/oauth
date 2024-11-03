@@ -54,7 +54,7 @@ public sealed class TokenValidator(
         }
 
         // Validate that Confidential client is authenticated
-        // <cref="BasicAuthenticationHandler" includes clientid claim when it is available
+        // BasicAuthenticationHandler includes clientid claim when it is available
         if (client.ClientType == Domain.Enumerations.ClientType.Confidential &&
             (claimsPrincipal.Identity?.IsAuthenticated ?? true) &&
             !claimsPrincipal.Claims.Any(c => c.Type.EqualsTo(ClaimType.ClientId)))
