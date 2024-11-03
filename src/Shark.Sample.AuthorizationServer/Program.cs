@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
