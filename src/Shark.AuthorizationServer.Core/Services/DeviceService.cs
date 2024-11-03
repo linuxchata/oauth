@@ -16,7 +16,7 @@ public sealed class DeviceService(IDevicePersistedGrantRepository devicePersiste
 
         var devicePersistedGrant = await _devicePersistedGrantRepository.GetByUserCode(userCode);
 
-        return devicePersistedGrant != null;
+        return devicePersistedGrant != null && !devicePersistedGrant.IsAuthorized.HasValue;
     }
 
     public async Task Authorize(string? userCode)
