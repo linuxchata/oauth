@@ -3,14 +3,12 @@ using System.Security.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Prometheus;
-using Shark.AuthorizationServer.Core;
-using Shark.AuthorizationServer.DomainServices;
 using Shark.AuthorizationServer.Extensions;
-using Shark.AuthorizationServer.Middleware;
 using Shark.AuthorizationServer.Repositories.InMemory;
-using Shark.AuthorizationServer.Repositories.SqLite;
+using Shark.Sample.AuthorizationServer.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ConfigureHttpsDefaults(listenOptions =>
@@ -20,7 +18,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     serverOptions.AddServerHeader = false;
 });
 
-// Add services to the container.
+// Logger
 builder.Logging.AddSimpleConsole(options =>
 {
     options.IncludeScopes = true;
@@ -32,27 +30,23 @@ builder.Logging.Configure(options =>
     options.ActivityTrackingOptions = ActivityTrackingOptions.None;
 });
 
-builder.Services.AddHttpClient();
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-builder.Services.AddCustomAuthentication(builder.Configuration);
-
-builder.Services.RegisterApplicationServices();
-builder.Services.RegisterDomainServices();
+// Authorization server
+builder.Services.AddSharkAuthorizationServer(builder.Configuration);
 builder.Services.RegisterInMemoryRepositories();
 
+// Pages and controllers
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
+
+// Swagger
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.IncludeXmlComments(Path.Combine(
-        AppContext.BaseDirectory,
-        $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Shark.AuthorizationServer.xml"));
 });
 
+// Security
 builder.Services.AddHsts(options =>
 {
     options.Preload = true;
@@ -74,7 +68,6 @@ app.UseMockClients();
 
 app.UseMetricServer();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -98,6 +91,7 @@ app.Use(async (context, next) =>
 
     await next();
 });
+
 app.UseStaticFiles();
 
 app.UseMiddleware<DisableTrackMiddleware>();

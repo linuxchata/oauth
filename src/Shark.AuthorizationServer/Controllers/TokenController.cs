@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;

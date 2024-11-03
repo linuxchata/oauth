@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Shark.AuthorizationServer": {
+    "Shark.Sample.AuthorizationServer": {
       "commandName": "Project",
       "launchUrl": "swagger",
       "environmentVariables": {

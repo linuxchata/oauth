@@ -1,9 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <CodeAnalysisRuleSet />
-    <UserSecretsId>b97bd871-c839-48d4-8cf2-d5c92f858c64</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -12,38 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Keys\RS256.Private.pem">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Keys\RS256.Public.pem">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Keys\shark-dev.crt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Keys\shark-dev.pfx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="prometheus-net" Version="8.2.1" />
-    <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
-    <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="8.2.1">
-      <TreatAsUsed>true</TreatAsUsed>
-    </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" />
-    <ProjectReference Include="..\Shark.AuthorizationServer.Repositories.SqLite\Shark.AuthorizationServer.Repositories.SqLite.csproj" />
-    <ProjectReference Include="..\Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.InMemory.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" />
   </ItemGroup>
 

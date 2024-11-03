@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
 
-namespace Shark.AuthorizationServer.Pages.Device;
+namespace Shark.Sample.AuthorizationServer.Pages.Device;
 
 public sealed class DeviceAuthorizeModel(IDeviceService deviceService) : PageModel
 {
