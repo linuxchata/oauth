@@ -41,7 +41,7 @@ internal sealed class SecurityKeyNetworkProvider(
             throw new ArgumentException($"Unssuported key type {configurationJwksResponse.KeyType}");
         }
 
-        if(!configurationJwksResponse.Algorithm.EqualsTo(SecurityAlgorithms.RsaSha256))
+        if (!configurationJwksResponse.Algorithm.EqualsTo(SecurityAlgorithms.RsaSha256))
         {
             throw new ArgumentException($"Unssuported algorithm {configurationJwksResponse.Algorithm}");
         }

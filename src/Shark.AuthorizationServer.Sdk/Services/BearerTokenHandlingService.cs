@@ -8,7 +8,6 @@ using Shark.AuthorizationServer.Common.Abstractions;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Configurations;
-using Shark.AuthorizationServer.Sdk.Constants;
 using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Services;
