@@ -11,12 +11,12 @@ using Shark.AuthorizationServer.Sdk.Models;
 namespace Shark.AuthorizationServer.Sdk.Authentication;
 
 public sealed class BearerTokenAuthenticationHandler(
-    IBearerTokenHandlingService bearerTokenHandlingService,
+    IBearerTokenHandler bearerTokenHandlingService,
     IOptionsMonitor<BearerTokenAuthenticationOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder) : AuthenticationHandler<BearerTokenAuthenticationOptions>(options, logger, encoder)
 {
-    private readonly IBearerTokenHandlingService _bearerTokenHandlingService = bearerTokenHandlingService;
+    private readonly IBearerTokenHandler _bearerTokenHandlingService = bearerTokenHandlingService;
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {

@@ -34,8 +34,9 @@ public static class ApplicationBuilderExtentions
         var securityKey = GetSecurityKey(services, bearerTokenAuthenticationOptions).GetAwaiter().GetResult();
         services.AddSingleton(securityKey);
 
+        services.AddTransient<ICustomAccessTokenHandler, CustomAccessTokenHandler>();
         services.AddTransient<ICertificateValidator, CertificateValidator>();
-        services.AddTransient<IBearerTokenHandlingService, BearerTokenHandlingService>();
+        services.AddTransient<IBearerTokenHandler, BearerTokenHandler>();
 
         services
             .AddAuthentication(Scheme.Bearer)

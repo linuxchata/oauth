@@ -10,6 +10,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection RegisterDomainServices(this IServiceCollection services)
     {
+        services.AddTransient<ICustomAccessTokenHandler, CustomAccessTokenHandler>();
         services.AddTransient<ICertificateValidator, CertificateValidator>();
 
         services.AddTransient<IStringGeneratorService, StringGeneratorService>();
