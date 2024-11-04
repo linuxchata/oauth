@@ -520,13 +520,25 @@
 					],
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ClientSecretPermanent}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ClientIdPermanent}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
+							"mode": "urlencoded",
+							"urlencoded": [
 								{
 									"key": "token",
 									"value": "{{AccessToken}}",

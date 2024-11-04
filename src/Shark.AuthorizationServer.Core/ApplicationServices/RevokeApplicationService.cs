@@ -1,5 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Shark.AuthorizationServer.Common.Abstractions;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
@@ -11,10 +11,12 @@ using Shark.AuthorizationServer.Domain;
 namespace Shark.AuthorizationServer.Core.ApplicationServices;
 
 public sealed class RevokeApplicationService(
+    ICustomAccessTokenHandler customAccessTokenHandler,
     IPersistedGrantRepository persistedGrantRepository,
     IRevokeTokenRepository revokeTokenRepository,
     ILogger<TokenApplicationService> logger) : IRevokeApplicationService
 {
+    private readonly ICustomAccessTokenHandler _customAccessTokenHandler = customAccessTokenHandler;
     private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly IRevokeTokenRepository _revokeTokenRepository = revokeTokenRepository;
     private readonly ILogger<TokenApplicationService> _logger = logger;
@@ -49,15 +51,11 @@ public sealed class RevokeApplicationService(
 
     private async Task<bool> TryRevokeAccessToken(string token)
     {
-        var handler = new JwtSecurityTokenHandler();
-        if (!handler.CanReadToken(token))
+        var jwtToken = _customAccessTokenHandler.Read(token, null);
+        if (jwtToken is null)
         {
-            // Do not log token value, since it can be a refresh token
-            _logger.LogWarning("Token is not a well formed Json Web Token");
             return false;
         }
-
-        var jwtToken = handler.ReadJwtToken(token);
 
         if (!string.IsNullOrWhiteSpace(jwtToken.Id))
         {

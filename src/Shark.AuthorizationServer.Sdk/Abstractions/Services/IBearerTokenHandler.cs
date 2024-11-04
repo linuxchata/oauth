@@ -3,7 +3,7 @@ using Shark.AuthorizationServer.Sdk.Models;
 
 namespace Shark.AuthorizationServer.Sdk.Abstractions.Services;
 
-public interface IBearerTokenHandlingService
+public interface IBearerTokenHandler
 {
     string? GetAccessToken(IHeaderDictionary headers);
 
