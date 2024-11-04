@@ -24,6 +24,7 @@ public class IntrospectController(
     [Authorize(AuthenticationSchemes = Scheme.Basic, Policy = Policy.Strict)]
     [HttpPost]
     [Consumes(MediaTypeNames.Application.FormUrlEncoded)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Post([FromForm] IntrospectRequest request)
     {

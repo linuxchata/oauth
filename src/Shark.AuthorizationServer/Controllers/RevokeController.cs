@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +23,9 @@ public class RevokeController(IRevokeApplicationService _applicationService) : C
     /// </summary>
     /// <param name="request">Revocation request.</param>
     /// <returns>HTTP response.</returns>
-    [Authorize(AuthenticationSchemes = Scheme.Basic)]
+    [Authorize(AuthenticationSchemes = Scheme.Basic, Policy = Policy.Strict)]
     [HttpPost]
+    [Consumes(MediaTypeNames.Application.FormUrlEncoded)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
