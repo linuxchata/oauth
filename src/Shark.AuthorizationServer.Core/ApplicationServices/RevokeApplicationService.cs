@@ -37,13 +37,17 @@ public sealed class RevokeApplicationService(
             }
             else
             {
-                return new RevokeInternalBadRequestResponse();
+                // An invalid token type hint value is ignored by the authorization
+                // server and does not influence the revocation response (RFC 7009).
+                return new RevokeInternalResponse();
             }
         }
-
-        if (!await TryRevokeAccessToken(request.Token))
+        else
         {
-            await TryRemoveRefreshToken(request.Token);
+            if (!await TryRevokeAccessToken(request.Token))
+            {
+                await TryRemoveRefreshToken(request.Token);
+            }
         }
 
         return new RevokeInternalResponse();
@@ -64,14 +68,14 @@ public sealed class RevokeApplicationService(
             {
                 await _revokeTokenRepository.Add(new RevokeToken(jwtToken.Id, DateTime.UtcNow));
                 _logger.LogInformation(
-                    "Access token [{Token}] has been added to revocation list. Access token is revoked",
-                    token);
+                    "Access token with identifier {Id} has been added to revocation list. Access token is revoked",
+                    jwtToken.Id);
             }
             else
             {
                 _logger.LogInformation(
-                    "Access token [{Token}] has already been revoked",
-                    token);
+                    "Access token with identifier {Id} has already been revoked",
+                    jwtToken.Id);
             }
 
             return true;
@@ -81,7 +85,8 @@ public sealed class RevokeApplicationService(
             _logger.LogWarning(
                 "Access token [{Token}] does not have identfier. Access token cannot be revoked",
                 token);
-            //// If token was read, so it is a access token. Marked it as handled
+
+            // If token was read, so it is a access token. Marked it as handled
             return true;
         }
     }
@@ -92,8 +97,7 @@ public sealed class RevokeApplicationService(
         if (refreshToken is not null)
         {
             await _persistedGrantRepository.Remove(token);
-            //// Do not log refresh token value
-            _logger.LogInformation("Refresh token has been removed");
+            _logger.LogInformation("Refresh token has been removed (revoked)");
         }
     }
 }
