@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -61,11 +62,13 @@ public static class ApplicationBuilderExtentions
         // Previously, the Cookies scheme was used to protect the /authorize endpoint.
         // However, this approach does not support non-browser-based flows.
         services
-            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddAuthentication(Scheme.Cookies)
             .AddCookie(
+                Scheme.Cookies,
                 options =>
                 {
-                    // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.Name = Scheme.Cookies;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 });
 
         // Basic authentication.

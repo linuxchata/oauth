@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Responses.Token;
 using Shark.AuthorizationServer.Mappers;
@@ -24,7 +24,7 @@ public sealed class TokenController(
     /// </summary>
     /// <param name="request">Token request.</param>
     /// <returns>HTTP response.</returns>
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = Scheme.Basic, Policy = Policy.AllowPublic)]
     [HttpPost]
     [Consumes(MediaTypeNames.Application.FormUrlEncoded)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
