@@ -31,7 +31,11 @@ public sealed class LoginService(
     {
         var claims = new List<Claim>();
 
-        // Add user name claim
+        // Add user identifier claim
+        var userId = Guid.NewGuid().ToString();
+        claims.Add(new(JwtRegisteredClaimNames.Sub, userId));
+
+        // Add user name and user identifier claims
         if (!string.IsNullOrWhiteSpace(userName))
         {
             claims.Add(new(JwtRegisteredClaimNames.Name, userName));

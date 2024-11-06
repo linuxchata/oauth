@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -26,7 +26,7 @@ public static class ApplicationBuilderExtentions
         IConfiguration configuration)
     {
         services.AddHttpClient();
-        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddHttpContextAccessor();
         services.AddCustomAuthentication(configuration);
         services.RegisterApplicationServices();
         services.RegisterDomainServices();
@@ -61,11 +61,12 @@ public static class ApplicationBuilderExtentions
         // Previously, the Cookies scheme was used to protect the /authorize endpoint.
         // However, this approach does not support non-browser-based flows.
         services
-            .AddAuthentication(Scheme.Cookies)
-            .AddCookie(options =>
-            {
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            });
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(
+                options =>
+                {
+                    // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                });
 
         // Basic authentication.
         services
@@ -74,16 +75,10 @@ public static class ApplicationBuilderExtentions
                 Scheme.Basic,
                 options => options = basicAuthenticationOptions);
 
-        services.AddAuthorization(options =>
-        {
-            // Token endpoint.
-            options.AddPolicy(Policy.AllowPublic, policy =>
-                policy.AddRequirements(new AllowPublicAuthorizationRequirement()));
-
-            // Introspect endpoint.
-            options.AddPolicy(Policy.Strict, policy =>
-                policy.RequireAuthenticatedUser());
-        });
+        services
+            .AddAuthorizationBuilder()
+            .AddPolicy(Policy.AllowPublic, p => p.AddRequirements(new AllowPublicAuthorizationRequirement()))
+            .AddPolicy(Policy.Strict, p => p.RequireAuthenticatedUser());
 
         // Client registration authentication.
         services
