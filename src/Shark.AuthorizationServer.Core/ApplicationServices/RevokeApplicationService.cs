@@ -56,7 +56,7 @@ public sealed class RevokeApplicationService(
     private async Task<bool> TryRevokeAccessToken(string token)
     {
         var jwtToken = _customAccessTokenHandler.Read(token, null);
-        if (jwtToken is null)
+        if (jwtToken == null)
         {
             return false;
         }
@@ -72,7 +72,7 @@ public sealed class RevokeApplicationService(
         }
 
         var revokedToken = await _revokeTokenRepository.Get(jwtToken.Id);
-        if (revokedToken is null)
+        if (revokedToken == null)
         {
             await _revokeTokenRepository.Add(new RevokeToken(jwtToken.Id, DateTime.UtcNow));
             _logger.LogInformation(
@@ -95,7 +95,7 @@ public sealed class RevokeApplicationService(
     private async Task TryRemoveRefreshToken(string token)
     {
         var persistedGrant = await _persistedGrantRepository.GetByValue(token);
-        if (persistedGrant is not null)
+        if (persistedGrant != null)
         {
             await TryRemoveRefreshToken(persistedGrant);
         }
@@ -103,7 +103,7 @@ public sealed class RevokeApplicationService(
 
     private async Task TryRemoveRefreshToken(PersistedGrant? persistedGrant)
     {
-        if (persistedGrant is not null)
+        if (persistedGrant != null)
         {
             await _persistedGrantRepository.Remove(persistedGrant);
             _logger.LogInformation("Refresh token has been removed (revoked)");

@@ -39,7 +39,7 @@ public sealed class IntrospectApplicationService(
         }
 
         var jwtToken = ReadToken(request.Token);
-        if (jwtToken is null)
+        if (jwtToken == null)
         {
             return new IntrospectInternalResponse { Active = false };
         }
@@ -71,7 +71,7 @@ public sealed class IntrospectApplicationService(
         if (!string.IsNullOrWhiteSpace(jwtToken.Id))
         {
             var revokedToken = await _revokeTokenRepository.Get(jwtToken.Id);
-            if (revokedToken is not null)
+            if (revokedToken != null)
             {
                 _logger.LogInformation("Access token with identifier {JwtTokenId} has been revoked", jwtToken.Id);
                 return new IntrospectInternalResponse { Active = false };

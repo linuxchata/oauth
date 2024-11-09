@@ -63,7 +63,7 @@ internal sealed class ConfigurationJwksProvider(
 
     private async Task<string> GetWithRetry(string endpoint)
     {
-        if (_resiliencePipelineProvider is null)
+        if (_resiliencePipelineProvider == null)
         {
             throw new InvalidOperationException("Retry logic is not properly configured");
         }

@@ -25,7 +25,7 @@ public sealed class TokenValidator(
         ClaimsPrincipal clientIdentity)
     {
         // Validate client
-        if (client is null)
+        if (client == null)
         {
             _logger.LogWarning("Unknown client");
             return new TokenInternalBadRequestResponse(Error.InvalidClient);
@@ -92,7 +92,7 @@ public sealed class TokenValidator(
         using var loggerScope = _logger.BeginScope("[{GrantType}]", GrantType.AuthorizationCode);
 
         // Validate grant
-        if (persistedGrant is null)
+        if (persistedGrant == null)
         {
             _logger.LogWarning("Persistent grant was not found");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
@@ -173,7 +173,7 @@ public sealed class TokenValidator(
         using var loggerScope = _logger.BeginScope("[{GrantType}]", GrantType.RefreshToken);
 
         // Validate grant
-        if (persistedGrant is null)
+        if (persistedGrant == null)
         {
             _logger.LogWarning("Persistent grant was not found");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
@@ -210,7 +210,7 @@ public sealed class TokenValidator(
         using var loggerScope = _logger.BeginScope("[{GrantType}]", GrantType.DeviceCode);
 
         // Validate grant
-        if (devicePersistedGrant is null)
+        if (devicePersistedGrant == null)
         {
             _logger.LogWarning("Persistent grant was not found");
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);

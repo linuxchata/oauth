@@ -102,7 +102,7 @@ public sealed class ConfigurationApplicationService(
 
         string? exponent = null;
         string? modulus = null;
-        if (rsa is not null)
+        if (rsa != null)
         {
             var parameters = rsa.ExportParameters(false);
             exponent = Convert.ToBase64String(parameters.Exponent ?? []);

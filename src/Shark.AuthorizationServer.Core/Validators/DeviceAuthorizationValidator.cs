@@ -15,7 +15,7 @@ public sealed class DeviceAuthorizationValidator(
 
     public DeviceAuthorizationBadRequestResponse? ValidateRequest(DeviceAuthorizationInternalRequest request, Client? client)
     {
-        if (client is null)
+        if (client == null)
         {
             _logger.LogWarning("Unknown client");
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);

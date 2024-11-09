@@ -24,7 +24,7 @@ public sealed class CustomAccessTokenHandler(
         }
 
         var jwtToken = handler.ReadJwtToken(accessToken);
-        if (tokenValidationParameters is not null &&
+        if (tokenValidationParameters != null &&
             !ValidateAccessToken(handler, accessToken, tokenValidationParameters))
         {
             _logger.LogWarning("Token is not a valid access token");
