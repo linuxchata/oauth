@@ -7,6 +7,8 @@ namespace Shark.AuthorizationServer.Repositories.InMemory;
 
 public sealed class RevokeTokenRepository(IDistributedCache cache) : IRevokeTokenRepository
 {
+    private const string Prefix = "revoke_";
+
     private readonly IDistributedCache _cache = cache;
 
     public async Task<RevokeToken?> Get(string? value)
@@ -16,7 +18,7 @@ public sealed class RevokeTokenRepository(IDistributedCache cache) : IRevokeToke
             return null;
         }
 
-        var serializedItem = await _cache.GetStringAsync(value);
+        var serializedItem = await _cache.GetStringAsync(GetKey(value));
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {
@@ -30,6 +32,11 @@ public sealed class RevokeTokenRepository(IDistributedCache cache) : IRevokeToke
     {
         var serializedItem = JsonSerializer.Serialize(item);
 
-        await _cache.SetStringAsync(item.TokenId, serializedItem);
+        await _cache.SetStringAsync(GetKey(item.TokenId), serializedItem);
+    }
+
+    private string GetKey(string key)
+    {
+        return $"{Prefix}{key}";
     }
 }

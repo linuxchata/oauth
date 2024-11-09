@@ -2,8 +2,8 @@
 
 namespace Shark.AuthorizationServer.Sdk.Models;
 
-public sealed class ConfigurationResponse
+public sealed class IntrospectResponse
 {
-    [JsonPropertyName("jwks_uri")]
-    public required string JsonWebKeySetEndpoint { get; set; }
+    [JsonPropertyName("active")]
+    public required bool Active { get; set; }
 }

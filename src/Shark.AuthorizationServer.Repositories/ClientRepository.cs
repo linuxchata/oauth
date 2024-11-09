@@ -7,6 +7,8 @@ namespace Shark.AuthorizationServer.Repositories.InMemory;
 
 public sealed class ClientRepository(IDistributedCache cache) : IClientRepository
 {
+    private const string Prefix = "client_";
+
     private readonly IDistributedCache _cache = cache;
 
     public async Task<Client?> Get(string? value)
@@ -16,7 +18,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
             return null;
         }
 
-        var serializedItem = await _cache.GetStringAsync(value);
+        var serializedItem = await _cache.GetStringAsync(GetKey(value));
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {
@@ -30,14 +32,19 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
     {
         var serializedItem = JsonSerializer.Serialize(client);
 
-        await _cache.SetStringAsync(client.ClientId, serializedItem);
+        await _cache.SetStringAsync(GetKey(client.ClientId), serializedItem);
     }
 
     public async Task Remove(string? value)
     {
         if (!string.IsNullOrWhiteSpace(value))
         {
-            await _cache.RemoveAsync(value);
+            await _cache.RemoveAsync(GetKey(value));
         }
+    }
+
+    private string GetKey(string key)
+    {
+        return $"{Prefix}{key}";
     }
 }

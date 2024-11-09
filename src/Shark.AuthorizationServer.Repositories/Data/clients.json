@@ -42,5 +42,27 @@
     "AccessTokenLifetimeInSeconds": null,
     "RefreshTokenLifetimeInSeconds": null,
     "DeviceCodeLifetimeInSeconds": 300
+  },
+  {
+    "ClientName": "The default protected resource",
+    "Enabled": true,
+    "ClientId": "protected-resource-1",
+    "ClientSecret": "protected-resource-01",
+    "ClientIdIssuedAt": 1728814710,
+    "ClientSecretExpiresAt": 0,
+    "ClientType": 2,
+    "RedirectUris": [],
+    "GrantTypes": [],
+    "ResponseTypes": [],
+    "TokenEndpointAuthMethod": "client_secret_basic",
+    "ClientUri": null,
+    "LogoUri": null,
+    "Scope": [],
+    "Audience": "http://protected-resource-dev.com",
+    "RegistrationAccessToken": null,
+    "RegistrationClientUri": null,
+    "AccessTokenLifetimeInSeconds": null,
+    "RefreshTokenLifetimeInSeconds": null,
+    "DeviceCodeLifetimeInSeconds": null
   }
 ]

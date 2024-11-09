@@ -16,5 +16,7 @@ public sealed class BearerTokenAuthenticationOptions : AuthenticationSchemeOptio
 
     public bool ValidateAudience { get; set; }
 
+    public TokenIntrospectionOptions? TokenIntrospection { get; set; }
+
     public RetryOnGetConfigurationOptions? RetryConfiguration { get; set; }
 }

@@ -10,7 +10,7 @@ namespace Shark.AuthorizationServer.Repositories.SqLite;
 public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLiteConfiguration) :
     BaseSqLiteRepository(sqLiteConfiguration), IPersistedGrantRepository
 {
-    public async Task<PersistedGrant?> Get(string? value)
+    public async Task<PersistedGrant?> GetByValue(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -39,6 +39,11 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
 
             return persistedGrant;
         });
+    }
+
+    public Task<PersistedGrant?> GetByAccessTokenId(string? value)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task Add(PersistedGrant item)
@@ -99,5 +104,10 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
 
             await Execute(commandText, [sqliteParameters]);
         }
+    }
+
+    public Task Remove(PersistedGrant item)
+    {
+        throw new NotImplementedException();
     }
 }

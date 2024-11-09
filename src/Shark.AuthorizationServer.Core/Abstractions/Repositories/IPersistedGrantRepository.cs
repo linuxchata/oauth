@@ -4,9 +4,11 @@ namespace Shark.AuthorizationServer.Core.Abstractions.Repositories;
 
 public interface IPersistedGrantRepository
 {
-    Task<PersistedGrant?> Get(string? value);
+    Task<PersistedGrant?> GetByValue(string? value);
+
+    Task<PersistedGrant?> GetByAccessTokenId(string? value);
 
     Task Add(PersistedGrant item);
 
-    Task Remove(string? value);
+    Task Remove(PersistedGrant item);
 }

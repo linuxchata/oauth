@@ -11,29 +11,30 @@ using Shark.AuthorizationServer.Sdk.Models;
 namespace Shark.AuthorizationServer.Sdk.Authentication;
 
 public sealed class BearerTokenAuthenticationHandler(
-    IBearerTokenHandler bearerTokenHandlingService,
+    IBearerTokenHandler bearerTokenHandler,
     IOptionsMonitor<BearerTokenAuthenticationOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder) : AuthenticationHandler<BearerTokenAuthenticationOptions>(options, logger, encoder)
 {
-    private readonly IBearerTokenHandler _bearerTokenHandlingService = bearerTokenHandlingService;
+    private readonly IBearerTokenHandler _bearerTokenHandler = bearerTokenHandler;
 
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var accessToken = _bearerTokenHandlingService.GetAccessToken(Request.Headers);
+        var accessToken = _bearerTokenHandler.GetAccessToken(Request.Headers);
         if (string.IsNullOrWhiteSpace(accessToken))
         {
-            return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
+            return AuthenticateResult.Fail("Unauthorized");
         }
 
-        if (!_bearerTokenHandlingService.ParseAndValidateAccessToken(accessToken, out TokenIdentity tokenIdentity))
+        var tokenIdentity = await _bearerTokenHandler.ParseAccessToken(accessToken);
+        if (tokenIdentity == null)
         {
-            return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
+            return AuthenticateResult.Fail("Unauthorized");
         }
 
         var claimsPrincipal = CreateClaimsPrincipal(tokenIdentity);
         var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
-        return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
+        return AuthenticateResult.Success(authenticationTicket);
     }
 
     private ClaimsPrincipal CreateClaimsPrincipal(TokenIdentity tokenIdentity)

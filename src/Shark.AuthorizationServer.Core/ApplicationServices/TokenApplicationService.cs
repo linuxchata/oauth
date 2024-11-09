@@ -87,7 +87,7 @@ public sealed class TokenApplicationService(
 
     private async Task<ITokenInternalResponse> HandleAuthorizationCode(TokenInternalRequest request, Client client)
     {
-        var persistedGrant = await _persistedGrantRepository.Get(request.Code);
+        var persistedGrant = await _persistedGrantRepository.GetByValue(request.Code);
 
         var response = _tokenValidator.ValidateCodeGrant(persistedGrant, request);
         if (response != null)
@@ -96,7 +96,7 @@ public sealed class TokenApplicationService(
         }
 
         // Remove code persisted grant, since it can be considered consumed at this point
-        await _persistedGrantRepository.Remove(request.Code);
+        await _persistedGrantRepository.Remove(persistedGrant!);
 
         _logger.LogInformation(
             "Found matching authorization code {Code}. Issuing access token and refresh token for {GrantType} grant",
@@ -111,19 +111,19 @@ public sealed class TokenApplicationService(
 
     private async Task<ITokenInternalResponse> HandleRefreshTokenGrant(TokenInternalRequest request, Client client)
     {
-        var persistedGrant = await _persistedGrantRepository.Get(request.RefreshToken);
+        var persistedGrant = await _persistedGrantRepository.GetByValue(request.RefreshToken);
 
         var response = _tokenValidator.ValidateRefreshTokenGrant(persistedGrant, request);
         if (response != null)
         {
             // Remove refresh token persisted grant if it exists, since it can be compromised
-            await _persistedGrantRepository.Remove(request.RefreshToken);
+            await _persistedGrantRepository.Remove(persistedGrant!);
 
             return response;
         }
 
         // Remove previous refresh token
-        await _persistedGrantRepository.Remove(request.RefreshToken);
+        await _persistedGrantRepository.Remove(persistedGrant!);
 
         _logger.LogInformation(
             "Found matching refresh token {RefreshToken}. Issuing access token and refresh token for {GrantType}",

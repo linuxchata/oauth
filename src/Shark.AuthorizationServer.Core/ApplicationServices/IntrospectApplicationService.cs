@@ -27,11 +27,11 @@ public sealed class IntrospectApplicationService(
 
     public async Task<IIntrospectInternalResponse> Execute(
         IntrospectInternalRequest request,
-        ClaimsPrincipal claimsPrincipal)
+        ClaimsPrincipal clientIdentity)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        var clientId = claimsPrincipal.Claims.FirstOrDefault(c => c.Type.EqualsTo(ClaimType.ClientId))?.Value;
+        var clientId = clientIdentity.Claims.FirstOrDefault(c => c.Type.EqualsTo(ClaimType.ClientId))?.Value;
         if (string.IsNullOrWhiteSpace(clientId))
         {
             // BasicAuthenticationHandler must always include clientid claim
