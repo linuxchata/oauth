@@ -8460,7 +8460,7 @@ jQuery.fn.extend( {
 					return ret.replace( rreturn, "" );
 				}
 
-				// Handle cases where value == null/undef or number
+				// Handle cases where value is null/undef or number
 				return ret == null ? "" : ret;
 			}
 

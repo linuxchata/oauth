@@ -65,7 +65,7 @@
         </form>
     </div>
     <br />
-    @if (Model.Data != null)
+    @if (Model.Data is not null)
     {
         <div class="center-20">
             @foreach (var item in Model.Data)

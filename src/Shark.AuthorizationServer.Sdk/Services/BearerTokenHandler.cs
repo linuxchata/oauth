@@ -61,7 +61,7 @@ internal sealed class BearerTokenHandler(
         };
 
         var jwtToken = _customAccessTokenHandler.Read(accessToken, tokenValidationParameters);
-        if (jwtToken == null)
+        if (jwtToken is null)
         {
             return null;
         }

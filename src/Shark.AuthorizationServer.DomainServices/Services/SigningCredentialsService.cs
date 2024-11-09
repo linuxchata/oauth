@@ -43,12 +43,12 @@ public sealed class SigningCredentialsService(
 
     private SigningCredentials GetX509SigningCredentials(X509SecurityKey? securityKey)
     {
-        if (securityKey == null)
+        if (securityKey is null)
         {
             throw new InvalidOperationException("X509 security key must not be null");
         }
 
-        if (securityKey.Certificate == null)
+        if (securityKey.Certificate is null)
         {
             throw new InvalidOperationException("X509 certificate must not be null");
         }
@@ -63,7 +63,7 @@ public sealed class SigningCredentialsService(
 
     private SigningCredentials GetRsaSigningCredentials(RsaSecurityKey? securityKey)
     {
-        if (securityKey == null)
+        if (securityKey is null)
         {
             throw new InvalidOperationException("RSA security key must not be null");
         }
@@ -73,7 +73,7 @@ public sealed class SigningCredentialsService(
 
     private SigningCredentials GetSymmetricSigningCredentials()
     {
-        if (_symmetricSecurityKey == null)
+        if (_symmetricSecurityKey is null)
         {
             throw new InvalidOperationException("Symmetric security key must not be null");
         }

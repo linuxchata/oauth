@@ -10,7 +10,7 @@ public sealed class CertificateValidator(ILogger<CertificateValidator> logger) :
 
     public bool IsValid(X509Certificate2 certificate)
     {
-        if (certificate == null)
+        if (certificate is null)
         {
             return false;
         }

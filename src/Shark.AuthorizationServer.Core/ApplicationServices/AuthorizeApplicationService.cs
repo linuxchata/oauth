@@ -32,9 +32,7 @@ public sealed class AuthorizeApplicationService(
     private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly ILogger<AuthorizeApplicationService> _logger = logger;
 
-    public async Task<IAuthorizeInternalResponse> Execute(
-        AuthorizeInternalRequest request,
-        ClaimsPrincipal userIdentity)
+    public async Task<IAuthorizeInternalResponse> Execute(AuthorizeInternalRequest request, ClaimsPrincipal userIdentity)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -103,10 +101,7 @@ public sealed class AuthorizeApplicationService(
         return new AuthorizeInternalTokenResponse(redirectUrl);
     }
 
-    private async Task StorePersistedGrant(
-        AuthorizeInternalRequest request,
-        string code,
-        IEnumerable<CustomClaim> claims)
+    private async Task StorePersistedGrant(AuthorizeInternalRequest request, string code, IEnumerable<CustomClaim> claims)
     {
         // code_challenge_method defaults to "plain" if not present in the request
         var codeChallengeMethod = request.CodeChallengeMethod;
