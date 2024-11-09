@@ -7,16 +7,18 @@ namespace Shark.AuthorizationServer.Repositories.InMemory;
 
 public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : IDevicePersistedGrantRepository
 {
+    private const string Prefix = "device_grant_";
+
     private readonly IDistributedCache _cache = cache;
 
     public async Task<DevicePersistedGrant?> GetByUserCode(string? value)
     {
-        return await GetInternal<DevicePersistedGrant?>(value);
+        return await GetInternal(value);
     }
 
     public async Task<DevicePersistedGrant?> GetByDeviceCode(string? value)
     {
-        return await GetInternal<DevicePersistedGrant?>(value);
+        return await GetInternal(value);
     }
 
     public async Task Add(DevicePersistedGrant item)
@@ -28,8 +30,8 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
 
         var serializedItem = JsonSerializer.Serialize(item);
 
-        await _cache.SetStringAsync(item.UserCode, serializedItem, cacheEntryOptions);
-        await _cache.SetStringAsync(item.DeviceCode, serializedItem, cacheEntryOptions);
+        await _cache.SetStringAsync(GetKey(item.UserCode), serializedItem, cacheEntryOptions);
+        await _cache.SetStringAsync(GetKey(item.DeviceCode), serializedItem, cacheEntryOptions);
     }
 
     public async Task Update(DevicePersistedGrant item, bool isAuthorized)
@@ -45,29 +47,34 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
     {
         if (!string.IsNullOrWhiteSpace(item.UserCode))
         {
-            await _cache.RemoveAsync(item.UserCode);
+            await _cache.RemoveAsync(GetKey(item.UserCode));
         }
 
         if (!string.IsNullOrWhiteSpace(item.DeviceCode))
         {
-            await _cache.RemoveAsync(item.DeviceCode);
+            await _cache.RemoveAsync(GetKey(item.DeviceCode));
         }
     }
 
-    private async Task<T?> GetInternal<T>(string? value)
+    private async Task<DevicePersistedGrant?> GetInternal(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return default;
+            return null;
         }
 
-        var serializedItem = await _cache.GetStringAsync(value);
+        var serializedItem = await _cache.GetStringAsync(GetKey(value));
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {
-            return JsonSerializer.Deserialize<T>(serializedItem);
+            return JsonSerializer.Deserialize<DevicePersistedGrant>(serializedItem);
         }
 
-        return default;
+        return null;
+    }
+
+    private string GetKey(string key)
+    {
+        return $"{Prefix}{key}";
     }
 }

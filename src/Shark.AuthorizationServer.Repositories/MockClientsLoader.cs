@@ -7,6 +7,8 @@ namespace Shark.AuthorizationServer.Repositories.InMemory;
 
 public sealed class MockClientsLoader(IDistributedCache cache) : IMockClientsLoader
 {
+    private const string Prefix = "client_";
+
     private readonly IDistributedCache _cache = cache;
 
     public void Load()
@@ -27,9 +29,13 @@ public sealed class MockClientsLoader(IDistributedCache cache) : IMockClientsLoa
             foreach (var client in deserializedClients)
             {
                 var serializedItem = JsonSerializer.Serialize(client);
-
-                _cache.SetString(client.ClientId, serializedItem);
+                _cache.SetString(GetKey(client.ClientId), serializedItem);
             }
         }
+    }
+
+    private string GetKey(string key)
+    {
+        return $"{Prefix}{key}";
     }
 }

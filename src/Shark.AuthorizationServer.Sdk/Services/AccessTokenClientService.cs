@@ -1,4 +1,5 @@
 ﻿using Shark.AuthorizationServer.Common.Constants;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
 
@@ -22,21 +23,24 @@ public sealed class AccessTokenClientService(
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(grantType, nameof(grantType));
 
-        if (string.Equals(grantType, GrantType.AuthorizationCode, StringComparison.OrdinalIgnoreCase))
+        if (grantType.EqualsTo(GrantType.AuthorizationCode))
         {
-            return await GetForRefreshTokenFlow();
+            return await GetForAuthorizationCodeFlow();
         }
-        else if (string.Equals(grantType, GrantType.Implicit, StringComparison.OrdinalIgnoreCase))
+        else if (grantType.EqualsTo(GrantType.Implicit))
         {
             return GetForImplicitFlow();
         }
-        else if (string.Equals(grantType, GrantType.ClientCredentials, StringComparison.OrdinalIgnoreCase))
+        else if (grantType.EqualsTo(GrantType.ClientCredentials))
         {
-            return await GetForForClientCredentialsFlow("read");
+            return await GetForForClientCredentialsFlow(scope);
         }
-        else if (string.Equals(grantType, GrantType.ResourceOwnerCredentials, StringComparison.OrdinalIgnoreCase))
+        else if (grantType.EqualsTo(GrantType.ResourceOwnerCredentials))
         {
-            return await GetForForPasswordFlow("alice", "secret", "read");
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(username, nameof(username));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(password, nameof(password));
+
+            return await GetForForPasswordFlow(username, password, scope);
         }
 
         throw new ArgumentException("Unsupported grant type");
@@ -47,7 +51,7 @@ public sealed class AccessTokenClientService(
         _secureTokenStore.RemoveAccessToken(grantType);
     }
 
-    private async Task<string> GetForRefreshTokenFlow()
+    private async Task<string> GetForAuthorizationCodeFlow()
     {
         var accessToken = _secureTokenStore.GetAccessToken(GrantType.AuthorizationCode);
         if (!string.IsNullOrWhiteSpace(accessToken))

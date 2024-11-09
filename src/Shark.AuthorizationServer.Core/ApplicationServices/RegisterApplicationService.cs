@@ -32,7 +32,7 @@ public sealed class RegisterApplicationService(
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
 
         var client = await _clientRepository.Get(clientId);
-        if (client is null)
+        if (client == null)
         {
             return new RegisterInternalNotFoundResponse();
         }
@@ -67,7 +67,7 @@ public sealed class RegisterApplicationService(
         }
 
         var client = await _clientRepository.Get(clientId);
-        if (client is null)
+        if (client == null)
         {
             return new RegisterInternalNotFoundResponse();
         }
@@ -94,7 +94,7 @@ public sealed class RegisterApplicationService(
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
 
         var client = _clientRepository.Get(clientId);
-        if (client is null)
+        if (client == null)
         {
             return new RegisterInternalNotFoundResponse();
         }

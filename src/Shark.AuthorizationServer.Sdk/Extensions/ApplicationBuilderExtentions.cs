@@ -78,6 +78,7 @@ public static class ApplicationBuilderExtentions
         AddConfigurationRetries(services, options);
 
         services.TryAddTransient<IConfigurationJwksProvider, ConfigurationJwksProvider>();
+        services.TryAddTransient<IIntrospectionProvider, IntrospectionProvider>();
         services.TryAddTransient<ISecurityKeyProvider, SecurityKeyNetworkProvider>();
 
         var serviceProvider = services.BuildServiceProvider();

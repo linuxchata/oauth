@@ -31,7 +31,7 @@ public sealed class LoginModel(
         ClientId = _redirectionService.GetClientId(returnUrl);
 
         var client = await _clientRepository.Get(ClientId);
-        if (client is null)
+        if (client == null)
         {
             return RedirectToPage("Error");
         }

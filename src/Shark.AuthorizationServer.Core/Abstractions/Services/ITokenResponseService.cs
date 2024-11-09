@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Shark.AuthorizationServer.Core.Responses.Token;
+﻿using Shark.AuthorizationServer.Core.Responses.Token;
 using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.Abstractions.Services;

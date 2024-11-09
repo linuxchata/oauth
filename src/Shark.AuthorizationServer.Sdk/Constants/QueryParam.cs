@@ -31,4 +31,6 @@ public static class QueryParam
     public const string Username = "username";
 
     public const string Password = "password";
+
+    public const string Token = "token";
 }

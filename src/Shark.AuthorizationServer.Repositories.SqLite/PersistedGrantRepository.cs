@@ -10,7 +10,7 @@ namespace Shark.AuthorizationServer.Repositories.SqLite;
 public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLiteConfiguration) :
     BaseSqLiteRepository(sqLiteConfiguration), IPersistedGrantRepository
 {
-    public async Task<PersistedGrant?> Get(string? value)
+    public async Task<PersistedGrant?> GetByValue(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -18,27 +18,22 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
         }
 
         var commandText = @"SELECT * FROM PersistedGrant WHERE Value = @Value";
-        var sqliteParameters = new SqliteParameter("@Value", value);
+        var sqliteParameter = new SqliteParameter("@Value", value);
 
-        return await Execute(commandText, [sqliteParameters], (SqliteDataReader reader) =>
+        return await GetInternal(commandText, sqliteParameter);
+    }
+
+    public async Task<PersistedGrant?> GetByAccessTokenId(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
         {
-            var persistedGrant = new PersistedGrant
-            {
-                Type = reader["Type"].ToString()!,
-                ClientId = reader["ClientId"].ToString()!,
-                RedirectUri = reader["RedirectUri"].ToString(),
-                Scopes = reader["Scopes"].ToString()!.Split(';'),
-                AccessTokenId = reader["AccessTokenId"].ToString(),
-                Value = reader["Value"].ToString()!,
-                Claims = JsonSerializer.Deserialize<CustomClaim[]>(reader["Claims"].ToString()!) ?? [],
-                CodeChallenge = reader["CodeChallenge"].ToString(),
-                CodeChallengeMethod = reader["CodeChallengeMethod"].ToString(),
-                CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
-                ExpiredIn = Convert.ToInt32(reader["ExpiredIn"]),
-            };
+            return null;
+        }
 
-            return persistedGrant;
-        });
+        var commandText = @"SELECT * FROM PersistedGrant WHERE AccessTokenId = @AccessTokenId";
+        var sqliteParameter = new SqliteParameter("@AccessTokenId", value);
+
+        return await GetInternal(commandText, sqliteParameter);
     }
 
     public async Task Add(PersistedGrant item)
@@ -90,14 +85,40 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
         await Execute(commandText, sqliteParameters);
     }
 
-    public async Task Remove(string? value)
+    public async Task Remove(PersistedGrant item)
     {
-        if (!string.IsNullOrWhiteSpace(value))
+        if (item != null)
         {
-            var commandText = @"DELETE FROM PersistedGrant WHERE Value = @Value";
-            var sqliteParameters = new SqliteParameter("@Value", value);
+            if (!string.IsNullOrWhiteSpace(item.Value))
+            {
+                var commandText = @"DELETE FROM PersistedGrant WHERE Value = @Value";
+                var sqliteParameters = new SqliteParameter("@Value", item.Value);
 
-            await Execute(commandText, [sqliteParameters]);
+                await Execute(commandText, [sqliteParameters]);
+            }
         }
+    }
+
+    private async Task<PersistedGrant?> GetInternal(string commandText, SqliteParameter sqliteParameter)
+    {
+        return await Execute(commandText, [sqliteParameter], (SqliteDataReader reader) =>
+        {
+            var persistedGrant = new PersistedGrant
+            {
+                Type = reader["Type"].ToString()!,
+                ClientId = reader["ClientId"].ToString()!,
+                RedirectUri = reader["RedirectUri"].ToString(),
+                Scopes = reader["Scopes"].ToString()!.Split(';'),
+                AccessTokenId = reader["AccessTokenId"].ToString(),
+                Value = reader["Value"].ToString()!,
+                Claims = JsonSerializer.Deserialize<CustomClaim[]>(reader["Claims"].ToString()!) ?? [],
+                CodeChallenge = reader["CodeChallenge"].ToString(),
+                CodeChallengeMethod = reader["CodeChallengeMethod"].ToString(),
+                CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
+                ExpiredIn = Convert.ToInt32(reader["ExpiredIn"]),
+            };
+
+            return persistedGrant;
+        });
     }
 }
