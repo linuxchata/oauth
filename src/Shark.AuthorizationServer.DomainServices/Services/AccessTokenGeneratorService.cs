@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Common.Constants;
@@ -35,6 +36,7 @@ public sealed class AccessTokenGeneratorService(
 
         AddClaimIfExists(claims, JwtRegisteredClaimNames.Sub, tokenClaims);
         AddClaimIfExists(claims, JwtRegisteredClaimNames.Name, tokenClaims);
+        AddAmrClaimIfExists(claims, tokenClaims);
 
         if (scopes.Length != 0)
         {
@@ -56,6 +58,26 @@ public sealed class AccessTokenGeneratorService(
         if (claim != null && !string.IsNullOrEmpty(claim.Value))
         {
             tokenClaims.Add(new(claimName, claim.Value));
+        }
+    }
+
+    private static void AddAmrClaimIfExists(IEnumerable<CustomClaim>? claims, List<Claim> tokenClaims)
+    {
+        var claim = claims?.FirstOrDefault(a => a.Type.EqualsTo(JwtRegisteredClaimNames.Amr));
+        if (claim != null && !string.IsNullOrEmpty(claim.Value))
+        {
+            var amrs = new List<string>();
+            if (Amr.Supported.Contains(claim.Value))
+            {
+                amrs.Add(claim.Value);
+            }
+            else
+            {
+                amrs.Add(Amr.Custom);
+            }
+
+            var amrJson = JsonSerializer.Serialize(amrs);
+            tokenClaims.Add(new(JwtRegisteredClaimNames.Amr, amrJson, JsonClaimValueTypes.JsonArray));
         }
     }
 

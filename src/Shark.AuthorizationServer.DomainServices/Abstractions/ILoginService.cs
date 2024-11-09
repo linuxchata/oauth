@@ -2,5 +2,5 @@
 
 public interface ILoginService
 {
-    Task SignIn(string userName, string[] selectedScopes);
+    Task SignIn(string userName, string[] scopes, string authMethod);
 }

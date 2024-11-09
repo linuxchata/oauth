@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Shark.AuthorizationServer.Domain;
+﻿using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.DomainServices.Abstractions;
 

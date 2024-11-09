@@ -54,7 +54,7 @@ public sealed class ConfigurationApplicationService(
             UserInfoEndpoint = userInfoEndpoint.ToString(),
             DeviceAuthorizationEndpoint = deviceAuthorizationEndpoint.ToString(),
             ScopesSupported = [Scope.OfflineAccess, Scope.OpenId, Scope.Profile, Scope.Email, Scope.Address, Scope.Phone],
-            ClaimsSupported = [JwtRegisteredClaimNames.Sub, JwtRegisteredClaimNames.Name],
+            ClaimsSupported = [JwtRegisteredClaimNames.Sub, JwtRegisteredClaimNames.Name, JwtRegisteredClaimNames.Amr],
             GrantTypesSupported = GrantType.Supported,
             ResponseTypesSupported = ResponseType.Supported,
             SubjectTypesSupported = ["public"],

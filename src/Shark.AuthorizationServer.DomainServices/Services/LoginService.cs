@@ -12,9 +12,9 @@ public sealed class LoginService(
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-    public async Task SignIn(string userName, string[] selectedScopes)
+    public async Task SignIn(string userName, string[] scopes, string authMethod)
     {
-        var claims = CreateClaims(userName, selectedScopes);
+        var claims = CreateClaims(userName, scopes, authMethod);
 
         var claimsPrincipal = CreateClaimsPrincipal(claims);
 
@@ -24,7 +24,7 @@ public sealed class LoginService(
         }
     }
 
-    private static List<Claim> CreateClaims(string userName, string[] selectedScopes)
+    private static List<Claim> CreateClaims(string userName, string[] scopes, string authMethod)
     {
         var claims = new List<Claim>();
 
@@ -32,16 +32,22 @@ public sealed class LoginService(
         var userId = Guid.NewGuid().ToString();
         claims.Add(new(JwtRegisteredClaimNames.Sub, userId));
 
-        // Add user name and user identifier claims
+        // Add user name
         if (!string.IsNullOrWhiteSpace(userName))
         {
             claims.Add(new(JwtRegisteredClaimNames.Name, userName));
         }
 
         // Add scopes claims
-        if (selectedScopes != null && selectedScopes.Length != 0)
+        if (scopes != null && scopes.Length != 0)
         {
-            claims.Add(new(ClaimType.Scope, string.Join(' ', selectedScopes)));
+            claims.Add(new(ClaimType.Scope, string.Join(' ', scopes)));
+        }
+
+        // Add authentication methods references
+        if (!string.IsNullOrWhiteSpace(authMethod))
+        {
+            claims.Add(new(JwtRegisteredClaimNames.Amr, authMethod));
         }
 
         return claims;

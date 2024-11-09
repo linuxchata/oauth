@@ -8,5 +8,7 @@ public static class ClaimType
 
     public const string Scope = "scope";
 
+    public const string Amr = "amr";
+
     public const string ClientId = "clientid";
 }
