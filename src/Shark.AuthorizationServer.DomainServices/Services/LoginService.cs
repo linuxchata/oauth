@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
@@ -21,9 +20,7 @@ public sealed class LoginService(
 
         if (_httpContextAccessor.HttpContext != null)
         {
-            await _httpContextAccessor.HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                claimsPrincipal);
+            await _httpContextAccessor.HttpContext.SignInAsync(Scheme.Cookies, claimsPrincipal);
         }
     }
 
@@ -31,7 +28,11 @@ public sealed class LoginService(
     {
         var claims = new List<Claim>();
 
-        // Add user name claim
+        // Add user identifier claim
+        var userId = Guid.NewGuid().ToString();
+        claims.Add(new(JwtRegisteredClaimNames.Sub, userId));
+
+        // Add user name and user identifier claims
         if (!string.IsNullOrWhiteSpace(userName))
         {
             claims.Add(new(JwtRegisteredClaimNames.Name, userName));
@@ -50,7 +51,7 @@ public sealed class LoginService(
     {
         var claimsIdentity = new ClaimsIdentity(
             claims,
-            CookieAuthenticationDefaults.AuthenticationScheme,
+            Scheme.Cookies,
             JwtRegisteredClaimNames.Name,
             null!);
 

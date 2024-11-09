@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Security.Claims;
+using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
 using Shark.AuthorizationServer.Core.Responses.Token;
@@ -19,21 +20,19 @@ public sealed class TokenResponseService(
     private readonly IRefreshTokenGeneratorService _refreshTokenGeneratorService = refreshTokenGeneratorService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public (TokenResponse TokenResponse, AccessToken AccessToken) Generate(
+    public (TokenResponse TokenResponse, string AccessTokenId) Generate(
         string clientId,
         string audience,
         string[] scopes,
-        string userId,
-        string? userName = null)
+        IEnumerable<CustomClaim>? claims = null)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(clientId, nameof(clientId));
         ArgumentNullException.ThrowIfNullOrWhiteSpace(audience, nameof(audience));
         ArgumentNullException.ThrowIfNull(scopes, nameof(scopes));
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(userId, nameof(userId));
 
-        var accessToken = _accessTokenGeneratorService.Generate(userId, userName, scopes, audience);
+        var accessToken = _accessTokenGeneratorService.Generate(scopes, audience, claims);
         var refreshToken = _refreshTokenGeneratorService.Generate(scopes);
-        var idToken = _idTokenGeneratorService.Generate(userId, userName, clientId, scopes);
+        var idToken = _idTokenGeneratorService.Generate(clientId, scopes, claims);
 
         var tokenResponse = new TokenResponse
         {
@@ -44,15 +43,15 @@ public sealed class TokenResponseService(
             ExpiresIn = _configuration.AccessTokenExpirationInSeconds,
         };
 
-        return (tokenResponse, accessToken);
+        return (tokenResponse, accessToken.Id);
     }
 
-    public TokenResponse GenerateForAccessTokenOnly(string audience, string[] scopes, string? userId = null)
+    public TokenResponse GenerateForAccessTokenOnly(string audience, string[] scopes, IEnumerable<CustomClaim>? claims = null)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(audience, nameof(audience));
         ArgumentNullException.ThrowIfNull(scopes, nameof(scopes));
 
-        var accessToken = _accessTokenGeneratorService.Generate(userId, null, scopes, audience);
+        var accessToken = _accessTokenGeneratorService.Generate(scopes, audience, claims);
 
         var tokenResponse = new TokenResponse
         {

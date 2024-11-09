@@ -26,7 +26,7 @@ public static class ApplicationBuilderExtentions
         IConfiguration configuration)
     {
         services.AddHttpClient();
-        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddHttpContextAccessor();
         services.AddCustomAuthentication(configuration);
         services.RegisterApplicationServices();
         services.RegisterDomainServices();
@@ -57,15 +57,23 @@ public static class ApplicationBuilderExtentions
         var clientTokenAuthenticationOptions = new ClientTokenAuthenticationOptions();
         configuration.GetSection(ClientTokenAuthenticationOptions.Name).Bind(clientTokenAuthenticationOptions);
 
-        // Authentication session.
-        // Previously, the Cookies scheme was used to protect the /authorize endpoint.
-        // However, this approach does not support non-browser-based flows.
+        // Authentication session (cookie).
+        // Cookies scheme is used to extract user identity from authentication cookies.
+        // However, None scheme is used to support non-browser-based flows (without user).
+        services
+            .AddAuthentication(Scheme.None)
+            .AddScheme<NoneAuthenticationOptions, NoneAuthenticationHandler>(
+                Scheme.None,
+                options => { });
         services
             .AddAuthentication(Scheme.Cookies)
-            .AddCookie(options =>
-            {
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            });
+            .AddCookie(
+                Scheme.Cookies,
+                options =>
+                {
+                    options.Cookie.Name = Scheme.Cookies;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                });
 
         // Basic authentication.
         services
@@ -74,16 +82,10 @@ public static class ApplicationBuilderExtentions
                 Scheme.Basic,
                 options => options = basicAuthenticationOptions);
 
-        services.AddAuthorization(options =>
-        {
-            // Token endpoint.
-            options.AddPolicy(Policy.AllowPublic, policy =>
-                policy.AddRequirements(new AllowPublicAuthorizationRequirement()));
-
-            // Introspect endpoint.
-            options.AddPolicy(Policy.Strict, policy =>
-                policy.RequireAuthenticatedUser());
-        });
+        services
+            .AddAuthorizationBuilder()
+            .AddPolicy(Policy.AllowPublic, p => p.AddRequirements(new AllowPublicAuthorizationRequirement()))
+            .AddPolicy(Policy.Strict, p => p.RequireAuthenticatedUser());
 
         // Client registration authentication.
         services

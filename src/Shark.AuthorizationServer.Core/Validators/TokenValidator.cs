@@ -22,7 +22,7 @@ public sealed class TokenValidator(
     public TokenInternalBadRequestResponse? ValidateRequest(
         TokenInternalRequest request,
         Client? client,
-        ClaimsPrincipal claimsPrincipal)
+        ClaimsPrincipal clientIdentity)
     {
         // Validate client
         if (client is null)
@@ -46,7 +46,7 @@ public sealed class TokenValidator(
         }
 
         // Validate client secret
-        if ((!claimsPrincipal.Identity?.IsAuthenticated ?? true) &&
+        if ((!clientIdentity.Identity?.IsAuthenticated ?? true) &&
             !client.ClientSecret.EqualsTo(request.ClientSecret))
         {
             _logger.LogWarning("Invalid client secret");
@@ -56,8 +56,8 @@ public sealed class TokenValidator(
         // Validate that Confidential client is authenticated
         // BasicAuthenticationHandler includes clientid claim when it is available
         if (client.ClientType == Domain.Enumerations.ClientType.Confidential &&
-            (claimsPrincipal.Identity?.IsAuthenticated ?? true) &&
-            !claimsPrincipal.Claims.Any(c => c.Type.EqualsTo(ClaimType.ClientId)))
+            (clientIdentity.Identity?.IsAuthenticated ?? true) &&
+            !clientIdentity.Claims.Any(c => c.Type.EqualsTo(ClaimType.ClientId)))
         {
             _logger.LogWarning("Invalid client authentication for confidential client");
             return new TokenInternalBadRequestResponse(Error.UnauthorizedClient);

@@ -10,7 +10,7 @@ public interface ITokenValidator
     TokenInternalBadRequestResponse? ValidateRequest(
         TokenInternalRequest request,
         Client? client,
-        ClaimsPrincipal claimsPrincipal);
+        ClaimsPrincipal clientIdentity);
 
     TokenInternalBadRequestResponse? ValidateCodeGrant(
         PersistedGrant? persistedGrant,

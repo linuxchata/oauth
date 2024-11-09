@@ -17,9 +17,8 @@ public sealed class IdTokenGeneratorService(
     private readonly ISigningCredentialsService _signingCredentialsService = signingCredentialsService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public IdToken Generate(string userId, string? userName, string audience, string[] scopes)
+    public IdToken Generate(string audience, string[] scopes, IEnumerable<CustomClaim>? claims = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(userId, nameof(userId));
         ArgumentException.ThrowIfNullOrWhiteSpace(audience, nameof(audience));
         ArgumentNullException.ThrowIfNull(scopes, nameof(scopes));
 
@@ -30,9 +29,9 @@ public sealed class IdTokenGeneratorService(
 
         var currentTime = DateTime.UtcNow;
 
-        var claims = CreateClaims(userId, userName, audience, currentTime);
+        var tokenClaims = CreateClaims(audience, currentTime, claims);
 
-        return GenerateToken(claims);
+        return GenerateToken(tokenClaims);
     }
 
     private static bool HasOpenIdScope(IEnumerable<string> scopes)
@@ -40,28 +39,32 @@ public sealed class IdTokenGeneratorService(
         return scopes.Any(s => s.EqualsTo(Scope.OpenId));
     }
 
-    private List<Claim> CreateClaims(string userId, string? userName, string audience, DateTime currentTime)
+    private List<Claim> CreateClaims(string audience, DateTime currentTime, IEnumerable<CustomClaim>? claims)
     {
         var issuer = _configuration.Issuer;
         var issuedAt = EpochTime.GetIntDate(currentTime.ToUniversalTime()).ToString();
         var expireAt = EpochTime.GetIntDate(currentTime.AddMinutes(5).ToUniversalTime()).ToString();
 
-        var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, userId),
-        };
+        var tokenClaims = new List<Claim>();
 
-        if (!string.IsNullOrWhiteSpace(userName))
+        AddClaimIfExists(claims, JwtRegisteredClaimNames.Sub, tokenClaims);
+        AddClaimIfExists(claims, JwtRegisteredClaimNames.Name, tokenClaims);
+
+        tokenClaims.Add(new(JwtRegisteredClaimNames.Iss, issuer));
+        tokenClaims.Add(new(JwtRegisteredClaimNames.Aud, audience));
+        tokenClaims.Add(new(JwtRegisteredClaimNames.Iat, issuedAt));
+        tokenClaims.Add(new(JwtRegisteredClaimNames.Exp, expireAt));
+
+        return tokenClaims;
+    }
+
+    private void AddClaimIfExists(IEnumerable<CustomClaim>? claims, string claimName, List<Claim> tokenClaims)
+    {
+        var claim = claims?.FirstOrDefault(a => a.Type.EqualsTo(claimName));
+        if (claim != null && !string.IsNullOrEmpty(claim.Value))
         {
-            claims.Add(new(JwtRegisteredClaimNames.Name, userName));
+            tokenClaims.Add(new(claimName, claim.Value));
         }
-
-        claims.Add(new(JwtRegisteredClaimNames.Iss, issuer));
-        claims.Add(new(JwtRegisteredClaimNames.Aud, audience));
-        claims.Add(new(JwtRegisteredClaimNames.Iat, issuedAt));
-        claims.Add(new(JwtRegisteredClaimNames.Exp, expireAt));
-
-        return claims;
     }
 
     private IdToken GenerateToken(List<Claim> claims)

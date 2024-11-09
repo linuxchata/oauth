@@ -681,6 +681,31 @@
 				"type": "oauth2",
 				"oauth2": [
 					{
+						"key": "redirect_uri",
+						"value": "https://localhost:9001/callback",
+						"type": "string"
+					},
+					{
+						"key": "useBrowser",
+						"value": false,
+						"type": "boolean"
+					},
+					{
+						"key": "scope",
+						"value": "",
+						"type": "string"
+					},
+					{
+						"key": "accessTokenUrl",
+						"value": "https://localhost:7000/token",
+						"type": "string"
+					},
+					{
+						"key": "authUrl",
+						"value": "https://localhost:7000/login?returnurl=authorize%2f%3fresponse_type%3dcode%26client_id%3dclient-1%26redirect_uri%3dhttps%253a%252f%252flocalhost%253a9001%252fcallback%26state%3dd743f82481cb406b91b8ec540f2d53e0",
+						"type": "string"
+					},
+					{
 						"key": "clientSecret",
 						"value": "{{ClientSecretPermanent}}",
 						"type": "string"
@@ -694,26 +719,6 @@
 						"key": "client_authentication",
 						"value": "header",
 						"type": "string"
-					},
-					{
-						"key": "redirect_uri",
-						"value": "https://localhost:9001/callback",
-						"type": "string"
-					},
-					{
-						"key": "accessTokenUrl",
-						"value": "https://localhost:9000/token",
-						"type": "string"
-					},
-					{
-						"key": "authUrl",
-						"value": "https://localhost:9000/login?returnurl=authorize%2f%3fresponse_type%3dcode%26client_id%3dclient-1%26redirect_uri%3dhttps%253a%252f%252flocalhost%253a9001%252fcallback%26state%3d57b395259fe147aea9527e04830b60b9",
-						"type": "string"
-					},
-					{
-						"key": "useBrowser",
-						"value": false,
-						"type": "boolean"
 					},
 					{
 						"key": "state",
@@ -936,7 +941,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{AccessToken}}",
+									"value": "",
 									"type": "string"
 								}
 							]
@@ -963,7 +968,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{AccessToken}}",
+									"value": "",
 									"type": "string"
 								}
 							]

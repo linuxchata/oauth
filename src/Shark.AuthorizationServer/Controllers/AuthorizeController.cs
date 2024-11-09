@@ -1,6 +1,8 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Authorize;
@@ -28,6 +30,7 @@ public sealed class AuthorizeController(
     /// <param name="code_challenge">Code challenge.</param>
     /// <param name="code_challenge_method">Code challenge method.</param>
     /// <returns>HTTP response.</returns>
+    [Authorize(AuthenticationSchemes = $"None,{Scheme.Cookies}", Policy = Policy.AllowPublic)]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -52,7 +55,8 @@ public sealed class AuthorizeController(
             CodeChallengeMethod = code_challenge_method,
         };
 
-        var internalResponse = await _applicationService.Execute(internalRequest);
+        var userIdentity = HttpContext.User;
+        var internalResponse = await _applicationService.Execute(internalRequest, userIdentity);
 
         switch (internalResponse)
         {

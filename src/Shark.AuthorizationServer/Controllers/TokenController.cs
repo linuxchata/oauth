@@ -33,7 +33,8 @@ public sealed class TokenController(
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Post([FromForm] TokenRequest request)
     {
-        var internalResponse = await _applicationService.Execute(request.ToInternalRequest(), HttpContext.User);
+        var clientIdentity = HttpContext.User;
+        var internalResponse = await _applicationService.Execute(request.ToInternalRequest(), clientIdentity);
 
         switch (internalResponse)
         {

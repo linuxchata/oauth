@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
@@ -35,20 +36,21 @@ public sealed class TokenApplicationService(
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
     private readonly ILogger<TokenApplicationService> _logger = logger;
 
-    public async Task<ITokenInternalResponse> Execute(TokenInternalRequest request, ClaimsPrincipal claimsPrincipal)
+    public async Task<ITokenInternalResponse> Execute(TokenInternalRequest request, ClaimsPrincipal clientIdentity)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(clientIdentity, nameof(clientIdentity));
 
         if (string.IsNullOrWhiteSpace(request.ClientId))
         {
-            request.ClientId = claimsPrincipal.FindFirstValue(Scope.ClientId);
+            request.ClientId = clientIdentity.FindFirstValue(Scope.ClientId);
         }
 
         using var loggerScope = _logger.BeginScope("ClientId:{ClientId}", request.ClientId!);
 
         var client = await _clientRepository.Get(request.ClientId);
 
-        var response = _tokenValidator.ValidateRequest(request, client, claimsPrincipal);
+        var response = _tokenValidator.ValidateRequest(request, client, clientIdentity);
         if (response != null)
         {
             return response;
@@ -102,7 +104,7 @@ public sealed class TokenApplicationService(
             GrantType.AuthorizationCode);
 
         var tokenResponse = await GenerateAndStoreBearerToken(
-            client.ClientId, client.Audience, request.RedirectUri, request.Scopes, persistedGrant!.UserName);
+            client.ClientId, client.Audience, request.RedirectUri, request.Scopes, persistedGrant!.Claims);
 
         return new TokenInternalResponse(tokenResponse);
     }
@@ -129,7 +131,7 @@ public sealed class TokenApplicationService(
             GrantType.RefreshToken);
 
         var tokenResponse = await GenerateAndStoreBearerToken(
-            client.ClientId, client.Audience, request.RedirectUri, persistedGrant!.Scopes, persistedGrant!.UserName);
+            client.ClientId, client.Audience, request.RedirectUri, persistedGrant!.Scopes, persistedGrant!.Claims);
 
         return new TokenInternalResponse(tokenResponse);
     }
@@ -138,7 +140,7 @@ public sealed class TokenApplicationService(
     {
         _logger.LogInformation("Issuing access token for {GrantType} grant", GrantType.ClientCredentials);
 
-        var tokenResponse = _tokenResponseService.GenerateForAccessTokenOnly(client.Audience, request.Scopes);
+        var tokenResponse = _tokenResponseService.GenerateForAccessTokenOnly(client.Audience, request.Scopes, null);
 
         return new TokenInternalResponse(tokenResponse);
     }
@@ -152,8 +154,13 @@ public sealed class TokenApplicationService(
 
         _logger.LogInformation("Issuing access token for {GrantType} grant", GrantType.ResourceOwnerCredentials);
 
+        var customClaims = new List<CustomClaim>
+        {
+            new(JwtRegisteredClaimNames.Name, request.Username!),
+        };
+
         var tokenResponse = await GenerateAndStoreBearerToken(
-            client.ClientId, client.Audience, request.RedirectUri, request.Scopes, request.Username);
+            client.ClientId, client.Audience, request.RedirectUri, request.Scopes, customClaims);
 
         return new TokenInternalResponse(tokenResponse);
     }
@@ -178,7 +185,7 @@ public sealed class TokenApplicationService(
 
         _logger.LogInformation("Issuing access token for {GrantType} grant", GrantType.DeviceCode);
 
-        var tokenResponse = await GenerateAndStoreBearerToken(client.ClientId, client.Audience, null, request.Scopes);
+        var tokenResponse = await GenerateAndStoreBearerToken(client.ClientId, client.Audience, null, request.Scopes, null);
 
         return new TokenInternalResponse(tokenResponse);
     }
@@ -188,10 +195,9 @@ public sealed class TokenApplicationService(
         string audience,
         string? redirectUri,
         string[] scopes,
-        string? userName = null)
+        IEnumerable<CustomClaim>? claims)
     {
-        var userId = Guid.NewGuid().ToString();
-        var result = _tokenResponseService.Generate(clientId, audience, scopes, userId, userName);
+        var result = _tokenResponseService.Generate(clientId, audience, scopes, claims);
 
         if (!string.IsNullOrWhiteSpace(result.TokenResponse.RefreshToken))
         {
@@ -201,9 +207,9 @@ public sealed class TokenApplicationService(
                 ClientId = clientId,
                 RedirectUri = redirectUri,
                 Scopes = scopes,
-                AccessTokenId = result.AccessToken.Id, // Jti (token identifier) is needed to revoke refresh token when access token is revoked
+                AccessTokenId = result.AccessTokenId, // Jti (token identifier) is needed to revoke refresh token when access token is revoked
                 Value = result.TokenResponse.RefreshToken,
-                UserName = userName,
+                Claims = claims?.ToArray() ?? [],
                 CreatedDate = DateTime.UtcNow,
                 ExpiredIn = _configuration.AccessTokenExpirationInSeconds * 24,
             };

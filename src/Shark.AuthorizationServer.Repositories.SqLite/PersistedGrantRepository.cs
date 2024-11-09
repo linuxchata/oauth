@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System.Text.Json;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Domain;
@@ -29,7 +30,7 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
                 Scopes = reader["Scopes"].ToString()!.Split(';'),
                 AccessTokenId = reader["AccessTokenId"].ToString(),
                 Value = reader["Value"].ToString()!,
-                UserName = reader["UserName"].ToString(),
+                Claims = JsonSerializer.Deserialize<CustomClaim[]>(reader["Claims"].ToString()!) ?? [],
                 CodeChallenge = reader["CodeChallenge"].ToString(),
                 CodeChallengeMethod = reader["CodeChallengeMethod"].ToString(),
                 CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
@@ -51,7 +52,7 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
                 Scopes,
                 AccessTokenId,
                 Value,
-                UserName,
+                Claims,
                 CodeChallenge,
                 CodeChallengeMethod,
                 CreatedDate,
@@ -65,7 +66,7 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
                 @Scopes,
                 @AccessTokenId,
                 @Value,
-                @UserName,
+                @Claims,
                 @CodeChallenge,
                 @CodeChallengeMethod,
                 @CreatedDate,
@@ -79,7 +80,7 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
             new("@Scopes", string.Join(';', item.Scopes)),
             new("@AccessTokenId", SetNullableValue(item.AccessTokenId)),
             new("@Value", item.Value),
-            new("@UserName", SetNullableValue(item.UserName)),
+            new("@Claims", SetNullableValue(JsonSerializer.Serialize(item.Claims))),
             new("@CodeChallenge", SetNullableValue(item.CodeChallenge)),
             new("@CodeChallengeMethod", SetNullableValue(item.CodeChallengeMethod)),
             new("@CreatedDate", item.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss")),
