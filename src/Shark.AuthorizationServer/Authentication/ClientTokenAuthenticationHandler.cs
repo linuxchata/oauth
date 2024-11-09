@@ -71,7 +71,7 @@ public sealed class ClientTokenAuthenticationHandler(
             var accessToken = authorizationHeaderValue[(startIndexOfAccessToken + Common.Constants.Scheme.Bearer.Length)..];
 
             var client = await _clientRepository.Get(clientId);
-            if (client is null || !client.RegistrationAccessToken.EqualsTo(accessToken))
+            if (client == null || !client.RegistrationAccessToken.EqualsTo(accessToken))
             {
                 return false;
             }

@@ -12,43 +12,43 @@ public sealed class RegisterValidator : IRegisterValidator
     public RegisterInternalBadRequestResponse? ValidatePostRequest(RegisterInternalRequest request)
     {
         var response = ValidateRedirectUris(request.RedirectUris);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateTokenEndpointAuthMethod(request.TokenEndpointAuthMethod);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateGrandTypesAndResponseTypes(request.GrantTypes, request.ResponseTypes);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateClientName(request.ClientName);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateClientUri(request.ClientUri);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateLogoUri(request.LogoUri);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateAudience(request.Audience);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
@@ -59,43 +59,43 @@ public sealed class RegisterValidator : IRegisterValidator
     public RegisterInternalBadRequestResponse? ValidatePutRequest(RegisterUpdateInternalRequest request)
     {
         var response = ValidateRedirectUris(request.RedirectUris);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateTokenEndpointAuthMethod(request.TokenEndpointAuthMethod);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateGrandTypesAndResponseTypes(request.GrantTypes, request.ResponseTypes);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateClientName(request.ClientName);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateClientUri(request.ClientUri);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateLogoUri(request.LogoUri);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
 
         response = ValidateAudience(request.Audience);
-        if (response is not null)
+        if (response != null)
         {
             return response;
         }
@@ -126,7 +126,7 @@ public sealed class RegisterValidator : IRegisterValidator
 
     private static RegisterInternalBadRequestResponse? ValidateRedirectUris(string[] redirectUris)
     {
-        if (redirectUris is null || redirectUris.Length == 0)
+        if (redirectUris == null || redirectUris.Length == 0)
         {
             return new RegisterInternalBadRequestResponse(Error.InvalidRedirectUri);
         }
@@ -178,7 +178,7 @@ public sealed class RegisterValidator : IRegisterValidator
             {
                 var codeResponseType = responseTypesList.Find(t => t.EqualsTo(ResponseType.Code));
 
-                if (codeResponseType is null)
+                if (codeResponseType == null)
                 {
                     return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
                 }
@@ -187,7 +187,7 @@ public sealed class RegisterValidator : IRegisterValidator
             {
                 var tokenResponseType = responseTypesList.Find(t => t.EqualsTo(ResponseType.Token));
 
-                if (tokenResponseType is null)
+                if (tokenResponseType == null)
                 {
                     return new RegisterInternalBadRequestResponse(Error.InvalidClientMetadata);
                 }

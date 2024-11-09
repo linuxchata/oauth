@@ -15,7 +15,7 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
     public AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request, Client? client)
     {
         // Validate client
-        if (client is null)
+        if (client == null)
         {
             _logger.LogWarning("Unknown client");
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);

@@ -33,7 +33,7 @@ public sealed class UserInfoApplicationService(
 
         var profileData = await _profileService.Get(subject);
 
-        if (profileData is null)
+        if (profileData == null)
         {
             return new UserInfoNotFoundResponse();
         }

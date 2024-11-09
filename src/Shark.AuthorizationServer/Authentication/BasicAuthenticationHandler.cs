@@ -103,7 +103,7 @@ public sealed class BasicAuthenticationHandler(
         }
 
         var client = await _clientRepository.Get(clientId);
-        if (client is null || !client.ClientSecret.EqualsTo(clientSecret))
+        if (client == null || !client.ClientSecret.EqualsTo(clientSecret))
         {
             return false;
         }
