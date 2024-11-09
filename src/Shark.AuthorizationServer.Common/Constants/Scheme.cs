@@ -2,6 +2,8 @@
 
 public static class Scheme
 {
+    public const string None = nameof(None);
+
     public const string Cookies = "AuthServer";
 
     public const string Basic = nameof(Basic);

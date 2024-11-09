@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shark.AuthorizationServer.Common.Constants;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Configurations;
@@ -16,47 +17,49 @@ public sealed class AccessTokenGeneratorService(
     private readonly ISigningCredentialsService _signingCredentialsService = signingCredentialsService;
     private readonly AuthorizationServerConfiguration _configuration = options.Value;
 
-    public AccessToken Generate(string? userId, string? userName, string[] scopes, string audience)
+    public AccessToken Generate(string[] scopes, string audience, IEnumerable<CustomClaim>? claims = null)
     {
         ArgumentNullException.ThrowIfNull(scopes, nameof(scopes));
         ArgumentException.ThrowIfNullOrWhiteSpace(audience, nameof(audience));
 
         var currentTime = DateTime.UtcNow;
 
-        var claims = CreateClaims(userId, userName, scopes, currentTime);
+        var tokenClaims = CreateClaims(scopes, currentTime, claims);
 
-        return GenerateToken(claims, audience, currentTime);
+        return GenerateToken(audience, tokenClaims, currentTime);
     }
 
-    private static List<Claim> CreateClaims(string? userId, string? userName, string[] scopes, DateTime currentTime)
+    private static List<Claim> CreateClaims(string[] scopes, DateTime currentTime, IEnumerable<CustomClaim>? claims)
     {
-        var claims = new List<Claim>();
+        var tokenClaims = new List<Claim>();
 
-        if (!string.IsNullOrWhiteSpace(userId))
-        {
-            claims.Add(new(JwtRegisteredClaimNames.Sub, userId));
-        }
-
-        if (!string.IsNullOrWhiteSpace(userName))
-        {
-            claims.Add(new(JwtRegisteredClaimNames.Name, userName));
-        }
+        AddClaimIfExists(claims, JwtRegisteredClaimNames.Sub, tokenClaims);
+        AddClaimIfExists(claims, JwtRegisteredClaimNames.Name, tokenClaims);
 
         if (scopes.Length != 0)
         {
-            claims.Add(new(ClaimType.Scope, string.Join(" ", scopes)));
+            tokenClaims.Add(new(ClaimType.Scope, string.Join(" ", scopes)));
         }
 
         var issuedAt = EpochTime.GetIntDate(currentTime.ToUniversalTime()).ToString();
-        claims.Add(new Claim(JwtRegisteredClaimNames.Iat, issuedAt, ClaimValueTypes.Integer64));
+        tokenClaims.Add(new Claim(JwtRegisteredClaimNames.Iat, issuedAt, ClaimValueTypes.Integer64));
 
         var jwtId = Guid.NewGuid().ToString().ToLower();
-        claims.Add(new Claim(JwtRegisteredClaimNames.Jti, jwtId));
+        tokenClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, jwtId));
 
-        return claims;
+        return tokenClaims;
     }
 
-    private AccessToken GenerateToken(List<Claim> claims, string audience, DateTime currentTime)
+    private static void AddClaimIfExists(IEnumerable<CustomClaim>? claims, string claimName, List<Claim> tokenClaims)
+    {
+        var claim = claims?.FirstOrDefault(a => a.Type.EqualsTo(claimName));
+        if (claim != null && !string.IsNullOrEmpty(claim.Value))
+        {
+            tokenClaims.Add(new(claimName, claim.Value));
+        }
+    }
+
+    private AccessToken GenerateToken(string audience, List<Claim> claims, DateTime currentTime)
     {
         var signingCredentials = _signingCredentialsService.GetSigningCredentials();
 

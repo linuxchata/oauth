@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,9 +57,14 @@ public static class ApplicationBuilderExtentions
         var clientTokenAuthenticationOptions = new ClientTokenAuthenticationOptions();
         configuration.GetSection(ClientTokenAuthenticationOptions.Name).Bind(clientTokenAuthenticationOptions);
 
-        // Authentication session.
-        // Previously, the Cookies scheme was used to protect the /authorize endpoint.
-        // However, this approach does not support non-browser-based flows.
+        // Authentication session (cookie).
+        // Cookies scheme is used to extract user identity from authentication cookies.
+        // However, None scheme is used to support non-browser-based flows (without user).
+        services
+            .AddAuthentication(Scheme.None)
+            .AddScheme<NoneAuthenticationOptions, NoneAuthenticationHandler>(
+                Scheme.None,
+                options => { });
         services
             .AddAuthentication(Scheme.Cookies)
             .AddCookie(

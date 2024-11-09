@@ -14,7 +14,7 @@ public record PersistedGrant
 
     public required string Value { get; set; }
 
-    public string? UserName { get; set; }
+    public required CustomClaim[] Claims { get; set; }
 
     public string? CodeChallenge { get; set; }
 

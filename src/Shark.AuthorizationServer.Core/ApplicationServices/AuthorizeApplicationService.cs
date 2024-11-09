@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
@@ -20,7 +20,6 @@ public sealed class AuthorizeApplicationService(
     IRedirectionService redirectionService,
     IClientRepository clientRepository,
     IPersistedGrantRepository persistedGrantRepository,
-    IHttpContextAccessor httpContextAccessor,
     ILogger<AuthorizeApplicationService> logger) : IAuthorizeApplicationService
 {
     private const int AuthorizationCodeExpirationInSeconds = 30;
@@ -31,10 +30,9 @@ public sealed class AuthorizeApplicationService(
     private readonly IRedirectionService _redirectionService = redirectionService;
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly ILogger<AuthorizeApplicationService> _logger = logger;
 
-    public async Task<IAuthorizeInternalResponse> Execute(AuthorizeInternalRequest request)
+    public async Task<IAuthorizeInternalResponse> Execute(AuthorizeInternalRequest request, ClaimsPrincipal userIdentity)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -48,13 +46,15 @@ public sealed class AuthorizeApplicationService(
             return response;
         }
 
+        var customClaims = userIdentity?.Claims?.Select(c => new CustomClaim(c.Type, c.Value)).ToArray() ?? [];
+
         if (IsResponseType(request.ResponseType, ResponseType.Code))
         {
-            return await HandleCodeResponse(request);
+            return await HandleCodeResponse(request, customClaims);
         }
         else if (IsResponseType(request.ResponseType, ResponseType.Token))
         {
-            return HandleTokenResponse(request, client!);
+            return HandleTokenResponse(request, client!, customClaims);
         }
 
         throw new InvalidOperationException($"Unsupported response type {request.ResponseType}");
@@ -65,13 +65,15 @@ public sealed class AuthorizeApplicationService(
         return responseType.EqualsTo(expectedResponseType);
     }
 
-    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponse(AuthorizeInternalRequest request)
+    private async Task<AuthorizeInternalCodeResponse> HandleCodeResponse(
+        AuthorizeInternalRequest request,
+        IEnumerable<CustomClaim> claims)
     {
         _logger.LogInformation("Issuing authorization code. Response type is {ResponseType}", ResponseType.Code);
 
         var code = _stringGeneratorService.GenerateCode();
 
-        await StorePersistedGrant(request, code);
+        await StorePersistedGrant(request, code, claims);
 
         var redirectUrl = _redirectionService.BuildClientCallbackUrl(
             request.RedirectUri,
@@ -82,12 +84,14 @@ public sealed class AuthorizeApplicationService(
         return new AuthorizeInternalCodeResponse(redirectUrl);
     }
 
-    private AuthorizeInternalTokenResponse HandleTokenResponse(AuthorizeInternalRequest request, Client client)
+    private AuthorizeInternalTokenResponse HandleTokenResponse(
+        AuthorizeInternalRequest request,
+        Client client,
+        IEnumerable<CustomClaim> claims)
     {
         _logger.LogInformation("Issuing access token. Response type is {ResponseType}", ResponseType.Token);
 
-        var userId = Guid.NewGuid().ToString();
-        var tokenResponse = _tokenResponseService.GenerateForAccessTokenOnly(client.Audience, request.Scopes, userId);
+        var tokenResponse = _tokenResponseService.GenerateForAccessTokenOnly(client.Audience, request.Scopes, claims);
 
         var redirectUrl = _redirectionService.BuildClientCallbackUrl(
             request.RedirectUri,
@@ -97,10 +101,8 @@ public sealed class AuthorizeApplicationService(
         return new AuthorizeInternalTokenResponse(redirectUrl);
     }
 
-    private async Task StorePersistedGrant(AuthorizeInternalRequest request, string code)
+    private async Task StorePersistedGrant(AuthorizeInternalRequest request, string code, IEnumerable<CustomClaim> claims)
     {
-        var userName = _httpContextAccessor.HttpContext?.User.Identity?.Name;
-
         // code_challenge_method defaults to "plain" if not present in the request
         var codeChallengeMethod = request.CodeChallengeMethod;
         if (!string.IsNullOrWhiteSpace(request.CodeChallenge) &&
@@ -116,7 +118,7 @@ public sealed class AuthorizeApplicationService(
             RedirectUri = request.RedirectUri,
             Scopes = request.Scopes,
             Value = code,
-            UserName = userName,
+            Claims = claims.ToArray(),
             CodeChallenge = request.CodeChallenge,
             CodeChallengeMethod = codeChallengeMethod,
             CreatedDate = DateTime.UtcNow,
