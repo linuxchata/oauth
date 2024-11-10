@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,23 +16,33 @@ public class UserInfoController(
 {
     private readonly IUserInfoApplicationService _applicationService = applicationService;
 
+    /// <summary>
+    /// Returns claims about the authenticated end-user.
+    /// </summary>
+    /// <returns>HTTP response.</returns>
     [Authorize(AuthenticationSchemes = Scheme.Bearer)]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Get()
     {
         return await Execute();
     }
 
+    /// <summary>
+    /// Returns claims about the authenticated end-user.
+    /// </summary>
+    /// <returns>HTTP response.</returns>
     [Authorize(AuthenticationSchemes = Scheme.Bearer)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Post()
     {
         return await Execute();
@@ -39,7 +50,8 @@ public class UserInfoController(
 
     private async Task<IActionResult> Execute()
     {
-        var internalResponse = await _applicationService.Execute(HttpContext.User);
+        var userIdentity = HttpContext.User;
+        var internalResponse = await _applicationService.Execute(userIdentity);
 
         switch (internalResponse)
         {

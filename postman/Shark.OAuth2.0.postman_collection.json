@@ -681,6 +681,28 @@
 				"type": "oauth2",
 				"oauth2": [
 					{
+						"key": "tokenName",
+						"value": "Token",
+						"type": "string"
+					},
+					{
+						"key": "tokenRequestParams",
+						"value": [
+							{
+								"key": "scope",
+								"value": "offline_access read add update delete openid profile email address phone",
+								"enabled": true,
+								"send_as": "request_body"
+							}
+						],
+						"type": "any"
+					},
+					{
+						"key": "scope",
+						"value": "",
+						"type": "string"
+					},
+					{
 						"key": "redirect_uri",
 						"value": "https://localhost:9001/callback",
 						"type": "string"
@@ -689,11 +711,6 @@
 						"key": "useBrowser",
 						"value": false,
 						"type": "boolean"
-					},
-					{
-						"key": "scope",
-						"value": "",
-						"type": "string"
 					},
 					{
 						"key": "accessTokenUrl",

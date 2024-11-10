@@ -13,16 +13,16 @@ public sealed class UserInfoApplicationService(
 {
     private readonly IProfileService _profileService = profileService;
 
-    public async Task<IUserInfoResponse> Execute(ClaimsPrincipal claimsPrincipal)
+    public async Task<IUserInfoResponse> Execute(ClaimsPrincipal userIdentity)
     {
-        ArgumentNullException.ThrowIfNull(claimsPrincipal, nameof(claimsPrincipal));
+        ArgumentNullException.ThrowIfNull(userIdentity, nameof(userIdentity));
 
-        if (!claimsPrincipal.HasScope(Scope.OpenId))
+        if (!userIdentity.HasScope(Scope.OpenId))
         {
             return new UserInfoForbiddenResponse();
         }
 
-        var subject = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        var subject = userIdentity.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
         if (string.IsNullOrEmpty(subject))
         {
@@ -38,26 +38,26 @@ public sealed class UserInfoApplicationService(
             return new UserInfoNotFoundResponse();
         }
 
-        if (claimsPrincipal.HasScope(Scope.Profile))
+        if (userIdentity.HasScope(Scope.Profile))
         {
             response.Subject = subject;
             response.Name = profileData.Name;
-            response.GivenName = profileData.GivenName;
             response.FamilyName = profileData.FamilyName;
+            response.GivenName = profileData.GivenName;
         }
 
-        if (claimsPrincipal.HasScope(Scope.Email))
+        if (userIdentity.HasScope(Scope.Email))
         {
             response.Email = profileData.Email;
             response.EmailVerified = profileData.EmailVerified;
         }
 
-        if (claimsPrincipal.HasScope(Scope.Address))
+        if (userIdentity.HasScope(Scope.Address))
         {
             response.Address = profileData.Address;
         }
 
-        if (claimsPrincipal.HasScope(Scope.Phone))
+        if (userIdentity.HasScope(Scope.Phone))
         {
             response.PhoneNumber = profileData.PhoneNumber;
             response.PhoneNumberVerified = profileData.PhoneNumberVerified;

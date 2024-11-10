@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shark.AuthorizationServer.Common;
 using Shark.AuthorizationServer.Common.Abstractions;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
@@ -20,9 +21,10 @@ public static class DependencyInjection
         services.AddTransient<IRefreshTokenGeneratorService, RefreshTokenGeneratorService>();
         services.AddTransient<IProofKeyForCodeExchangeService, ProofKeyForCodeExchangeService>();
         services.AddTransient<ILoginService, LoginService>();
-        services.AddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();
         services.AddTransient<IRedirectionService, RedirectionService>();
-        services.AddTransient<IProfileService, DefaultProfileService>();
+
+        services.TryAddTransient<IResourceOwnerCredentialsValidationService, ResourceOwnerCredentialsValidationService>();
+        services.TryAddTransient<IProfileService, DefaultProfileService>();
 
         return services;
     }

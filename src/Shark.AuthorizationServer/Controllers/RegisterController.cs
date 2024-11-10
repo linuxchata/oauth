@@ -47,9 +47,9 @@ public class RegisterController(IRegisterApplicationService applicationService) 
     /// <param name="request">Register request.</param>
     /// <returns>HTTP response.</returns>
     [HttpPost]
+    [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Post([FromBody] RegisterRequest request)
     {
