@@ -1,4 +1,4 @@
-name: build_push_nuget
+name: build_push_nuget_sdk
 
 on:
   push:
