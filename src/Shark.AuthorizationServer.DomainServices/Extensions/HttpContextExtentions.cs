@@ -12,17 +12,16 @@ public static class HttpContextExtentions
     public static async Task SignInAsync(
         this HttpContext context,
         string userName,
-        string[] scopes,
         string? authMethod = null)
     {
-        var claims = CreateClaims(userName, scopes, authMethod);
+        var claims = CreateClaims(userName, authMethod);
 
         var userIdentity = CreateUserIdentity(claims);
 
         await context.SignInAsync(Scheme.Cookies, userIdentity);
     }
 
-    private static List<Claim> CreateClaims(string userName, string[] scopes, string? authMethod)
+    private static List<Claim> CreateClaims(string userName, string? authMethod)
     {
         var claims = new List<Claim>();
 
@@ -34,12 +33,6 @@ public static class HttpContextExtentions
         if (!string.IsNullOrWhiteSpace(userName))
         {
             claims.Add(new(JwtRegisteredClaimNames.Name, userName));
-        }
-
-        // Add scopes
-        if (scopes != null && scopes.Length != 0)
-        {
-            claims.Add(new(ClaimType.Scope, string.Join(' ', scopes)));
         }
 
         // Add authentication methods references
