@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 
@@ -17,6 +18,7 @@ public class ConfigurationController(
     /// <returns>HTTP response.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces(MediaTypeNames.Application.Json)]
     [ResponseCache(NoStore = true, Duration = 0, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> Get()
     {
@@ -31,6 +33,7 @@ public class ConfigurationController(
     /// <returns>HTTP response.</returns>
     [HttpGet("jwks")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces(MediaTypeNames.Application.Json)]
     [ResponseCache(NoStore = true, Duration = 0, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> GetJsonWebKeySet()
     {
