@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shark.AuthorizationServer.Common.Constants;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Sdk.Abstractions.Services;
 using Shark.AuthorizationServer.Sdk.Abstractions.Stores;
 using Shark.AuthorizationServer.Sdk.Models;
@@ -34,7 +35,7 @@ public sealed class CallBackClientService(
     private static bool IsImplicitGrantType(string? accessToken, string? tokenType)
     {
         return !string.IsNullOrWhiteSpace(accessToken) && !string.IsNullOrWhiteSpace(tokenType) &&
-            string.Equals(tokenType, AccessTokenType.Bearer, StringComparison.OrdinalIgnoreCase);
+            tokenType.EqualsTo(AccessTokenType.Bearer);
     }
 
     private static bool IsAuthorizationCodeGrantType(string? code)
