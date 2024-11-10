@@ -43,7 +43,7 @@ public sealed class LoginModel(
 
     public async Task OnPost(string returnUrl, string userName, string[] selectedScopes)
     {
-        await HttpContext.SignInAsync(userName, selectedScopes, Amr.Pwd);
+        await HttpContext.SignInAsync(userName, Amr.Pwd);
 
         var authorizeEndpointUrl = _redirectionService.BuildAuthorizeUrl(returnUrl, selectedScopes);
 
