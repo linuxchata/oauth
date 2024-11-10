@@ -3,32 +3,30 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Shark.AuthorizationServer.Common.Constants;
-using Shark.AuthorizationServer.DomainServices.Abstractions;
+using Shark.AuthorizationServer.DomainServices.Extensions;
 
-namespace Shark.AuthorizationServer.DomainServices.Services;
+namespace Shark.AuthorizationServer.DomainServices.Extensions;
 
-public sealed class LoginService(
-    IHttpContextAccessor httpContextAccessor) : ILoginService
+public static class HttpContextExtentions
 {
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-
-    public async Task SignIn(string userName, string[] scopes, string authMethod)
+    public static async Task SignInAsync(
+        this HttpContext context,
+        string userName,
+        string[] scopes,
+        string? authMethod = null)
     {
         var claims = CreateClaims(userName, scopes, authMethod);
 
-        var claimsPrincipal = CreateClaimsPrincipal(claims);
+        var userIdentity = CreateUserIdentity(claims);
 
-        if (_httpContextAccessor.HttpContext != null)
-        {
-            await _httpContextAccessor.HttpContext.SignInAsync(Scheme.Cookies, claimsPrincipal);
-        }
+        await context.SignInAsync(Scheme.Cookies, userIdentity);
     }
 
-    private static List<Claim> CreateClaims(string userName, string[] scopes, string authMethod)
+    private static List<Claim> CreateClaims(string userName, string[] scopes, string? authMethod)
     {
         var claims = new List<Claim>();
 
-        // Add user identifier claim
+        // Add user identifier
         var userId = Guid.NewGuid().ToString();
         claims.Add(new(JwtRegisteredClaimNames.Sub, userId));
 
@@ -38,7 +36,7 @@ public sealed class LoginService(
             claims.Add(new(JwtRegisteredClaimNames.Name, userName));
         }
 
-        // Add scopes claims
+        // Add scopes
         if (scopes != null && scopes.Length != 0)
         {
             claims.Add(new(ClaimType.Scope, string.Join(' ', scopes)));
@@ -53,14 +51,14 @@ public sealed class LoginService(
         return claims;
     }
 
-    private static ClaimsPrincipal CreateClaimsPrincipal(List<Claim> claims)
+    private static ClaimsPrincipal CreateUserIdentity(List<Claim> claims)
     {
-        var claimsIdentity = new ClaimsIdentity(
+        var userIdentity = new ClaimsIdentity(
             claims,
             Scheme.Cookies,
             JwtRegisteredClaimNames.Name,
             null!);
 
-        return new ClaimsPrincipal(claimsIdentity);
+        return new ClaimsPrincipal(userIdentity);
     }
 }

@@ -1,18 +1,18 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
+using Shark.AuthorizationServer.DomainServices.Extensions;
 
 namespace Shark.Sample.AuthorizationServer.Pages;
 
 public sealed class LoginModel(
     IClientRepository clientRepository,
-    ILoginService loginService,
     IRedirectionService redirectionService) : PageModel
 {
     private readonly IClientRepository _clientRepository = clientRepository;
-    private readonly ILoginService _loginService = loginService;
     private readonly IRedirectionService _redirectionService = redirectionService;
 
     public string? ClientId { get; private set; }
@@ -43,7 +43,7 @@ public sealed class LoginModel(
 
     public async Task OnPost(string returnUrl, string userName, string[] selectedScopes)
     {
-        await _loginService.SignIn(userName, selectedScopes, Amr.Pwd);
+        await HttpContext.SignInAsync(userName, selectedScopes, Amr.Pwd);
 
         var authorizeEndpointUrl = _redirectionService.BuildAuthorizeUrl(returnUrl, selectedScopes);
 
