@@ -46,7 +46,7 @@ public sealed class TokenApplicationService(
             request.ClientId = clientIdentity.FindFirstValue(Scope.ClientId);
         }
 
-        using var loggerScope = _logger.BeginScope("ClientId:{ClientId}", request.ClientId!);
+        using var loggerScope = _logger.BeginScope("ClientId:{ClientId}", request.ClientId.Sanitize());
 
         var client = await _clientRepository.Get(request.ClientId);
 
@@ -126,8 +126,7 @@ public sealed class TokenApplicationService(
         await _persistedGrantRepository.Remove(persistedGrant!);
 
         _logger.LogInformation(
-            "Found matching refresh token {RefreshToken}. Issuing access token and refresh token for {GrantType}",
-            request.RefreshToken,
+            "Found matching refresh token. Issuing access token and refresh token for {GrantType}",
             GrantType.RefreshToken);
 
         var tokenResponse = await GenerateAndStoreBearerToken(

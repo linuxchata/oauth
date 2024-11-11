@@ -63,9 +63,7 @@ public sealed class RevokeApplicationService(
 
         if (string.IsNullOrWhiteSpace(jwtToken.Id))
         {
-            _logger.LogWarning(
-                "Access token [{Token}] does not have identfier. Access token cannot be revoked",
-                token);
+            _logger.LogWarning("Provided access token does not have identfier. Access token cannot be revoked");
 
             // If token was read, so it is an access token. Marked it as handled
             return true;
