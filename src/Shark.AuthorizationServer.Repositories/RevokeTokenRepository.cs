@@ -35,7 +35,7 @@ public sealed class RevokeTokenRepository(IDistributedCache cache) : IRevokeToke
         await _cache.SetStringAsync(GetKey(item.TokenId), serializedItem);
     }
 
-    private string GetKey(string key)
+    private static string GetKey(string key)
     {
         return $"{Prefix}{key}";
     }

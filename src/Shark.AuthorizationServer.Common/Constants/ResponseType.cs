@@ -1,4 +1,6 @@
-﻿namespace Shark.AuthorizationServer.Common.Constants;
+﻿using System.Collections.Immutable;
+
+namespace Shark.AuthorizationServer.Common.Constants;
 
 public static class ResponseType
 {
@@ -6,7 +8,7 @@ public static class ResponseType
 
     public const string Token = "token";
 
-    public readonly static string[] Supported =
+    public readonly static ImmutableHashSet<string> Supported =
     [
         Code,
         Token,

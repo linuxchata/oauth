@@ -87,15 +87,12 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
 
     public async Task Remove(PersistedGrant item)
     {
-        if (item != null)
+        if (item != null && !string.IsNullOrWhiteSpace(item.Value))
         {
-            if (!string.IsNullOrWhiteSpace(item.Value))
-            {
-                var commandText = @"DELETE FROM PersistedGrant WHERE Value = @Value";
-                var sqliteParameters = new SqliteParameter("@Value", item.Value);
+            var commandText = @"DELETE FROM PersistedGrant WHERE Value = @Value";
+            var sqliteParameters = new SqliteParameter("@Value", item.Value);
 
-                await Execute(commandText, [sqliteParameters]);
-            }
+            await Execute(commandText, [sqliteParameters]);
         }
     }
 

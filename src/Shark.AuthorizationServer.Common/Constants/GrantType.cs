@@ -1,4 +1,6 @@
-﻿namespace Shark.AuthorizationServer.Common.Constants;
+﻿using System.Collections.Immutable;
+
+namespace Shark.AuthorizationServer.Common.Constants;
 
 public static class GrantType
 {
@@ -14,7 +16,7 @@ public static class GrantType
 
     public const string DeviceCode = "urn:ietf:params:oauth:grant-type:device_code";
 
-    public readonly static HashSet<string> Allowed =
+    public readonly static ImmutableHashSet<string> Allowed =
     [
         AuthorizationCode,
         RefreshToken,
@@ -24,7 +26,7 @@ public static class GrantType
         DeviceCode,
     ];
 
-    public readonly static string[] Supported =
+    public readonly static ImmutableArray<string> Supported =
     [
         AuthorizationCode,
         RefreshToken,
