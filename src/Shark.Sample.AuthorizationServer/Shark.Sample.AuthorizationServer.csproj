@@ -31,8 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shark.AuthorizationServer.Repositories.InMemory\Shark.AuthorizationServer.Repositories.InMemory.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer.Repositories.SqLite\Shark.AuthorizationServer.Repositories.SqLite.csproj" />
-    <ProjectReference Include="..\Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.InMemory.csproj" />
     <ProjectReference Include="..\Shark.AuthorizationServer\Shark.AuthorizationServer.csproj" />
   </ItemGroup>
 

@@ -5,7 +5,7 @@ using Shark.AuthorizationServer.Common.Extensions;
 
 namespace Shark.AuthorizationServer.Common;
 
-public sealed class ProofKeyForCodeExchangeProvider
+public static class ProofKeyForCodeExchangeProvider
 {
     public static string GetCodeChallenge(string codeVerifier, string codeChallengeMethod)
     {

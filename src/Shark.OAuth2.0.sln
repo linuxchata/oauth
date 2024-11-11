@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.DomainServices", "Shark.AuthorizationServer.DomainServices\Shark.AuthorizationServer.DomainServices.csproj", "{270CCBB0-65BA-4F5D-85E3-0A39718FC464}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.Repositories.InMemory", "Shark.AuthorizationServer.Repositories\Shark.AuthorizationServer.Repositories.InMemory.csproj", "{00BD7CAA-805A-430D-8B25-C0AAAB336499}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.Repositories.InMemory", "Shark.AuthorizationServer.Repositories.InMemory\Shark.AuthorizationServer.Repositories.InMemory.csproj", "{00BD7CAA-805A-430D-8B25-C0AAAB336499}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.Common", "Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj", "{2E59163B-501A-4896-8F3E-45CEDC4C110F}"
 EndProject
