@@ -34,7 +34,7 @@ public sealed class MockClientsLoader(IDistributedCache cache) : IMockClientsLoa
         }
     }
 
-    private string GetKey(string key)
+    private static string GetKey(string key)
     {
         return $"{Prefix}{key}";
     }
