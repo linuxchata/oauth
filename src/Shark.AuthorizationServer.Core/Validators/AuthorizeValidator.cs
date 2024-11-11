@@ -9,20 +9,34 @@ using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.Validators;
 
-public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAuthorizeValidator
+public sealed class AuthorizeValidator(
+    ILogger<AuthorizeValidator> logger) : BaseValidator<AuthorizeInternalBadRequestResponse>, IAuthorizeValidator
 {
     private readonly ILogger<AuthorizeValidator> _logger = logger;
 
     public AuthorizeInternalBadRequestResponse? ValidateRequest(AuthorizeInternalRequest request, Client? client)
     {
-        // Validate client
+        return CheckAll(
+            ValidateClient(client),
+            ValidateResponseType(request, client!),
+            ValidateRedirectUri(request, client!),
+            ValidateScopes(request, client!),
+            ValidateCodeChallengeMethod(request));
+    }
+
+    private AuthorizeInternalBadRequestResponse? ValidateClient(Client? client)
+    {
         if (client == null)
         {
             _logger.LogWarning("Unknown client");
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
-        // Validate response type
+        return null;
+    }
+
+    private AuthorizeInternalBadRequestResponse? ValidateResponseType(AuthorizeInternalRequest request, Client client)
+    {
         if (!ResponseType.Supported.Contains(request.ResponseType))
         {
             _logger.LogWarning(
@@ -39,14 +53,22 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
             return new AuthorizeInternalBadRequestResponse(Error.UnauthorizedClient);
         }
 
-        // Validate redirect URI
+        return null;
+    }
+
+    private AuthorizeInternalBadRequestResponse? ValidateRedirectUri(AuthorizeInternalRequest request, Client client)
+    {
         if (!client.RedirectUris.Contains(request.RedirectUri))
         {
             _logger.LogWarning("Mismatched redirect URL [{RedirectUri}] for client", request.RedirectUri.Sanitize());
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
-        // Validate requested scopes against client's allowed scopes
+        return null;
+    }
+
+    private AuthorizeInternalBadRequestResponse? ValidateScopes(AuthorizeInternalRequest request, Client client)
+    {
         var allowedClientScopes = client.Scope.ToHashSet();
         var scopes = request.Scopes;
         foreach (var scope in scopes)
@@ -58,7 +80,11 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
             }
         }
 
-        // Validate code challenge method
+        return null;
+    }
+
+    private AuthorizeInternalBadRequestResponse? ValidateCodeChallengeMethod(AuthorizeInternalRequest request)
+    {
         if (!string.IsNullOrWhiteSpace(request.CodeChallengeMethod) &&
             !CodeChallengeMethod.Supported.Contains(request.CodeChallengeMethod))
         {

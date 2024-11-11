@@ -7,100 +7,30 @@ using Shark.AuthorizationServer.Core.Responses.Register;
 
 namespace Shark.AuthorizationServer.Core.Validators;
 
-public sealed class RegisterValidator : IRegisterValidator
+public sealed class RegisterValidator : BaseValidator<RegisterInternalBadRequestResponse>, IRegisterValidator
 {
     public RegisterInternalBadRequestResponse? ValidatePostRequest(RegisterInternalRequest request)
     {
-        var response = ValidateRedirectUris(request.RedirectUris);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateTokenEndpointAuthMethod(request.TokenEndpointAuthMethod);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateGrandTypesAndResponseTypes(request.GrantTypes, request.ResponseTypes);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateClientName(request.ClientName);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateClientUri(request.ClientUri);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateLogoUri(request.LogoUri);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateAudience(request.Audience);
-        if (response != null)
-        {
-            return response;
-        }
-
-        return null;
+        return CheckAll(
+            ValidateRedirectUris(request.RedirectUris),
+            ValidateTokenEndpointAuthMethod(request.TokenEndpointAuthMethod),
+            ValidateGrandTypesAndResponseTypes(request.GrantTypes, request.ResponseTypes),
+            ValidateClientName(request.ClientName),
+            ValidateClientUri(request.ClientUri),
+            ValidateLogoUri(request.LogoUri),
+            ValidateAudience(request.Audience));
     }
 
     public RegisterInternalBadRequestResponse? ValidatePutRequest(RegisterUpdateInternalRequest request)
     {
-        var response = ValidateRedirectUris(request.RedirectUris);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateTokenEndpointAuthMethod(request.TokenEndpointAuthMethod);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateGrandTypesAndResponseTypes(request.GrantTypes, request.ResponseTypes);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateClientName(request.ClientName);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateClientUri(request.ClientUri);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateLogoUri(request.LogoUri);
-        if (response != null)
-        {
-            return response;
-        }
-
-        response = ValidateAudience(request.Audience);
-        if (response != null)
-        {
-            return response;
-        }
-
-        return null;
+        return CheckAll(
+            ValidateRedirectUris(request.RedirectUris),
+            ValidateTokenEndpointAuthMethod(request.TokenEndpointAuthMethod),
+            ValidateGrandTypesAndResponseTypes(request.GrantTypes, request.ResponseTypes),
+            ValidateClientName(request.ClientName),
+            ValidateClientUri(request.ClientUri),
+            ValidateLogoUri(request.LogoUri),
+            ValidateAudience(request.Audience));
     }
 
     public RegisterInternalBadRequestResponse? ValidateClientId(string clientId, string requestClientId)

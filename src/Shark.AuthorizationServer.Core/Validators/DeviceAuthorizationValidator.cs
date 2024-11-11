@@ -13,7 +13,9 @@ public sealed class DeviceAuthorizationValidator(
 {
     private readonly ILogger<DeviceAuthorizationValidator> _logger = logger;
 
-    public DeviceAuthorizationBadRequestResponse? ValidateRequest(DeviceAuthorizationInternalRequest request, Client? client)
+    public DeviceAuthorizationBadRequestResponse? ValidateRequest(
+        DeviceAuthorizationInternalRequest request,
+        Client? client)
     {
         if (client == null)
         {

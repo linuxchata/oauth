@@ -100,7 +100,7 @@ public sealed class TokenApplicationService(
 
         _logger.LogInformation(
             "Found matching authorization code {Code}. Issuing access token and refresh token for {GrantType} grant",
-            request.Code,
+            request.Code.Sanitize(),
             GrantType.AuthorizationCode);
 
         var tokenResponse = await GenerateAndStoreBearerToken(

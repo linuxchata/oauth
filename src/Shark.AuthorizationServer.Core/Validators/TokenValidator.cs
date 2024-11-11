@@ -67,7 +67,7 @@ public sealed class TokenValidator(
         if (!string.IsNullOrWhiteSpace(request.RedirectUri) &&
             !client.RedirectUris.Contains(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URL [{RedirectUri}]", request.RedirectUri);
+            _logger.LogWarning("Mismatched redirect URL [{RedirectUri}]", request.RedirectUri.Sanitize());
             return new TokenInternalBadRequestResponse(Error.InvalidGrant);
         }
 
