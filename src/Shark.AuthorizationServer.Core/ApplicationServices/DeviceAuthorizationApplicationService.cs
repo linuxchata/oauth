@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
@@ -40,7 +41,7 @@ public sealed class DeviceAuthorizationApplicationService(
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        using var loggerScope = _logger.BeginScope("ClientId:{ClientId}", request.ClientId!);
+        using var loggerScope = _logger.BeginScope("ClientId:{ClientId}", request.ClientId.Sanitize());
 
         var client = await _clientRepository.Get(request.ClientId);
 

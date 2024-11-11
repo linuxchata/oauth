@@ -38,7 +38,7 @@ public sealed class AuthorizeApplicationService(
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        using var loggerScope = _logger.BeginScope("ClientId:{ClientId}", request.ClientId!);
+        using var loggerScope = _logger.BeginScope("ClientId:{ClientId}", request.ClientId.Sanitize());
 
         var client = await _clientRepository.Get(request.ClientId);
 
