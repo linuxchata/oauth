@@ -7,6 +7,7 @@ This authorization server provides robust OAuth2 capabilities, supporting a vari
 | GitHub Actions | Build | [![build](https://github.com/linuxchata/oauth/actions/workflows/build.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build.yml) |
 | GitHub Actions | Build & Deploy | [![build_deploy](https://github.com/linuxchata/oauth/actions/workflows/build_deploy.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build_deploy.yml) |
 | GitHub Actions | Nuget | [![build_push_nuget](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget_sdk.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget_sdk.yml) |
+| GitHub Actions | Nuget | [![build_push_nuget](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget_auth_server.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget_auth_server.yml) |
 
 # Specifications
 - [The OAuth 2.0 Authorization Framework](https://datatracker.ietf.org/doc/html/rfc6749)
