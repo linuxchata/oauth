@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shark.AuthorizationServer.Common.Constants;
+using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
@@ -24,20 +25,24 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
         // Validate response type
         if (!ResponseType.Supported.Contains(request.ResponseType))
         {
-            _logger.LogWarning("Unsupported response type [{ResponseType}] by server", request.ResponseType);
+            _logger.LogWarning(
+                "Unsupported response type [{ResponseType}] by server",
+                request.ResponseType.Sanitize());
             return new AuthorizeInternalBadRequestResponse(Error.UnsupportedResponseType);
         }
 
         if (!client.ResponseTypes.ToHashSet().Contains(request.ResponseType))
         {
-            _logger.LogWarning("Unsupported response type [{ResponseType}] by client", request.ResponseType);
+            _logger.LogWarning(
+                "Unsupported response type [{ResponseType}] by client",
+                request.ResponseType.Sanitize());
             return new AuthorizeInternalBadRequestResponse(Error.UnauthorizedClient);
         }
 
         // Validate redirect URI
         if (!client.RedirectUris.Contains(request.RedirectUri))
         {
-            _logger.LogWarning("Mismatched redirect URL [{RedirectUri}] for client", request.RedirectUri);
+            _logger.LogWarning("Mismatched redirect URL [{RedirectUri}] for client", request.RedirectUri.Sanitize());
             return new AuthorizeInternalBadRequestResponse(Error.InvalidClient);
         }
 
@@ -48,7 +53,7 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
         {
             if (!allowedClientScopes.Contains(scope))
             {
-                _logger.LogWarning("Mismatched scope [{Scope}] for client", scope);
+                _logger.LogWarning("Mismatched scope [{Scope}] for client", scope.Sanitize());
                 return new AuthorizeInternalBadRequestResponse(Error.InvalidScope);
             }
         }
@@ -59,7 +64,7 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
         {
             _logger.LogWarning(
                 "Unsupported code challenge method [{CodeChallengeMethod}] by server",
-                request.CodeChallengeMethod);
+                request.CodeChallengeMethod.Sanitize());
             return new AuthorizeInternalBadRequestResponse(Error.InvalidRequest);
         }
 
