@@ -137,7 +137,7 @@ public sealed class ClientRepository(IOptions<SqLiteConfiguration> sqLiteConfigu
         }
     }
 
-    private ClientType GetClientType(object? value)
+    private static ClientType GetClientType(object? value)
     {
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
         {

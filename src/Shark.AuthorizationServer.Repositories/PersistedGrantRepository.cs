@@ -13,12 +13,12 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
 
     public async Task<PersistedGrant?> GetByValue(string? value)
     {
-        return await GetInternal<DevicePersistedGrant?>(value);
+        return await GetInternal(value);
     }
 
     public async Task<PersistedGrant?> GetByAccessTokenId(string? value)
     {
-        return await GetInternal<DevicePersistedGrant?>(value);
+        return await GetInternal(value);
     }
 
     public async Task Add(PersistedGrant item)
@@ -56,7 +56,7 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
         }
     }
 
-    private async Task<PersistedGrant?> GetInternal<T>(string? value)
+    private async Task<PersistedGrant?> GetInternal(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {

@@ -22,7 +22,7 @@ public sealed class AuthorizeValidator(ILogger<AuthorizeValidator> logger) : IAu
         }
 
         // Validate response type
-        if (!ResponseType.Supported.ToHashSet().Contains(request.ResponseType))
+        if (!ResponseType.Supported.Contains(request.ResponseType))
         {
             _logger.LogWarning("Unsupported response type [{ResponseType}] by server", request.ResponseType);
             return new AuthorizeInternalBadRequestResponse(Error.UnsupportedResponseType);

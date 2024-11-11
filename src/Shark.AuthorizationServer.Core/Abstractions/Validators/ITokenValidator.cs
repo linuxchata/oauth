@@ -21,6 +21,6 @@ public interface ITokenValidator
         TokenInternalRequest request);
 
     TokenInternalBadRequestResponse? ValidateDeviceCodeGrant(
-        DevicePersistedGrant? persistedGrant,
+        DevicePersistedGrant? devicePersistedGrant,
         TokenInternalRequest request);
 }

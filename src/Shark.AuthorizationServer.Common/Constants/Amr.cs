@@ -1,4 +1,6 @@
-﻿namespace Shark.AuthorizationServer.Common.Constants;
+﻿using System.Collections.Immutable;
+
+namespace Shark.AuthorizationServer.Common.Constants;
 
 public static class Amr
 {
@@ -44,8 +46,8 @@ public static class Amr
 
     public const string Custom = "custom";
 
-    public readonly static HashSet<string> Supported = new HashSet<string>
-    {
+    public readonly static ImmutableHashSet<string> Supported =
+    [
         Face, Fpt, Geo, Hwk, Iris, Kba, Mca, Mfa, Otp, Pin, Pwd, Rba, Retina, Sc, Sms, Swk, Tel, User, Vbm, Wia,
-    };
+    ];
 }

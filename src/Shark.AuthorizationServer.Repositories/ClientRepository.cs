@@ -43,7 +43,7 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
         }
     }
 
-    private string GetKey(string key)
+    private static string GetKey(string key)
     {
         return $"{Prefix}{key}";
     }

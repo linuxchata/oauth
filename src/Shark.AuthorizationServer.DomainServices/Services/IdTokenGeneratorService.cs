@@ -58,7 +58,7 @@ public sealed class IdTokenGeneratorService(
         return tokenClaims;
     }
 
-    private void AddClaimIfExists(IEnumerable<CustomClaim>? claims, string claimName, List<Claim> tokenClaims)
+    private static void AddClaimIfExists(IEnumerable<CustomClaim>? claims, string claimName, List<Claim> tokenClaims)
     {
         var claim = claims?.FirstOrDefault(a => a.Type.EqualsTo(claimName));
         if (claim != null && !string.IsNullOrEmpty(claim.Value))

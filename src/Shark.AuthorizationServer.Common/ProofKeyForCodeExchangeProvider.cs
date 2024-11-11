@@ -25,7 +25,7 @@ public sealed class ProofKeyForCodeExchangeProvider
         }
     }
 
-    public static string Base64UrlEncode(byte[] input)
+    private static string Base64UrlEncode(byte[] input)
     {
         // Convert to base64, then replace URL-unsafe characters and trim padding.
         return Convert.ToBase64String(input)

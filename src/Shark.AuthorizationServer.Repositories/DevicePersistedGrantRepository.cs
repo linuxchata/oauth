@@ -73,7 +73,7 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
         return null;
     }
 
-    private string GetKey(string key)
+    private static string GetKey(string key)
     {
         return $"{Prefix}{key}";
     }
