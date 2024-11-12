@@ -9,11 +9,23 @@ using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.Validators;
 public sealed class DeviceAuthorizationValidator(
-    ILogger<DeviceAuthorizationValidator> logger) : IDeviceAuthorizationValidator
+    ILogger<DeviceAuthorizationValidator> logger) :
+    BaseValidator<DeviceAuthorizationBadRequestResponse>,
+    IDeviceAuthorizationValidator
 {
     private readonly ILogger<DeviceAuthorizationValidator> _logger = logger;
 
-    public DeviceAuthorizationBadRequestResponse? ValidateRequest(DeviceAuthorizationInternalRequest request, Client? client)
+    public DeviceAuthorizationBadRequestResponse? ValidateRequest(
+        DeviceAuthorizationInternalRequest request,
+        Client? client)
+    {
+        return CheckAll(
+            ValidateClient(client),
+            ValidateClientSecret(request, client!),
+            ValidateGrantTypes(client!));
+    }
+
+    private DeviceAuthorizationBadRequestResponse? ValidateClient(Client? client)
     {
         if (client == null)
         {
@@ -21,12 +33,24 @@ public sealed class DeviceAuthorizationValidator(
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
         }
 
+        return null;
+    }
+
+    private DeviceAuthorizationBadRequestResponse? ValidateClientSecret(
+        DeviceAuthorizationInternalRequest request,
+        Client client)
+    {
         if (!request.ClientSecret.EqualsTo(client.ClientSecret))
         {
             _logger.LogWarning("Invalid client secret");
             return new DeviceAuthorizationBadRequestResponse(Error.InvalidClient);
         }
 
+        return null;
+    }
+
+    private DeviceAuthorizationBadRequestResponse? ValidateGrantTypes(Client client)
+    {
         if (!client.GrantTypes.ToHashSet().Contains(GrantType.DeviceCode))
         {
             _logger.LogWarning("Unsupported grant [{GrantType}] by client", GrantType.DeviceCode);
