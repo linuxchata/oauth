@@ -30,7 +30,7 @@ public sealed class AuthorizeController(
     /// <param name="code_challenge">Code challenge.</param>
     /// <param name="code_challenge_method">Code challenge method.</param>
     /// <returns>HTTP response.</returns>
-    [Authorize(AuthenticationSchemes = $"None,{Scheme.Cookies}", Policy = Policy.AllowPublic)]
+    [Authorize(AuthenticationSchemes = $"{Scheme.None},{Scheme.Cookies}", Policy = Policy.AllowPublic)]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
