@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
 using Shark.AuthorizationServer.Core.Responses.Token;
