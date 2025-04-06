@@ -1,4 +1,4 @@
-name: build_push_nuget_auth_server
+name: Build Authorization Server NuGet package
 
 on:
   push:
