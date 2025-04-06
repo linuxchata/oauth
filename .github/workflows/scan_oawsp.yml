@@ -1,4 +1,4 @@
-name: scan_oawsp
+name: Scan OAWSP
 
 on:
   schedule:
