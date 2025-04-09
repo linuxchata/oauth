@@ -1,4 +1,4 @@
-name: Build Authorization Server SDK NuGet package
+name: Build OAuth Server SDK NuGet package
 
 on:
   push:
