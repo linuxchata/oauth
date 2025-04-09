@@ -25,8 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" />
-    <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.DomainServices\Shark.AuthorizationServer.DomainServices.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Domain\Shark.AuthorizationServer.Domain.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
