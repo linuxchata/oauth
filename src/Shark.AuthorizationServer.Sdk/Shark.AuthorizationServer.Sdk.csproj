@@ -1,7 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <IsPackable>true</IsPackable>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <Description>Authorization server SDK</Description>
+    <PackageId>Shark.AuthorizationServer.Sdk</PackageId>
+    <PackageTags>security;identity;oauth;oauth2;oauth2-server;oauth2-authentication</PackageTags>
+    <RepositoryUrl>https://github.com/linuxchata/oauth</RepositoryUrl>
+    <Product>Authorization server SDK</Product>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,10 +26,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>

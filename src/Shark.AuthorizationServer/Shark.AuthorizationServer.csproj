@@ -3,13 +3,14 @@
   <PropertyGroup>
     <CodeAnalysisRuleSet />
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <IsPackable>true</IsPackable>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <Description>Authorization server</Description>
+    <PackageId>Shark.AuthorizationServer</PackageId>
+    <PackageTags>security;identity;oauth;oauth2;oauth2-server;oauth2-authentication</PackageTags>
+    <RepositoryUrl>https://github.com/linuxchata/oauth</RepositoryUrl>
+    <Product>Authorization server</Product>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
@@ -25,11 +26,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" />
-    <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Common\Shark.AuthorizationServer.Common.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Core\Shark.AuthorizationServer.Core.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.DomainServices\Shark.AuthorizationServer.DomainServices.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Domain\Shark.AuthorizationServer.Domain.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Shark.AuthorizationServer.Sdk\Shark.AuthorizationServer.Sdk.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>
