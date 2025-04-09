@@ -8,6 +8,12 @@ This authorization server provides robust OAuth2 capabilities, supporting a vari
 | GitHub Actions | Nuget | [![build_push_nuget](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget_sdk.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget_sdk.yml) |
 | GitHub Actions | Nuget | [![build_push_nuget](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget_auth_server.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build_push_nuget_auth_server.yml) |
 
+# Packages
+| Package Source | Package Name | Status |
+|-|-|-|
+| NuGet | Shark.AuthorizationServer | [![NuGet](https://img.shields.io/nuget/v/Shark.AuthorizationServer.svg)](https://www.nuget.org/packages/Shark.AuthorizationServer/) |
+| NuGet | Shark.AuthorizationServer.Sdk | [![NuGet](https://img.shields.io/nuget/v/Shark.AuthorizationServer.Sdk.svg)](https://www.nuget.org/packages/Shark.AuthorizationServer.Sdk/) |
+
 # Specifications
 - [The OAuth 2.0 Authorization Framework](https://datatracker.ietf.org/doc/html/rfc6749)
 - [Proof Key for Code Exchange by OAuth Public Clients](https://datatracker.ietf.org/doc/html/rfc7636)
