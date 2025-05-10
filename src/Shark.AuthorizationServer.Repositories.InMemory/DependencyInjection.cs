@@ -6,7 +6,7 @@ namespace Shark.AuthorizationServer.Repositories.InMemory;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection RegisterInMemoryRepositories(this IServiceCollection services)
+    public static IServiceCollection AddInMemoryDataStore(this IServiceCollection services)
     {
         services.AddDistributedMemoryCache();
 

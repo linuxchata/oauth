@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shark.AuthorizationServer.Common.Abstractions;
-using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Common.Extensions;
 using Shark.AuthorizationServer.Core.Abstractions.ApplicationServices;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
@@ -16,6 +15,9 @@ public sealed class RevokeApplicationService(
     IRevokeTokenRepository revokeTokenRepository,
     ILogger<TokenApplicationService> logger) : IRevokeApplicationService
 {
+    private const string AccessToken = "access_token";
+    private const string RefreshToken = "refresh_token";
+
     private readonly ICustomAccessTokenHandler _customAccessTokenHandler = customAccessTokenHandler;
     private readonly IPersistedGrantRepository _persistedGrantRepository = persistedGrantRepository;
     private readonly IRevokeTokenRepository _revokeTokenRepository = revokeTokenRepository;
@@ -27,11 +29,11 @@ public sealed class RevokeApplicationService(
 
         if (!string.IsNullOrWhiteSpace(request.TokenHint))
         {
-            if (request.TokenHint.EqualsTo(TokenHint.AccessToken))
+            if (request.TokenHint.EqualsTo(AccessToken))
             {
                 await TryRevokeAccessToken(request.Token);
             }
-            else if (request.TokenHint.EqualsTo(TokenHint.RefreshToken))
+            else if (request.TokenHint.EqualsTo(RefreshToken))
             {
                 await TryRemoveRefreshToken(request.Token);
             }

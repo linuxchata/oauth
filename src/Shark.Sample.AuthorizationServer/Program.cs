@@ -31,7 +31,7 @@ builder.Logging.Configure(options =>
 
 // Authorization server
 builder.Services.AddSharkAuthorizationServer(builder.Configuration);
-builder.Services.RegisterInMemoryRepositories();
+builder.Services.AddInMemoryDataStore();
 
 // Pages and controllers
 builder.Services.AddRazorPages();

@@ -7,7 +7,7 @@ namespace Shark.AuthorizationServer.Repositories.SqLite;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection RegisterSqLiteRepositories(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSqLiteDataStore(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<SqLiteConfiguration>(configuration.GetSection(SqLiteConfiguration.Name));
 
