@@ -1,14 +1,16 @@
 ﻿using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NUnit.Framework;
+using Shark.AuthorizationServer.Common.Constants;
 using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.ApplicationServices;
+using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Authorize;
 using Shark.AuthorizationServer.Domain;
+using Shark.AuthorizationServer.Domain.Enumerations;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 
 namespace Shark.AuthorizationServer.Core.Tests.ApplicationServices;
@@ -55,8 +57,7 @@ public class AuthorizeApplicationServiceTests
         var userIdentity = new ClaimsPrincipal();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(async () =>
-          await _sut.Execute(request!, userIdentity));
+        Assert.ThrowsAsync<ArgumentNullException>(async () => await _sut.Execute(request!, userIdentity));
     }
 
     [Test]
@@ -65,13 +66,12 @@ public class AuthorizeApplicationServiceTests
         // Arrange
         var request = new AuthorizeInternalRequest
         {
-            ResponseType = "ResponseType",
+            ResponseType = ResponseType.Code,
             ClientId = "NonExistentClient",
             RedirectUri = "RedirectUri",
             Scopes = [],
         };
         var userIdentity = new ClaimsPrincipal();
-        var expectedResponse = new Mock<IAuthorizeInternalResponse>().Object;
 
         _clientRepositoryMock
           .Setup(x => x.Get(request.ClientId))
@@ -79,13 +79,13 @@ public class AuthorizeApplicationServiceTests
 
         _authorizeValidatorMock
           .Setup(x => x.ValidateRequest(request, null))
-          .Returns(expectedResponse);
+          .Returns(new AuthorizeInternalBadRequestResponse(Error.InvalidClient));
 
         // Act
-        var result = await _sut.Execute(request, userIdentity);
+        var result = await _sut.Execute(request, userIdentity) as AuthorizeInternalBadRequestResponse;
 
         // Assert
-        Assert.That(result, Is.EqualTo(expectedResponse));
+        Assert.That(result!.Error.Error, Is.EqualTo(Error.InvalidClient));
     }
 
     [Test]
@@ -94,14 +94,13 @@ public class AuthorizeApplicationServiceTests
         // Arrange
         var request = new AuthorizeInternalRequest
         {
-            ResponseType = "ResponseType",
+            ResponseType = ResponseType.Code,
             ClientId = "Client",
             RedirectUri = "RedirectUri",
             Scopes = [],
         };
-        var client = new Client();
+        var client = GetClient();
         var userIdentity = new ClaimsPrincipal();
-        var expectedResponse = new Mock<IAuthorizeInternalResponse>().Object;
 
         _clientRepositoryMock
           .Setup(x => x.Get(request.ClientId))
@@ -109,13 +108,13 @@ public class AuthorizeApplicationServiceTests
 
         _authorizeValidatorMock
           .Setup(x => x.ValidateRequest(request, client))
-          .Returns(expectedResponse);
+          .Returns(new AuthorizeInternalBadRequestResponse(Error.InvalidRequest));
 
         // Act
-        var result = await _sut.Execute(request, userIdentity);
+        var result = await _sut.Execute(request, userIdentity) as AuthorizeInternalBadRequestResponse;
 
         // Assert
-        Assert.That(result, Is.EqualTo(expectedResponse));
+        Assert.That(result!.Error.Error, Is.EqualTo(Error.InvalidRequest));
     }
 
     [Test]
@@ -125,12 +124,12 @@ public class AuthorizeApplicationServiceTests
         var request = new AuthorizeInternalRequest
         {
 
-            ResponseType = "UnsupportedType",
+            ResponseType = "unsupported_type",
             ClientId = "Client",
             RedirectUri = "RedirectUri",
             Scopes = [],
         };
-        var client = new Client();
+        var client = GetClient();
         var userIdentity = new ClaimsPrincipal();
 
         _clientRepositoryMock
@@ -139,12 +138,34 @@ public class AuthorizeApplicationServiceTests
 
         _authorizeValidatorMock
           .Setup(x => x.ValidateRequest(request, client))
-          .Returns((IAuthorizeInternalResponse?)null);
+          .Returns((AuthorizeInternalBadRequestResponse)null!);
 
         // Act & Assert
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () =>
-          await _sut.Execute(request, userIdentity));
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await _sut.Execute(request, userIdentity));
 
         Assert.That(exception!.Message, Is.EqualTo("Unsupported response type unsupported_type"));
+    }
+
+    private static Client GetClient()
+    {
+        return new Client
+        {
+            ClientName = "Client",
+            Enabled = true,
+            ClientId = "ClientId",
+            ClientSecret = "Secret",
+            ClientIdIssuedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            ClientSecretExpiresAt = DateTimeOffset.UtcNow.AddYears(1).ToUnixTimeSeconds(),
+            ClientType = ClientType.Confidential,
+            RedirectUris = ["https://localhost/callback"],
+            GrantTypes = ["authorization_code"],
+            ResponseTypes = ["code"],
+            TokenEndpointAuthMethod = "client_secret_basic",
+            Scope = ["openid", "profile"],
+            Audience = "Audience",
+            RegistrationAccessToken = "RegistrationAccessToken",
+            RegistrationClientUri = "https://localhost/register",
+        };
     }
 }
