@@ -6,6 +6,9 @@ using Shark.AuthorizationServer.Core.Abstractions.Repositories;
 using Shark.AuthorizationServer.Core.Abstractions.Services;
 using Shark.AuthorizationServer.Core.Abstractions.Validators;
 using Shark.AuthorizationServer.Core.ApplicationServices;
+using Shark.AuthorizationServer.Core.Requests;
+using Shark.AuthorizationServer.Core.Responses.Authorize;
+using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
 
 namespace Shark.AuthorizationServer.Core.Tests.ApplicationServices;
