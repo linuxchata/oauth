@@ -18,6 +18,8 @@ namespace Shark.AuthorizationServer.Core.Tests.ApplicationServices;
 [TestFixture]
 public class AuthorizeApplicationServiceTests
 {
+    private readonly ClaimsPrincipal _userIdentity = new();
+
     private Mock<IAuthorizeValidator> _authorizeValidatorMock = null!;
     private Mock<IStringGeneratorService> _stringGeneratorServiceMock = null!;
     private Mock<ITokenResponseService> _tokenResponseServiceMock = null!;
@@ -54,64 +56,58 @@ public class AuthorizeApplicationServiceTests
     {
         // Arrange
         AuthorizeInternalRequest? request = null;
-        var userIdentity = new ClaimsPrincipal();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(async () => await _sut.Execute(request!, userIdentity));
+        Assert.ThrowsAsync<ArgumentNullException>(async () => await _sut.Execute(request!, _userIdentity));
     }
 
     [Test]
-    public async Task Execute_WhenClientNotFound_ReturnsValidatorResponse()
+    public async Task Execute_WhenClientNotFound_ReturnsBadRequestResponse()
     {
         // Arrange
         var request = new AuthorizeInternalRequest
         {
             ResponseType = ResponseType.Code,
-            ClientId = "NonExistentClient",
+            ClientId = "NonExistentClientId",
             RedirectUri = "RedirectUri",
             Scopes = [],
         };
-        var userIdentity = new ClaimsPrincipal();
 
-        _clientRepositoryMock
-          .Setup(x => x.Get(request.ClientId))
-          .ReturnsAsync((Client?)null);
+        _clientRepositoryMock.Setup(x => x.Get(request.ClientId)).ReturnsAsync((Client?)null);
 
         _authorizeValidatorMock
           .Setup(x => x.ValidateRequest(request, null))
           .Returns(new AuthorizeInternalBadRequestResponse(Error.InvalidClient));
 
         // Act
-        var result = await _sut.Execute(request, userIdentity) as AuthorizeInternalBadRequestResponse;
+        var result = await _sut.Execute(request, _userIdentity) as AuthorizeInternalBadRequestResponse;
 
         // Assert
         Assert.That(result!.Error.Error, Is.EqualTo(Error.InvalidClient));
     }
 
     [Test]
-    public async Task Execute_WhenValidationFails_ReturnsValidatorResponse()
+    public async Task Execute_WhenValidationFails_ReturnsBadRequestResponse()
     {
         // Arrange
         var request = new AuthorizeInternalRequest
         {
             ResponseType = ResponseType.Code,
-            ClientId = "Client",
+            ClientId = "ClientId",
             RedirectUri = "RedirectUri",
             Scopes = [],
         };
-        var client = GetClient();
-        var userIdentity = new ClaimsPrincipal();
 
-        _clientRepositoryMock
-          .Setup(x => x.Get(request.ClientId))
-          .ReturnsAsync(client);
+        var client = GetClient();
+
+        _clientRepositoryMock.Setup(x => x.Get(request.ClientId)).ReturnsAsync(client);
 
         _authorizeValidatorMock
           .Setup(x => x.ValidateRequest(request, client))
           .Returns(new AuthorizeInternalBadRequestResponse(Error.InvalidRequest));
 
         // Act
-        var result = await _sut.Execute(request, userIdentity) as AuthorizeInternalBadRequestResponse;
+        var result = await _sut.Execute(request, _userIdentity) as AuthorizeInternalBadRequestResponse;
 
         // Assert
         Assert.That(result!.Error.Error, Is.EqualTo(Error.InvalidRequest));
@@ -125,16 +121,14 @@ public class AuthorizeApplicationServiceTests
         {
 
             ResponseType = "unsupported_type",
-            ClientId = "Client",
+            ClientId = "ClientId",
             RedirectUri = "RedirectUri",
             Scopes = [],
         };
-        var client = GetClient();
-        var userIdentity = new ClaimsPrincipal();
 
-        _clientRepositoryMock
-          .Setup(x => x.Get(request.ClientId))
-          .ReturnsAsync(client);
+        var client = GetClient();
+
+        _clientRepositoryMock.Setup(x => x.Get(request.ClientId)).ReturnsAsync(client);
 
         _authorizeValidatorMock
           .Setup(x => x.ValidateRequest(request, client))
@@ -142,7 +136,7 @@ public class AuthorizeApplicationServiceTests
 
         // Act & Assert
         var exception = Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await _sut.Execute(request, userIdentity));
+            async () => await _sut.Execute(request, _userIdentity));
 
         Assert.That(exception!.Message, Is.EqualTo("Unsupported response type unsupported_type"));
     }
