@@ -9,6 +9,7 @@ using Shark.AuthorizationServer.Core.ApplicationServices;
 using Shark.AuthorizationServer.Core.Constants;
 using Shark.AuthorizationServer.Core.Requests;
 using Shark.AuthorizationServer.Core.Responses.Authorize;
+using Shark.AuthorizationServer.Core.Responses.Token;
 using Shark.AuthorizationServer.Domain;
 using Shark.AuthorizationServer.Domain.Enumerations;
 using Shark.AuthorizationServer.DomainServices.Abstractions;
@@ -139,6 +140,84 @@ public class AuthorizeApplicationServiceTests
             async () => await _sut.Execute(request, _userIdentity));
 
         Assert.That(exception!.Message, Is.EqualTo("Unsupported response type unsupported_type"));
+    }
+
+    [Test]
+    public async Task Execute_WhenResponseTypeIsCode_StoresGrantAndReturnsRedirect()
+    {
+        // Arrange
+        var request = new AuthorizeInternalRequest
+        {
+            ResponseType = ResponseType.Code,
+            ClientId = "ClientId",
+            RedirectUri = "https://localhost/callback",
+            Scopes = ["openid"],
+            State = "abc123",
+            CodeChallenge = "challenge",
+        };
+
+        var client = GetClient();
+
+        _clientRepositoryMock.Setup(x => x.Get(request.ClientId)).ReturnsAsync(client);
+
+        _authorizeValidatorMock
+            .Setup(x => x.ValidateRequest(request, client))
+            .Returns((AuthorizeInternalBadRequestResponse)null!);
+
+        _stringGeneratorServiceMock.Setup(x => x.GenerateCode(40)).Returns("authCode123");
+
+        _redirectionServiceMock
+            .Setup(x => x.BuildClientCallbackUrl(request.RedirectUri, "authCode123", request.Scopes, request.State))
+            .Returns("https://localhost/callback?code=authCode123&state=abc123");
+
+        // Act
+        var result = await _sut.Execute(request, _userIdentity) as AuthorizeInternalCodeResponse;
+
+        // Assert
+        Assert.That(result!.RedirectUrl, Is.EqualTo("https://localhost/callback?code=authCode123&state=abc123"));
+
+        _persistedGrantRepositoryMock.Verify(x => x.Add(It.IsAny<PersistedGrant>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Execute_WhenResponseTypeIsToken_ReturnsTokenResponse()
+    {
+        // Arrange
+        var request = new AuthorizeInternalRequest
+        {
+            ResponseType = ResponseType.Token,
+            ClientId = "ClientId",
+            RedirectUri = "https://localhost/callback",
+            Scopes = ["profile"],
+        };
+
+        var client = GetClient();
+
+        _clientRepositoryMock.Setup(x => x.Get(request.ClientId)).ReturnsAsync(client);
+
+        _authorizeValidatorMock
+            .Setup(x => x.ValidateRequest(request, client))
+            .Returns((AuthorizeInternalBadRequestResponse)null!);
+
+        var tokenResponse = new TokenResponse
+        {
+            AccessToken = "access-token-123",
+            TokenType = "Bearer",
+        };
+
+        _tokenResponseServiceMock
+            .Setup(x => x.GenerateForAccessTokenOnly(client.Audience, request.Scopes, It.IsAny<IEnumerable<CustomClaim>>()))
+            .Returns(tokenResponse);
+
+        _redirectionServiceMock
+            .Setup(x => x.BuildClientCallbackUrl(request.RedirectUri, tokenResponse.AccessToken, tokenResponse.TokenType))
+            .Returns("https://localhost/callback#access_token=access-token-123&token_type=Bearer");
+
+        // Act
+        var result = await _sut.Execute(request, _userIdentity) as AuthorizeInternalTokenResponse;
+
+        // Assert
+        Assert.That(result!.RedirectUrl, Is.EqualTo("https://localhost/callback#access_token=access-token-123&token_type=Bearer"));
     }
 
     private static Client GetClient()
