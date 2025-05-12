@@ -27,3 +27,6 @@ jobs:
 
     - name: Build with dotnet
       run: dotnet build ./src/Shark.OAuth2.0.sln --configuration Release --no-restore
+
+    - name: Test with dotnet
+      run: dotnet test ./src/Shark.OAuth2.0.sln --configuration Release --no-build --verbosity normal
