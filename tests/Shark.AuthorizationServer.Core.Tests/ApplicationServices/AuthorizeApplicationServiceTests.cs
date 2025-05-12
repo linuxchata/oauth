@@ -1,4 +1,12 @@
 ﻿using System.Security.Claims;
+using Microsoft.Extensions.Logging;
+using Moq;
+using NUnit.Framework;
+using Shark.AuthorizationServer.Core.Abstractions.Repositories;
+using Shark.AuthorizationServer.Core.Abstractions.Services;
+using Shark.AuthorizationServer.Core.Abstractions.Validators;
+using Shark.AuthorizationServer.Core.ApplicationServices;
+using Shark.AuthorizationServer.DomainServices.Abstractions;
 
 namespace Shark.AuthorizationServer.Core.Tests.ApplicationServices;
 
