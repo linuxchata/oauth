@@ -65,7 +65,10 @@ public class AuthorizeApplicationServiceTests
         // Arrange
         var request = new AuthorizeInternalRequest
         {
-            ClientId = "non-existent-client"
+            ResponseType = "ResponseType",
+            ClientId = "NonExistentClient",
+            RedirectUri = "RedirectUri",
+            Scopes = [],
         };
         var userIdentity = new ClaimsPrincipal();
         var expectedResponse = new Mock<IAuthorizeInternalResponse>().Object;
@@ -91,7 +94,10 @@ public class AuthorizeApplicationServiceTests
         // Arrange
         var request = new AuthorizeInternalRequest
         {
-            ClientId = "test-client"
+            ResponseType = "ResponseType",
+            ClientId = "Client",
+            RedirectUri = "RedirectUri",
+            Scopes = [],
         };
         var client = new Client();
         var userIdentity = new ClaimsPrincipal();
@@ -118,8 +124,11 @@ public class AuthorizeApplicationServiceTests
         // Arrange
         var request = new AuthorizeInternalRequest
         {
-            ClientId = "test-client",
-            ResponseType = "unsupported_type"
+
+            ResponseType = "UnsupportedType",
+            ClientId = "Client",
+            RedirectUri = "RedirectUri",
+            Scopes = [],
         };
         var client = new Client();
         var userIdentity = new ClaimsPrincipal();
