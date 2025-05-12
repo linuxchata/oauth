@@ -30,6 +30,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shark.AuthorizationServer.R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.Sample.AuthorizationServer", "Shark.Sample.AuthorizationServer\Shark.Sample.AuthorizationServer.csproj", "{E0E8164F-CB0A-4747-BE12-D591503ABE8F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shark.AuthorizationServer.Core.Tests", "..\tests\Shark.AuthorizationServer.Core.Tests\Shark.AuthorizationServer.Core.Tests.csproj", "{19A28EE6-341F-4402-97E0-04702BB97279}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,9 +84,16 @@ Global
 		{E0E8164F-CB0A-4747-BE12-D591503ABE8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0E8164F-CB0A-4747-BE12-D591503ABE8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0E8164F-CB0A-4747-BE12-D591503ABE8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19A28EE6-341F-4402-97E0-04702BB97279}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19A28EE6-341F-4402-97E0-04702BB97279}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19A28EE6-341F-4402-97E0-04702BB97279}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19A28EE6-341F-4402-97E0-04702BB97279}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{19A28EE6-341F-4402-97E0-04702BB97279} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33962B05-E569-4C7D-82AC-0256948D6166}
