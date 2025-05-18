@@ -60,8 +60,24 @@ public sealed class DeviceAuthorizationApplicationService(
 
         var baseUri = new Uri(_configuration.AuthorizationServerUri);
         var deviceCode = _stringGeneratorService.GenerateDeviceCode();
-        var userCode = _stringGeneratorService.GenerateUserDeviceCode();
         var expiresIn = client!.DeviceCodeLifetimeInSeconds ?? DefaultDeviceCodeLifetimeInSeconds;
+
+        string userCode = null!;
+        const int maxAttempts = 5;
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            userCode = _stringGeneratorService.GenerateUserDeviceCode();
+            var devicePersistedGrant = await _devicePersistedGrantRepository.GetByUserCode(userCode);
+            if (devicePersistedGrant == null)
+            {
+                break;
+            }
+
+            if (attempt == maxAttempts - 1)
+            {
+                throw new InvalidOperationException("Unable to generate a unique user code after multiple attempts.");
+            }
+        }
 
         await StorePersistedGrant(request, deviceCode, userCode, expiresIn);
 
