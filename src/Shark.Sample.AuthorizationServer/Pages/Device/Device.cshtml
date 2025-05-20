@@ -13,6 +13,7 @@
         <div class="device-form">
             <form method="post">
                 <div class="form-group">
+                    @Html.LabelFor(m => @Model.UserCode, "User Code", new { @class = "login-label" })
                     @Html.TextBoxFor(m => @Model.UserCode,
                         new { @class = "device-input", placeholder = "Enter user code", required = "required", maxlength = 6 })
                     <br />
