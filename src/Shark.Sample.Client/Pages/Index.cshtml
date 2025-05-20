@@ -4,78 +4,81 @@
     ViewData["Title"] = "OAuth Client";
 }
 
-<div class="text-center">
-    <h1 class="display-4">OAuth Client</h1>
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <h1 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">OAuth Client</h1>
 
-    <div class="form-container">
-        <form method="post" asp-page-handler="GetAuthTokenAuthorizationCode">
-            <label for="GetAuthTokenAuthorizationCode">
-                Get OAuth token with Authorization Code grant type
-            </label>
-            <input type="submit" id="GetAuthTokenAuthorizationCode" value="Get token" />
-        </form>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+        <!-- Authorization Code Section -->
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c3e50; margin: 5px; font-size: 1.1em;">Authorization Code Flow</h2>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <form method="post" asp-page-handler="GetAuthTokenAuthorizationCode" style="margin: 0;">
+                    <button type="submit" id="GetAuthTokenAuthorizationCode" style="width: 100%; padding: 8px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Get OAuth Token</button>
+                </form>
+                <form method="post" asp-page-handler="GetDataAuthorizationCode" style="margin: 0;">
+                    <button type="submit" id="GetDataAuthorizationCode" style="width: 100%; padding: 8px; background: #2ecc71; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Get Data</button>
+                </form>
+            </div>
+        </div>
 
-        <form method="post" asp-page-handler="GetDataAuthorizationCode">
-            <label for="GetDataAuthorizationCode">
-                Get Data from Protected Resource with Authorization Code grant type
-            </label>
-            <input type="submit" id="GetDataAuthorizationCode" value="Get Data" />
-        </form>
+        <!-- PKCE Section -->
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c3e50; margin: 5px; font-size: 1.1em;">PKCE Flow</h2>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <form method="post" asp-page-handler="GetAuthTokenAuthorizationCodePkce" style="margin: 0;">
+                    <button type="submit" id="GetAuthTokenAuthorizationCodePkce" style="width: 100%; padding: 8px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Get OAuth Token</button>
+                </form>
+                <form method="post" asp-page-handler="GetDataAuthorizationCodePkce" style="margin: 0;">
+                    <button type="submit" id="GetDataAuthorizationCodePkce" style="width: 100%; padding: 8px; background: #2ecc71; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Get Data</button>
+                </form>
+            </div>
+        </div>
 
-        <form method="post" asp-page-handler="GetAuthTokenAuthorizationCodePkce">
-            <label for="GetAuthTokenAuthorizationCodePkce">
-                Get OAuth token with Authorization Code PKCE grant type
-            </label>
-            <input type="submit" id="GetAuthTokenAuthorizationCodePkce" value="Get token" />
-        </form>
+        <!-- Implicit Section -->
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c3e50; margin: 5px; font-size: 1.1em;">Implicit Flow</h2>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <form method="post" asp-page-handler="GetAuthTokenImplicit" style="margin: 0;">
+                    <button type="submit" id="GetAuthTokenImplicit" style="width: 100%; padding: 8px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Get OAuth Token</button>
+                </form>
+                <form method="post" asp-page-handler="GetDataImplicit" style="margin: 0;">
+                    <button type="submit" id="GetDataImplicit" style="width: 100%; padding: 8px; background: #2ecc71; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Get Data</button>
+                </form>
+            </div>
+        </div>
 
-        <form method="post" asp-page-handler="GetDataAuthorizationCodePkce">
-            <label for="GetDataAuthorizationCodePkce">
-                Get Data from Protected Resource with Authorization Code PKCE grant type
-            </label>
-            <input type="submit" id="GetDataAuthorizationCodePkce" value="Get Data" />
-        </form>
-
-        <form method="post" asp-page-handler="GetAuthTokenImplicit">
-            <label for="GetDataAuthorizationCodePkce">
-                Get OAuth token with Implicit grant type
-            </label>
-            <input type="submit" id="GetAuthTokenImplicit" value="Get token" />
-        </form>
-
-        <form method="post" asp-page-handler="GetDataImplicit">
-            <label for="GetDataImplicit">
-                Get Data from Protected Resource with Implicit grant type
-            </label>
-            <input type="submit" id="GetDataImplicit" value="Get Data" />
-        </form>
-
-        <form method="post" asp-page-handler="GetDataResourceOwnerCredentials">
-            <label for="GetDataResourceOwnerCredentials">
-                Get Data from Protected Resource with Resource Owner Credentials grant type
-            </label>
-            <input type="submit" id="GetDataResourceOwnerCredentials" value="Get Data" />
-        </form>
-
-        <form method="post" asp-page-handler="GetDataClientCredentials">
-            <label for="GetDataClientCredentials">
-                Get Data from Protected Resource with Client Credentials grant type
-            </label>
-            <input type="submit" id="GetDataClientCredentials" value="Get Data" />
-        </form>
+        <!-- Other Flows Section -->
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c3e50; margin: 5px; font-size: 1.1em;">Other Flows</h2>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <form method="post" asp-page-handler="GetDataResourceOwnerCredentials" style="margin: 0;">
+                    <button type="submit" id="GetDataResourceOwnerCredentials" style="width: 100%; padding: 8px; background: #9b59b6; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Resource Owner Credentials</button>
+                </form>
+                <form method="post" asp-page-handler="GetDataClientCredentials" style="margin: 0;">
+                    <button type="submit" id="GetDataClientCredentials" style="width: 100%; padding: 8px; background: #e67e22; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Client Credentials</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <br />
+
     @if (Model.Data != null)
     {
-        <div class="center-20">
+        <div style="margin-top: 30px; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.2em;">Response Data</h2>
             @foreach (var item in Model.Data)
             {
-                <pre>
-                    <span>@Html.DisplayFor(modelItem => item.Date):&nbsp;</span>
-                    <span>@Html.DisplayFor(modelItem => item.TemperatureC)&degC&nbsp;</span>
-                    <span>@Html.DisplayFor(modelItem => item.Summary)</span>
-                </pre>
+                <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                    <span style="color: #7f8c8d;">@Html.DisplayFor(modelItem => item.Date):&nbsp;</span>
+                    <span style="color: #e74c3c;">@Html.DisplayFor(modelItem => item.TemperatureC)&degC&nbsp;</span>
+                    <span style="color: #2c3e50;">@Html.DisplayFor(modelItem => item.Summary)</span>
+                </div>
             }
         </div>
     }
 </div>
+
+<style>
+    button:hover {
+        opacity: 0.9;
+    }
+</style>
