@@ -4,77 +4,74 @@
     ViewData["Title"] = "OAuth Client";
 }
 
-<div class="text-center">
-    <h1 class="display-4">OAuth Client</h1>
+<div class="container">
+    <h1 class="page-title">OAuth Client</h1>
 
-    <div class="form-container">
-        <form method="post" asp-page-handler="GetAuthTokenAuthorizationCode">
-            <label for="GetAuthTokenAuthorizationCode">
-                Get OAuth token with Authorization Code grant type
-            </label>
-            <input type="submit" id="GetAuthTokenAuthorizationCode" value="Get token" />
-        </form>
+    <div class="flow-grid">
+        <!-- Authorization Code Section -->
+        <div class="flow-section">
+            <h2 class="section-title">Authorization Code Flow</h2>
+            <div class="button-container">
+                <form method="post" asp-page-handler="GetAuthTokenAuthorizationCode" class="form-container">
+                    <button type="submit" id="GetAuthTokenAuthorizationCode" class="btn btn-primary">Get Token</button>
+                </form>
+                <form method="post" asp-page-handler="GetDataAuthorizationCode" class="form-container">
+                    <button type="submit" id="GetDataAuthorizationCode" class="btn btn-success">Get Data</button>
+                </form>
+            </div>
+        </div>
 
-        <form method="post" asp-page-handler="GetDataAuthorizationCode">
-            <label for="GetDataAuthorizationCode">
-                Get Data from Protected Resource with Authorization Code grant type
-            </label>
-            <input type="submit" id="GetDataAuthorizationCode" value="Get Data" />
-        </form>
+        <!-- PKCE Section -->
+        <div class="flow-section">
+            <h2 class="section-title">PKCE Flow</h2>
+            <div class="button-container">
+                <form method="post" asp-page-handler="GetAuthTokenAuthorizationCodePkce" class="form-container">
+                    <button type="submit" id="GetAuthTokenAuthorizationCodePkce" class="btn btn-primary">Get Token</button>
+                </form>
+                <form method="post" asp-page-handler="GetDataAuthorizationCodePkce" class="form-container">
+                    <button type="submit" id="GetDataAuthorizationCodePkce" class="btn btn-success">Get Data</button>
+                </form>
+            </div>
+        </div>
 
-        <form method="post" asp-page-handler="GetAuthTokenAuthorizationCodePkce">
-            <label for="GetAuthTokenAuthorizationCodePkce">
-                Get OAuth token with Authorization Code PKCE grant type
-            </label>
-            <input type="submit" id="GetAuthTokenAuthorizationCodePkce" value="Get token" />
-        </form>
+        <!-- Implicit Section -->
+        <div class="flow-section">
+            <h2 class="section-title">Implicit Flow</h2>
+            <div class="button-container">
+                <form method="post" asp-page-handler="GetAuthTokenImplicit" class="form-container">
+                    <button type="submit" id="GetAuthTokenImplicit" class="btn btn-primary">Get Token</button>
+                </form>
+                <form method="post" asp-page-handler="GetDataImplicit" class="form-container">
+                    <button type="submit" id="GetDataImplicit" class="btn btn-success">Get Data</button>
+                </form>
+            </div>
+        </div>
 
-        <form method="post" asp-page-handler="GetDataAuthorizationCodePkce">
-            <label for="GetDataAuthorizationCodePkce">
-                Get Data from Protected Resource with Authorization Code PKCE grant type
-            </label>
-            <input type="submit" id="GetDataAuthorizationCodePkce" value="Get Data" />
-        </form>
-
-        <form method="post" asp-page-handler="GetAuthTokenImplicit">
-            <label for="GetDataAuthorizationCodePkce">
-                Get OAuth token with Implicit grant type
-            </label>
-            <input type="submit" id="GetAuthTokenImplicit" value="Get token" />
-        </form>
-
-        <form method="post" asp-page-handler="GetDataImplicit">
-            <label for="GetDataImplicit">
-                Get Data from Protected Resource with Implicit grant type
-            </label>
-            <input type="submit" id="GetDataImplicit" value="Get Data" />
-        </form>
-
-        <form method="post" asp-page-handler="GetDataResourceOwnerCredentials">
-            <label for="GetDataResourceOwnerCredentials">
-                Get Data from Protected Resource with Resource Owner Credentials grant type
-            </label>
-            <input type="submit" id="GetDataResourceOwnerCredentials" value="Get Data" />
-        </form>
-
-        <form method="post" asp-page-handler="GetDataClientCredentials">
-            <label for="GetDataClientCredentials">
-                Get Data from Protected Resource with Client Credentials grant type
-            </label>
-            <input type="submit" id="GetDataClientCredentials" value="Get Data" />
-        </form>
+        <!-- Other Flows Section -->
+        <div class="flow-section">
+            <h2 class="section-title">Other Flows</h2>
+            <div class="button-container">
+                <form method="post" asp-page-handler="GetDataResourceOwnerCredentials" class="form-container">
+                    <button type="submit" id="GetDataResourceOwnerCredentials" class="btn btn-purple">Resource Owner Credentials</button>
+                </form>
+                <form method="post" asp-page-handler="GetDataClientCredentials" class="form-container">
+                    <button type="submit" id="GetDataClientCredentials" class="btn btn-orange">Client Credentials</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <br />
+
     @if (Model.Data != null)
     {
-        <div class="center-20">
+        <div class="response-container">
+            <h2 class="response-title">Response Data</h2>
             @foreach (var item in Model.Data)
             {
-                <pre>
-                    <span>@Html.DisplayFor(modelItem => item.Date):&nbsp;</span>
-                    <span>@Html.DisplayFor(modelItem => item.TemperatureC)&degC&nbsp;</span>
-                    <span>@Html.DisplayFor(modelItem => item.Summary)</span>
-                </pre>
+                <div class="response-item">
+                    <span class="response-date">@Html.DisplayFor(modelItem => item.Date):&nbsp;</span>
+                    <span class="response-temp">@Html.DisplayFor(modelItem => item.TemperatureC)&degC&nbsp;</span>
+                    <span class="response-summary">@Html.DisplayFor(modelItem => item.Summary)</span>
+                </div>
             }
         </div>
     }
