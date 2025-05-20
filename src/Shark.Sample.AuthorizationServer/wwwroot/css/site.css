@@ -198,3 +198,128 @@ input[type="checkbox"] {
         margin: 0.5rem 0;
     }
 }
+
+/* Device Pages Styles */
+.device-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.device-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 800px;
+    width: 90%;
+    text-align: center;
+}
+
+.device-title {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.device-subtitle {
+    color: #34495e;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.device-form {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.device-input {
+    width: 300px;
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+    font-weight: 500;
+    color: #2c3e50;
+    background: white;
+}
+
+.device-input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+    outline: none;
+}
+
+.device-input::placeholder {
+    color: #a0aec0;
+    letter-spacing: normal;
+    font-weight: normal;
+}
+
+.device-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 1.5rem 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.device-button:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+.device-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.2);
+}
+
+.device-button.deny {
+    background: #e74c3c;
+}
+
+.device-button.deny:hover {
+    background: #c0392b;
+}
+
+.device-message {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: #f8f9fa;
+}
+
+.device-message.success {
+    background: #f0fff4;
+}
+
+.device-message.error {
+    background: #ffe5e5;
+}
+
+.device-message h4 {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.device-message p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
