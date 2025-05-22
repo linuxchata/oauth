@@ -12,22 +12,21 @@ To run the sample and see the OAuth 2.0 flow:
 2.  Run all three projects simultaneously. You can typically do this by setting multiple startup projects in Visual Studio or by running each project from its respective output directory.
 3.  Follow the instructions provided within the `Shark.Sample.Client` application to initiate the OAuth 2.0 authorization process. This will guide you through the interactions with the Authorization Server and demonstrate how the client accesses the Protected Resource.
 ```mermaid
-graph TD
-    subgraph OAuth 2.0 Flow
-        Client[Client]:::actor_client --> RequestAuth[Request Authorization]:::action_node
-        RequestAuth --> AuthorizationServer[Authorization Server]:::actor_auth_server
-        AuthorizationServer -- Grants Access Token --> Client
-        Client --> RequestResource[Request Protected Resource]:::action_node
-        RequestResource --> ProtectedResource[Protected Resource]:::actor_resource
-        ProtectedResource -- Validates Token & Returns Resource --> Client
-    end
+sequenceDiagram
+    title OAuth 2.0 Simplified Flow
 
-    classDef actor_client fill:#6495ED,stroke:#333,stroke-width:2px,color:#FFF;
-    classDef actor_auth_server fill:#DAA520,stroke:#333,stroke-width:2px,color:#FFF;
-    classDef actor_resource fill:#3CB371,stroke:#333,stroke-width:2px,color:#FFF;
-    classDef action_node fill:#FFFFFF,stroke:#666,stroke-width:1px,color:#000;
+    participant Client
+    participant Authorization Server
+    participant Protected Resource
 
-    linkStyle default stroke:#666,stroke-width:1.5px;
+    Client->>Authorization Server: Request Authorization
+    activate Authorization Server
+    Authorization Server-->>Client: Grants Access Token
+    deactivate Authorization Server
+    Client->>Protected Resource: Request Protected Resource
+    activate Protected Resource
+    Protected Resource-->>Client: Validates Token & Returns Resource
+    deactivate Protected Resource
 ```
 
 # Build Status
