@@ -1,7 +1,36 @@
-## Overview
+# Overview
 This authorization server provides robust OAuth2 capabilities, supporting a variety of client applications. It enables secure access management, handling access token issuance, validation, and user authorization through OAuth2 flows. The server is designed to be easily integrable, providing the necessary endpoints and functionalities to support secure and scalable authorization.
 
-## Build Status
+# Usage
+This repository provides a .NET implementation of the OAuth 2.0 protocol. To observe the full flow of OAuth 2.0 in action, you'll need to run three interconnected sample projects included in the solution:
+* **`Shark.Sample.AuthorizationServer`**: This project acts as the **Authorization Server**. It's responsible for authenticating users, granting authorization, and issuing access tokens.
+* **`Shark.Sample.Client`**: This project represents the **Client** application. It requests authorization from the user and uses the obtained access token to access protected resources.
+* **`Shark.Sample.ProtectedResource`**: This project functions as the **Protected Resource**. It hosts the resources that the client wishes to access and validates access tokens presented by the client.
+---
+To run the sample and see the OAuth 2.0 flow:
+1.  Ensure all three projects (`Shark.Sample.AuthorizationServer`, `Shark.Sample.Client`, and `Shark.Sample.ProtectedResource`) are built successfully within the solution.
+2.  Run all three projects simultaneously. You can typically do this by setting multiple startup projects in Visual Studio or by running each project from its respective output directory.
+3.  Follow the instructions provided within the `Shark.Sample.Client` application to initiate the OAuth 2.0 authorization process. This will guide you through the interactions with the Authorization Server and demonstrate how the client accesses the Protected Resource.
+```mermaid
+graph TD
+    subgraph OAuth 2.0 Flow
+        Client[Client]:::actor_client --> RequestAuth[Request Authorization]:::action_node
+        RequestAuth --> AuthorizationServer[Authorization Server]:::actor_auth_server
+        AuthorizationServer -- Grants Access Token --> Client
+        Client --> RequestResource[Request Protected Resource]:::action_node
+        RequestResource --> ProtectedResource[Protected Resource]:::actor_resource
+        ProtectedResource -- Validates Token & Returns Resource --> Client
+    end
+
+    classDef actor_client fill:#6495ED,stroke:#333,stroke-width:2px,color:#FFF;
+    classDef actor_auth_server fill:#DAA520,stroke:#333,stroke-width:2px,color:#FFF;
+    classDef actor_resource fill:#3CB371,stroke:#333,stroke-width:2px,color:#FFF;
+    classDef action_node fill:#FFFFFF,stroke:#666,stroke-width:1px,color:#000;
+
+    linkStyle default stroke:#666,stroke-width:1.5px;
+```
+
+# Build Status
 | Build server | Target |  Status |
 |-|-|-|
 | GitHub Actions | Build | [![build](https://github.com/linuxchata/oauth/actions/workflows/build.yml/badge.svg)](https://github.com/linuxchata/oauth/actions/workflows/build.yml) |
