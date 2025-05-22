@@ -269,6 +269,7 @@ input[type="checkbox"] {
 
 /* Device Pages Styles */
 .device-button.deny {
+    margin-top: 10px;
     background: #e74c3c;
 }
 
