@@ -5,17 +5,17 @@
     ViewData["Title"] = "OAuth Authorization Server";
 }
 
-<div class="login-container">
-    <div class="login-card">
-        <h2 class="login-title">Shark OAuth Authorization Server</h2>
-        <p class="login-subtitle">Client id is <span>@Model.ClientId</span></p>
+<div class="page-container">
+    <div class="page-card">
+        <h2 class="page-title">Shark OAuth Authorization Server</h2>
+        <p class="page-subtitle">Client id is <span>@Model.ClientId</span></p>
 
-        <div class="login-form">
+        <div class="form">
             <form method="post">
-                <div class="login-form-group">
-                    @Html.LabelFor(m => @Model.UserName, "Name", new { @class = "login-label" })
+                <div class="form-group">
+                    @Html.LabelFor(m => @Model.UserName, "Name", new { @class = "label" })
                     @Html.TextBoxFor(m => @Model.UserName,
-                        new { @class = "login-input", placeholder = "Enter your name", required = "required" })
+                        new { @class = "input", placeholder = "Enter your name", required = "required" })
                 </div>
 
                 <div class="login-scopes">
@@ -27,8 +27,8 @@
                             {
                                 foreach (var item in select.ToList())
                                 {
-                                    <label class="login-checkbox-label">
-                                        <input type="checkbox" class="login-checkbox" name="selectedScopes" value="@item" @(Html.Raw(true ? "checked=\"checked\"" : "")) />
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="selectedScopes" value="@item" @(Html.Raw(true ? "checked=\"checked\"" : "")) />
                                         <span>@item</span>
                                     </label>
                                 }
@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <input type="submit" value="Login" class="login-button" />
+                <input type="submit" value="Login" class="button" />
             </form>
         </div>
     </div>
