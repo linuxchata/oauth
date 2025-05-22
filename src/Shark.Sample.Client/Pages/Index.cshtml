@@ -10,7 +10,7 @@
     <div class="flow-grid">
         <!-- Authorization Code Section -->
         <div class="flow-section">
-            <h2 class="section-title">Authorization Code Flow</h2>
+            <h2 class="section-title">Authorization Code flow</h2>
             <div class="button-container">
                 <form method="post" asp-page-handler="GetAuthTokenAuthorizationCode" class="form-container">
                     <button type="submit" id="GetAuthTokenAuthorizationCode" class="btn btn-primary">Get Token</button>
@@ -21,9 +21,9 @@
             </div>
         </div>
 
-        <!-- PKCE Section -->
+        <!-- Authorization Code flow with PKCE Section -->
         <div class="flow-section">
-            <h2 class="section-title">PKCE Flow</h2>
+            <h2 class="section-title">Authorization Code flow with PKCE</h2>
             <div class="button-container">
                 <form method="post" asp-page-handler="GetAuthTokenAuthorizationCodePkce" class="form-container">
                     <button type="submit" id="GetAuthTokenAuthorizationCodePkce" class="btn btn-primary">Get Token</button>
@@ -36,7 +36,7 @@
 
         <!-- Implicit Section -->
         <div class="flow-section">
-            <h2 class="section-title">Implicit Flow</h2>
+            <h2 class="section-title">Implicit flow</h2>
             <div class="button-container">
                 <form method="post" asp-page-handler="GetAuthTokenImplicit" class="form-container">
                     <button type="submit" id="GetAuthTokenImplicit" class="btn btn-primary">Get Token</button>
@@ -47,15 +47,22 @@
             </div>
         </div>
 
-        <!-- Other Flows Section -->
+        <!-- Resource Owner Credentials Flow Section -->
         <div class="flow-section">
-            <h2 class="section-title">Other Flows</h2>
+            <h2 class="section-title">Resource Owner Credentials flow</h2>
             <div class="button-container">
                 <form method="post" asp-page-handler="GetDataResourceOwnerCredentials" class="form-container">
-                    <button type="submit" id="GetDataResourceOwnerCredentials" class="btn btn-purple">Resource Owner Credentials</button>
+                    <button type="submit" id="GetDataResourceOwnerCredentials" class="btn btn-success">Get Data</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Client Credentials Flows Section -->
+        <div class="flow-section">
+            <h2 class="section-title">Client Credentials flow</h2>
+            <div class="button-container">
                 <form method="post" asp-page-handler="GetDataClientCredentials" class="form-container">
-                    <button type="submit" id="GetDataClientCredentials" class="btn btn-orange">Client Credentials</button>
+                    <button type="submit" id="GetDataClientCredentials" class="btn btn-success">Get Data</button>
                 </form>
             </div>
         </div>
