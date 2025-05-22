@@ -15,7 +15,7 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+    margin-bottom: 20px;
 }
 
 .form-container {
@@ -74,12 +74,14 @@ pre {
     margin: 0;
     font-size: 1.1em;
     flex: 1;
+    min-width: 200px;
 }
 
 .button-container {
     display: flex;
     gap: 10px;
     margin-left: 20px;
+    flex-wrap: wrap;
 }
 
 .btn {
@@ -143,4 +145,21 @@ pre {
 
 .response-summary {
     color: #2c3e50;
+}
+
+@media (max-width: 768px) {
+    .flow-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .button-container {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .btn {
+        flex: 1;
+        min-width: 120px;
+    }
 }
