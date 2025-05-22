@@ -5,22 +5,19 @@
     ViewData["Title"] = "OAuth Authorization Server";
 }
 
-<style>
-    form {
-        display: inline-block;
-        margin-right: 10px;
-    }
-</style>
+<div class="page-container">
+    <div class="page-card">
+        <h1 class="page-title">Shark OAuth Authorization Server</h1>
+        <p class="page-subtitle">Authorize your device for the client application</p>
 
-<div class="text-center">
-    <h1 class="display-5">Shark OAuth Authorization Server</h1>
-    <p>Authorize your device for the cliet application</p>
+        <div class="device-form">
+            <form method="post" asp-page-handler="Authorize">
+                <input type="submit" value="Authorize" class="device-button" />
+            </form>
 
-    <form method="post" asp-page-handler="Authorize">
-        <input type="submit" value="Authorize" />
-    </form>
-
-    <form method="post" asp-page-handler="Deny">
-        <input type="submit" value="Deny" />
-    </form>
+            <form method="post" asp-page-handler="Deny">
+                <input type="submit" value="Deny" class="device-button deny" />
+            </form>
+        </div>
+    </div>
 </div>

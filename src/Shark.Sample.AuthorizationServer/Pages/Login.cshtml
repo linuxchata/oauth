@@ -5,34 +5,40 @@
     ViewData["Title"] = "OAuth Authorization Server";
 }
 
-<div class="text-center">
-    <h1 class="display-5">Shark OAuth Authorization Server</h1>
-    <p>Client id is <span>@Model.ClientId</span></p>
+<div class="page-container">
+    <div class="page-card">
+        <h2 class="page-title">Shark OAuth Authorization Server</h2>
+        <p class="page-subtitle">Client id is <span>@Model.ClientId</span></p>
 
-    <form method="post">
-        <div class="form-group">
-            @Html.LabelFor(m => @Model.UserName, "Name")
-            @Html.TextBoxFor(m =>
-                @Model.UserName,
-                new { @class = "form-input", placeholder = "Enter your name", required = "required" })
+        <div class="form">
+            <form method="post">
+                <div class="form-group">
+                    @Html.LabelFor(m => @Model.UserName, "Name", new { @class = "label" })
+                    @Html.TextBoxFor(m => @Model.UserName,
+                        new { @class = "input", placeholder = "Enter your name", required = "required" })
+                </div>
+
+                <div class="login-scopes">
+                    <div class="login-scopes-title">Select scopes:</div>
+                    <div class="login-checkbox-container">
+                        @{
+                            var select = @Model.Scopes;
+                            if (select != null && select.ToList().Count > 0)
+                            {
+                                foreach (var item in select.ToList())
+                                {
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="selectedScopes" value="@item" @(Html.Raw(true ? "checked=\"checked\"" : "")) />
+                                        <span>@item</span>
+                                    </label>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+
+                <input type="submit" value="Login" class="button" />
+            </form>
         </div>
-        <br />
-        <div class="form-group">
-            Select scopes:
-            @{
-                var select = @Model.Scopes;
-                if (select != null && select.ToList().Count > 0)
-                {
-                    foreach (var item in select.ToList())
-                    {
-                        <label>
-                            <input type="checkbox" name="selectedScopes" value="@item" @(Html.Raw(true ? "checked=\"checked\"" : "")) /> @item
-                        </label>
-                    }
-                }
-            }
-        </div>
-        <br />
-        <input type="submit" value="Login" />
-    </form>
+    </div>
 </div>
