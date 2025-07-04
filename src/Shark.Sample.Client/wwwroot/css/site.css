@@ -64,8 +64,8 @@ pre {
 }
 
 .flow-section {
-    background: #f8f9fa;
-    border-radius: 8px;
+    background: #f1f3f5;
+    border-radius: 2px;
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
@@ -83,14 +83,12 @@ pre {
 
 .button-container {
     display: flex;
-    gap: 10px;
-    margin-left: 20px;
     flex-wrap: wrap;
 }
 
 .btn {
-    width: 120px;
-    padding: 8px;
+    width: 100px;
+    padding: 6px;
     color: white;
     border: none;
     border-radius: 4px;
@@ -102,6 +100,14 @@ pre {
 
     .btn:hover {
         opacity: 0.9;
+    }
+
+    .btn:hover,
+    .btn:focus,
+    .btn:active,
+    .btn:visited {
+        outline: none !important;
+        box-shadow: none !important;
     }
 
 .btn-primary {

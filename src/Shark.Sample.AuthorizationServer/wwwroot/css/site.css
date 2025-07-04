@@ -65,7 +65,6 @@ input[type="submit"] {
 
     .button:hover {
         background: #2980b9;
-        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
     }
 
