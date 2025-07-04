@@ -9,28 +9,28 @@ namespace Shark.AuthorizationServer.Repositories.SqLite;
 public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration> sqLiteConfiguration) :
     BaseSqLiteRepository(sqLiteConfiguration), IDevicePersistedGrantRepository
 {
-    public async Task<DevicePersistedGrant?> GetByUserCode(string? value)
+    public async Task<DevicePersistedGrant?> GetByUserCode(string? userCode)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(userCode))
         {
             return null;
         }
 
         var commandText = @"SELECT * FROM DevicePersistedGrant WHERE UserCode = @UserCode";
-        var sqliteParameter = new SqliteParameter("@UserCode", value);
+        var sqliteParameter = new SqliteParameter("@UserCode", userCode);
 
         return await GetInternal(commandText, sqliteParameter);
     }
 
-    public async Task<DevicePersistedGrant?> GetByDeviceCode(string? value)
+    public async Task<DevicePersistedGrant?> GetByDeviceCode(string? deviceCode)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(deviceCode))
         {
             return null;
         }
 
         var commandText = @"SELECT * FROM DevicePersistedGrant WHERE DeviceCode = @DeviceCode";
-        var sqliteParameter = new SqliteParameter("@DeviceCode", value);
+        var sqliteParameter = new SqliteParameter("@DeviceCode", deviceCode);
 
         return await GetInternal(commandText, sqliteParameter);
     }
