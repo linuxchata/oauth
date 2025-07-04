@@ -9,6 +9,8 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
 {
     private const string Prefix = "grant_";
 
+    private static readonly SemaphoreSlim _operationLock = new(1, 1);
+
     private readonly IDistributedCache _cache = cache;
 
     public async Task<PersistedGrant?> GetByValue(string? value)
@@ -23,26 +25,44 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
 
     public async Task Add(PersistedGrant item)
     {
-        var cacheEntryOptions = new DistributedCacheEntryOptions
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
+        await _operationLock.WaitAsync();
+
+        try
         {
-            AbsoluteExpiration = item.CreatedDate.AddSeconds(item.ExpiredIn),
-        };
+            var cacheEntryOptions = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpiration = item.CreatedDate.AddSeconds(item.ExpiredIn),
+            };
 
-        var serializedItem = JsonSerializer.Serialize(item);
+            var serializedItem = JsonSerializer.Serialize(item);
 
-        await _cache.SetStringAsync(GetKey(item.Value), serializedItem, cacheEntryOptions);
+            await _cache.SetStringAsync(GetKey(item.Value), serializedItem, cacheEntryOptions);
 
-        // Revoke token logic require to revoke refresh token with access token. Thefore
-        // it must be possible to find refresh token persisted grant by access token identifier
-        if (!string.IsNullOrWhiteSpace(item.AccessTokenId))
+            // Revoke token logic require to revoke refresh token with access token. Thefore
+            // it must be possible to find refresh token persisted grant by access token identifier
+            if (!string.IsNullOrWhiteSpace(item.AccessTokenId))
+            {
+                await _cache.SetStringAsync(GetKey(item.AccessTokenId), serializedItem, cacheEntryOptions);
+            }
+        }
+        finally
         {
-            await _cache.SetStringAsync(GetKey(item.AccessTokenId), serializedItem, cacheEntryOptions);
+            _operationLock.Release();
         }
     }
 
     public async Task Remove(PersistedGrant item)
     {
-        if (item != null)
+        if (item == null)
+        {
+            return;
+        }
+
+        await _operationLock.WaitAsync();
+
+        try
         {
             if (!string.IsNullOrWhiteSpace(item.Value))
             {
@@ -53,6 +73,10 @@ public sealed class PersistedGrantRepository(IDistributedCache cache) : IPersist
             {
                 await _cache.RemoveAsync(GetKey(item.AccessTokenId));
             }
+        }
+        finally
+        {
+            _operationLock.Release();
         }
     }
 
