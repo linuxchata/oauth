@@ -13,7 +13,19 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
 
     public async Task<DevicePersistedGrant?> GetByUserCode(string? userCode)
     {
-        return await GetByUserCodeInternal(userCode);
+        if (string.IsNullOrWhiteSpace(userCode))
+        {
+            return null;
+        }
+
+        var serializedItem = await _cache.GetStringAsync(GetKey(userCode));
+
+        if (!string.IsNullOrWhiteSpace(serializedItem))
+        {
+            return JsonSerializer.Deserialize<DevicePersistedGrant>(serializedItem);
+        }
+
+        return null;
     }
 
     public async Task<DevicePersistedGrant?> GetByDeviceCode(string? deviceCode)
@@ -25,7 +37,7 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
 
         var userCode = await _cache.GetStringAsync(GetKey(deviceCode));
 
-        return await GetByUserCodeInternal(userCode);
+        return await GetByUserCode(userCode);
     }
 
     public async Task Add(DevicePersistedGrant item)
@@ -61,23 +73,6 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
         {
             await _cache.RemoveAsync(GetKey(item.DeviceCode));
         }
-    }
-
-    private async Task<DevicePersistedGrant?> GetByUserCodeInternal(string? userCode)
-    {
-        if (string.IsNullOrWhiteSpace(userCode))
-        {
-            return null;
-        }
-
-        var serializedItem = await _cache.GetStringAsync(GetKey(userCode));
-
-        if (!string.IsNullOrWhiteSpace(serializedItem))
-        {
-            return JsonSerializer.Deserialize<DevicePersistedGrant>(serializedItem);
-        }
-
-        return null;
     }
 
     private static string GetKey(string key)
