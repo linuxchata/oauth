@@ -37,6 +37,8 @@ public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration>
 
     public async Task Add(DevicePersistedGrant item)
     {
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
         var commandText = @"
             INSERT INTO DevicePersistedGrant
             (
@@ -77,6 +79,8 @@ public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration>
 
     public async Task Update(DevicePersistedGrant item, bool isAuthorized)
     {
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
         if (!string.IsNullOrWhiteSpace(item.DeviceCode))
         {
             var commandText = @"UPDATE DevicePersistedGrant SET IsAuthorized = @IsAuthorized WHERE DeviceCode = @DeviceCode";
@@ -92,6 +96,8 @@ public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration>
 
     public async Task Remove(DevicePersistedGrant item)
     {
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
         if (!string.IsNullOrWhiteSpace(item.DeviceCode))
         {
             var commandText = @"DELETE FROM DevicePersistedGrant WHERE DeviceCode = @DeviceCode";

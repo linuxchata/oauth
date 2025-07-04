@@ -9,6 +9,8 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
 {
     private const string Prefix = "device_grant_";
 
+    private static readonly SemaphoreSlim _operationLock = new(1, 1);
+
     private readonly IDistributedCache _cache = cache;
 
     public async Task<DevicePersistedGrant?> GetByUserCode(string? userCode)
@@ -42,6 +44,58 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
 
     public async Task Add(DevicePersistedGrant item)
     {
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
+        await _operationLock.WaitAsync();
+
+        try
+        {
+            await AddInternal(item);
+        }
+        finally
+        {
+            _operationLock.Release();
+        }
+    }
+
+    public async Task Update(DevicePersistedGrant item, bool isAuthorized)
+    {
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
+        await _operationLock.WaitAsync();
+
+        try
+        {
+            var adjustedItem = item with { };
+            adjustedItem.IsAuthorized = isAuthorized;
+
+            await RemoveInternal(item);
+            await AddInternal(adjustedItem);
+        }
+        finally
+        {
+            _operationLock.Release();
+        }
+    }
+
+    public async Task Remove(DevicePersistedGrant item)
+    {
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
+        await _operationLock.WaitAsync();
+
+        try
+        {
+            await RemoveInternal(item);
+        }
+        finally
+        {
+            _operationLock.Release();
+        }
+    }
+
+    private async Task AddInternal(DevicePersistedGrant item)
+    {
         var serializedItem = JsonSerializer.Serialize(item);
 
         var cacheEntryOptions = new DistributedCacheEntryOptions
@@ -53,16 +107,7 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
         await _cache.SetStringAsync(GetKey(item.DeviceCode), item.UserCode, cacheEntryOptions);
     }
 
-    public async Task Update(DevicePersistedGrant item, bool isAuthorized)
-    {
-        var adjustedItem = item with { };
-        adjustedItem.IsAuthorized = isAuthorized;
-
-        await Remove(item);
-        await Add(adjustedItem);
-    }
-
-    public async Task Remove(DevicePersistedGrant item)
+    private async Task RemoveInternal(DevicePersistedGrant item)
     {
         if (!string.IsNullOrWhiteSpace(item.UserCode))
         {

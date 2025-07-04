@@ -29,6 +29,8 @@ public sealed class RevokeTokenRepository(IOptions<SqLiteConfiguration> sqLiteCo
 
     public async Task Add(RevokeToken item)
     {
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
         var commandText = @"INSERT INTO RevokeToken (TokenId, RevokedAt) VALUES (@TokenId, @RevokedAt)";
         var sqliteParameters = new SqliteParameter[]
         {

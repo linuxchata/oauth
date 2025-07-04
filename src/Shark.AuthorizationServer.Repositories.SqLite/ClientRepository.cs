@@ -52,6 +52,8 @@ public sealed class ClientRepository(IOptions<SqLiteConfiguration> sqLiteConfigu
 
     public async Task Add(Client client)
     {
+        ArgumentNullException.ThrowIfNull(client, nameof(client));
+
         var commandText = @"
             INSERT INTO Client
             (

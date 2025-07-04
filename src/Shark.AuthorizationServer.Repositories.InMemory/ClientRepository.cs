@@ -30,6 +30,8 @@ public sealed class ClientRepository(IDistributedCache cache) : IClientRepositor
 
     public async Task Add(Client client)
     {
+        ArgumentNullException.ThrowIfNull(client, nameof(client));
+
         var serializedItem = JsonSerializer.Serialize(client);
 
         await _cache.SetStringAsync(GetKey(client.ClientId), serializedItem);

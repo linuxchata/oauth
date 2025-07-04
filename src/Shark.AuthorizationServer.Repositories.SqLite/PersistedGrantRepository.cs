@@ -38,6 +38,8 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
 
     public async Task Add(PersistedGrant item)
     {
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
+
         var commandText = @"
             INSERT INTO PersistedGrant
             (
@@ -87,13 +89,15 @@ public sealed class PersistedGrantRepository(IOptions<SqLiteConfiguration> sqLit
 
     public async Task Remove(PersistedGrant item)
     {
-        if (item != null && !string.IsNullOrWhiteSpace(item.Value))
+        if (item == null || string.IsNullOrWhiteSpace(item.Value))
         {
-            var commandText = @"DELETE FROM PersistedGrant WHERE Value = @Value";
-            var sqliteParameters = new SqliteParameter("@Value", item.Value);
-
-            await Execute(commandText, [sqliteParameters]);
+            return;
         }
+
+        var commandText = @"DELETE FROM PersistedGrant WHERE Value = @Value";
+        var sqliteParameters = new SqliteParameter("@Value", item.Value);
+
+        await Execute(commandText, [sqliteParameters]);
     }
 
     private async Task<PersistedGrant?> GetInternal(string commandText, SqliteParameter sqliteParameter)
