@@ -14,10 +14,6 @@ html {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-body {
-    margin-bottom: 20px;
-}
-
 .form-container {
     margin: 0;
 }
@@ -96,24 +92,16 @@ pre {
     white-space: nowrap;
 }
 
-.btn:hover {
-    opacity: 0.9;
-}
+    .btn:hover {
+        opacity: 0.9;
+    }
 
 .btn-primary {
-    background: #3498db;
+    background: #007bff;
 }
 
 .btn-success {
-    background: #2ecc71;
-}
-
-.btn-purple {
-    background: #9b59b6;
-}
-
-.btn-orange {
-    background: #e67e22;
+    background: #28a745;
 }
 
 .response-container {
@@ -132,7 +120,6 @@ pre {
 
 .response-item {
     padding: 10px;
-    border-bottom: 1px solid #eee;
 }
 
 .response-date {
