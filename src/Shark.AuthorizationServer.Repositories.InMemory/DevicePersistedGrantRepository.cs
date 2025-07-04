@@ -11,27 +11,34 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
 
     private readonly IDistributedCache _cache = cache;
 
-    public async Task<DevicePersistedGrant?> GetByUserCode(string? value)
+    public async Task<DevicePersistedGrant?> GetByUserCode(string? userCode)
     {
-        return await GetInternal(value);
+        return await GetByUserCodeInternal(userCode);
     }
 
-    public async Task<DevicePersistedGrant?> GetByDeviceCode(string? value)
+    public async Task<DevicePersistedGrant?> GetByDeviceCode(string? deviceCode)
     {
-        return await GetInternal(value);
+        if (string.IsNullOrWhiteSpace(deviceCode))
+        {
+            return null;
+        }
+
+        var userCode = await _cache.GetStringAsync(GetKey(deviceCode));
+
+        return await GetByUserCodeInternal(userCode);
     }
 
     public async Task Add(DevicePersistedGrant item)
     {
+        var serializedItem = JsonSerializer.Serialize(item);
+
         var cacheEntryOptions = new DistributedCacheEntryOptions
         {
             AbsoluteExpiration = item.CreatedDate.AddSeconds(item.ExpiredIn),
         };
 
-        var serializedItem = JsonSerializer.Serialize(item);
-
         await _cache.SetStringAsync(GetKey(item.UserCode), serializedItem, cacheEntryOptions);
-        await _cache.SetStringAsync(GetKey(item.DeviceCode), serializedItem, cacheEntryOptions);
+        await _cache.SetStringAsync(GetKey(item.DeviceCode), item.UserCode, cacheEntryOptions);
     }
 
     public async Task Update(DevicePersistedGrant item, bool isAuthorized)
@@ -56,14 +63,14 @@ public sealed class DevicePersistedGrantRepository(IDistributedCache cache) : ID
         }
     }
 
-    private async Task<DevicePersistedGrant?> GetInternal(string? value)
+    private async Task<DevicePersistedGrant?> GetByUserCodeInternal(string? userCode)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(userCode))
         {
             return null;
         }
 
-        var serializedItem = await _cache.GetStringAsync(GetKey(value));
+        var serializedItem = await _cache.GetStringAsync(GetKey(userCode));
 
         if (!string.IsNullOrWhiteSpace(serializedItem))
         {

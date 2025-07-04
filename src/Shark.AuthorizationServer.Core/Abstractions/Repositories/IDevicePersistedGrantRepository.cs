@@ -4,9 +4,9 @@ namespace Shark.AuthorizationServer.Core.Abstractions.Repositories;
 
 public interface IDevicePersistedGrantRepository
 {
-    Task<DevicePersistedGrant?> GetByUserCode(string? value);
+    Task<DevicePersistedGrant?> GetByUserCode(string? userCode);
 
-    Task<DevicePersistedGrant?> GetByDeviceCode(string? value);
+    Task<DevicePersistedGrant?> GetByDeviceCode(string? deviceCode);
 
     Task Add(DevicePersistedGrant item);
 
