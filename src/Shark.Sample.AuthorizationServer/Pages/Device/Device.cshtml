@@ -15,7 +15,7 @@
                 <div class="form-group">
                     @Html.LabelFor(m => @Model.UserCode, "User Code", new { @class = "label" })
                     @Html.TextBoxFor(m => @Model.UserCode,
-                        new { @class = "input", placeholder = "Enter user code", required = "required", maxlength = 6 })
+                        new { @class = "input", required = "required", autofocus = true, maxlength = 6 })
                     <br />
                     <span asp-validation-for="UserCode" class="text-danger"></span>
                 </div>

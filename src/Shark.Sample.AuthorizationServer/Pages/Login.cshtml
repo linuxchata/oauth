@@ -13,9 +13,9 @@
         <div class="form">
             <form method="post">
                 <div class="form-group">
-                    @Html.LabelFor(m => @Model.UserName, "Name", new { @class = "label" })
+                    @Html.LabelFor(m => @Model.UserName, "Username", new { @class = "label" })
                     @Html.TextBoxFor(m => @Model.UserName,
-                        new { @class = "input", placeholder = "Enter your name", required = "required" })
+                        new { @class = "input", required = "required", maxlength = 32 })
                 </div>
 
                 <div class="login-scopes">
