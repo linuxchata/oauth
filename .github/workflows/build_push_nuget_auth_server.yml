@@ -1,4 +1,4 @@
-name: Build OAuth Server NuGet package
+name: OAuth Server NuGet
 
 on:
   push:
