@@ -1,3 +1,9 @@
+﻿:root {
+    --color-primary: #8a4600;
+    --color-border: #ccc;
+    --color-text: #34495e;
+}
+
 html {
     position: relative;
     min-height: 100%;
@@ -29,7 +35,7 @@ body {
 }
 
 input[type="submit"] {
-    background-color: orange;
+    background-color: var(--color-primary);
     color: white;
     border: none;
     padding: 8px 20px;
@@ -53,7 +59,6 @@ input[type="submit"] {
     cursor: pointer;
     transition: all 0.3s ease;
     margin: 1.5rem 0 0 0;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
@@ -69,18 +74,17 @@ input[type="submit"] {
 
 
 input[type="text"] {
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
+    background-color: white;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 10px;
     font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
     input[type="text"]:focus {
-        border-color: orange;
-        box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+        border-color: var(--color-primary);
+        box-shadow: none;
         outline: none;
     }
 
@@ -90,7 +94,7 @@ input[type="checkbox"] {
     appearance: none;
     width: 20px;
     height: 20px;
-    border: 2px solid #ccc;
+    border: 2px solid var(--color-border);
     border-radius: 4px;
     outline: none;
     cursor: pointer;
@@ -98,15 +102,15 @@ input[type="checkbox"] {
 }
 
     input[type="checkbox"]:checked {
-        background-color: orange;
-        border-color: orange;
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
     }
 
         input[type="checkbox"]:checked::before {
             content: "";
             position: absolute;
             left: 5px;
-            top: 3px;
+            top: 1px;
             width: 6px;
             height: 10px;
             border: solid white;
@@ -162,7 +166,7 @@ input[type="checkbox"] {
 }
 
 .page-subtitle {
-    color: #34495e;
+    color: var(--color-text);
     font-size: 1.2rem;
     margin-bottom: 1rem;
 }
@@ -201,7 +205,7 @@ input[type="checkbox"] {
 }
 
 .navbar-nav .nav-link {
-    color: #34495e !important;
+    color: var(--color-text) !important;
     font-weight: 500;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -209,8 +213,7 @@ input[type="checkbox"] {
 }
 
     .navbar-nav .nav-link:hover {
-        color: #3498db !important;
-        background-color: rgba(52, 152, 219, 0.1);
+        color: black !important;
     }
 
 .navbar-toggler {
@@ -250,11 +253,11 @@ input[type="checkbox"] {
     margin: 2rem 0;
     padding: 1.5rem;
     background: #f8f9fa;
-    border-left: 4px solid #3498db;
+    border-left: 4px solid var(--color-primary);
 }
 
 .auth-welcome {
-    color: #34495e;
+    color: var(--color-text);
     font-size: 1.2rem;
     line-height: 1.6;
     margin-bottom: 1rem;
@@ -308,8 +311,8 @@ input[type="checkbox"] {
     margin: 1.5rem 0;
     padding: 1rem;
     background: white;
-    border-radius: 10px;
-    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    border: 1px solid var(--color-border)
 }
 
 .login-scopes-title {
