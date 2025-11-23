@@ -1,8 +1,6 @@
 name: Scan OAWSP
 
 on:
-  schedule:
-    - cron:  '00 4 * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,7 +10,7 @@ jobs:
       issues: write
     steps:
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.11.0
+        uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c #v0.13.0
         with:
           target: 'https://app-auth-dev-01.azurewebsites.net/'
           allow_issue_writing: false

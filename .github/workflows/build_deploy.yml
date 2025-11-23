@@ -51,7 +51,7 @@ jobs:
           name: .net-app
 
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 #v2.3.0
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_25B6BF5098E742C0A6A21DC77D35A038 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7137EF529D2E4E50A1EFE68BD5652E76 }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@122b7ec46017e53a3f71e3a027d67550a1641f5e #v2.2.17
         with:
           app-name: 'app-auth-dev-01'
           slot-name: 'Production'
