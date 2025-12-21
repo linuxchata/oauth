@@ -9,6 +9,9 @@ namespace Shark.AuthorizationServer.Repositories.SqLite;
 public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration> sqLiteConfiguration) :
     BaseSqLiteRepository(sqLiteConfiguration), IDevicePersistedGrantRepository
 {
+    private const string UserCodeParameterName = "@UserCode";
+    private const string DeviceCodeParameterName = "@DeviceCode";
+
     public async Task<DevicePersistedGrant?> GetByUserCode(string? userCode)
     {
         if (string.IsNullOrWhiteSpace(userCode))
@@ -17,7 +20,7 @@ public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration>
         }
 
         var commandText = @"SELECT * FROM DevicePersistedGrant WHERE UserCode = @UserCode";
-        var sqliteParameter = new SqliteParameter("@UserCode", userCode);
+        var sqliteParameter = new SqliteParameter(UserCodeParameterName, userCode);
 
         return await GetInternal(commandText, sqliteParameter);
     }
@@ -30,7 +33,7 @@ public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration>
         }
 
         var commandText = @"SELECT * FROM DevicePersistedGrant WHERE DeviceCode = @DeviceCode";
-        var sqliteParameter = new SqliteParameter("@DeviceCode", deviceCode);
+        var sqliteParameter = new SqliteParameter(DeviceCodeParameterName, deviceCode);
 
         return await GetInternal(commandText, sqliteParameter);
     }
@@ -87,7 +90,7 @@ public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration>
             var sqliteParameters = new SqliteParameter[]
             {
                 new("@IsAuthorized", isAuthorized),
-                new("@DeviceCode", item.DeviceCode),
+                new(DeviceCodeParameterName, item.DeviceCode),
             };
 
             await Execute(commandText, sqliteParameters);
@@ -101,7 +104,7 @@ public sealed class DevicePersistedGrantRepository(IOptions<SqLiteConfiguration>
         if (!string.IsNullOrWhiteSpace(item.DeviceCode))
         {
             var commandText = @"DELETE FROM DevicePersistedGrant WHERE DeviceCode = @DeviceCode";
-            var sqliteParameters = new SqliteParameter("@DeviceCode", item.DeviceCode);
+            var sqliteParameters = new SqliteParameter(DeviceCodeParameterName, item.DeviceCode);
 
             await Execute(commandText, [sqliteParameters]);
         }
