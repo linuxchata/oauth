@@ -42,7 +42,7 @@ public abstract class BaseSqLiteRepository(IOptions<SqLiteConfiguration> sqLiteC
         await command.ExecuteNonQueryAsync();
     }
 
-    protected int? GetNullableInteger(object? value)
+    protected static int? GetNullableInteger(object? value)
     {
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
         {
@@ -52,7 +52,7 @@ public abstract class BaseSqLiteRepository(IOptions<SqLiteConfiguration> sqLiteC
         return Convert.ToInt32(value);
     }
 
-    protected bool? GetNullableBoolean(object? value)
+    protected static bool? GetNullableBoolean(object? value)
     {
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
         {
@@ -62,17 +62,17 @@ public abstract class BaseSqLiteRepository(IOptions<SqLiteConfiguration> sqLiteC
         return Convert.ToBoolean(value);
     }
 
-    protected object SetNullableValue(string? value)
+    protected static object SetNullableValue(string? value)
     {
         return !string.IsNullOrWhiteSpace(value) ? value : DBNull.Value;
     }
 
-    protected object SetNullableValue(int? value)
+    protected static object SetNullableValue(int? value)
     {
         return value.HasValue ? value : DBNull.Value;
     }
 
-    protected object SetNullableValue(bool? value)
+    protected static object SetNullableValue(bool? value)
     {
         return value.HasValue ? value : DBNull.Value;
     }
