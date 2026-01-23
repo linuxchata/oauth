@@ -52,5 +52,5 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"linuxchata_oauth" /o:"linuxchata" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build ./src/Shark.OAuth2.0.sln
+          dotnet build ./src/Shark.OAuth2.0.slnx
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"

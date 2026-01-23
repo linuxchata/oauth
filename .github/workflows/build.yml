@@ -26,10 +26,10 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore ./src/Shark.OAuth2.0.sln
+      run: dotnet restore ./src/Shark.OAuth2.0.slnx
 
     - name: Build with dotnet
-      run: dotnet build ./src/Shark.OAuth2.0.sln --configuration Release --no-restore
+      run: dotnet build ./src/Shark.OAuth2.0.slnx --configuration Release --no-restore
 
     - name: Test with dotnet
-      run: dotnet test ./src/Shark.OAuth2.0.sln --configuration Release --no-build --verbosity normal
+      run: dotnet test ./src/Shark.OAuth2.0.slnx --configuration Release --no-build --verbosity normal

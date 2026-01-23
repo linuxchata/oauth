@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="../tests/Shark.AuthorizationServer.Core.Tests/Shark.AuthorizationServer.Core.Tests.csproj" />
+  </Folder>
+  <Project Path="Shark.AuthorizationServer.Common/Shark.AuthorizationServer.Common.csproj" />
+  <Project Path="Shark.AuthorizationServer.Core/Shark.AuthorizationServer.Core.csproj" />
+  <Project Path="Shark.AuthorizationServer.Domain/Shark.AuthorizationServer.Domain.csproj" />
+  <Project Path="Shark.AuthorizationServer.DomainServices/Shark.AuthorizationServer.DomainServices.csproj" />
+  <Project Path="Shark.AuthorizationServer.Repositories.InMemory/Shark.AuthorizationServer.Repositories.InMemory.csproj" />
+  <Project Path="Shark.AuthorizationServer.Repositories.SqLite/Shark.AuthorizationServer.Repositories.SqLite.csproj" />
+  <Project Path="Shark.AuthorizationServer.Sdk/Shark.AuthorizationServer.Sdk.csproj" />
+  <Project Path="Shark.AuthorizationServer/Shark.AuthorizationServer.csproj" />
+  <Project Path="Shark.Sample.AuthorizationServer/Shark.Sample.AuthorizationServer.csproj" />
+  <Project Path="Shark.Sample.Client/Shark.Sample.Client.csproj" />
+  <Project Path="Shark.Sample.ProtectedResource/Shark.Sample.ProtectedResource.csproj" />
+</Solution>
