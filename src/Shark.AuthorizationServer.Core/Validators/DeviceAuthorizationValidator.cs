@@ -8,6 +8,7 @@ using Shark.AuthorizationServer.Core.Responses.DeviceAuthorize;
 using Shark.AuthorizationServer.Domain;
 
 namespace Shark.AuthorizationServer.Core.Validators;
+
 public sealed class DeviceAuthorizationValidator(
     ILogger<DeviceAuthorizationValidator> logger) :
     BaseValidator<DeviceAuthorizationBadRequestResponse>,
