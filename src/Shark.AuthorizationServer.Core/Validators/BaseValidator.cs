@@ -3,7 +3,7 @@
 public abstract class BaseValidator<T>
     where T : class
 {
-    protected T? CheckAll(params T?[] responses)
+    protected static T? CheckAll(params T?[] responses)
     {
         foreach (var response in responses)
         {
