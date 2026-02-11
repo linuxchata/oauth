@@ -42,7 +42,16 @@ public static class ApplicationBuilderExtentions
             .AddAuthentication(Scheme.Bearer)
             .AddScheme<BearerTokenAuthenticationOptions, BearerTokenAuthenticationHandler>(
                 Scheme.Bearer,
-                options => options = bearerTokenAuthenticationOptions);
+                options =>
+                {
+                    options.AuthorizationServerUri = bearerTokenAuthenticationOptions.AuthorizationServerUri;
+                    options.Issuer = bearerTokenAuthenticationOptions.Issuer;
+                    options.ValidateIssuer = bearerTokenAuthenticationOptions.ValidateIssuer;
+                    options.Audience = bearerTokenAuthenticationOptions.Audience;
+                    options.ValidateAudience = bearerTokenAuthenticationOptions.ValidateAudience;
+                    options.TokenIntrospection = bearerTokenAuthenticationOptions.TokenIntrospection;
+                    options.RetryConfiguration = bearerTokenAuthenticationOptions.RetryConfiguration;
+                });
 
         return services;
     }
