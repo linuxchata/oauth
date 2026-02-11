@@ -1,5 +1,7 @@
 ﻿:root {
-    --color-primary: #8a4600;
+    --color-primary: #fcd34d;
+    --color-primary-hover: #fbbd24;
+    --color-primary-text: #1f2937;
     --color-border: #ccc;
     --color-text: #34495e;
 }
@@ -36,15 +38,15 @@ body {
 
 input[type="submit"] {
     background-color: var(--color-primary);
-    color: white;
+    color: var(--color-primary-text);
     border: none;
-    padding: 8px 20px;
+    padding: 10px 30px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
     input[type="submit"]:hover {
-        background-color: darkorange;
+        background-color: var(--color-primary-hover);
     }
 
 
@@ -54,12 +56,11 @@ input[type="submit"] {
     border: none;
     padding: 1rem 2.5rem;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: 16px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     margin: 1.5rem 0 0 0;
-    letter-spacing: 1px;
 }
 
     .button:hover {
@@ -94,7 +95,7 @@ input[type="checkbox"] {
     appearance: none;
     width: 20px;
     height: 20px;
-    border: 2px solid var(--color-border);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     outline: none;
     cursor: pointer;
@@ -109,11 +110,11 @@ input[type="checkbox"] {
         input[type="checkbox"]:checked::before {
             content: "";
             position: absolute;
-            left: 5px;
-            top: 1px;
+            left: 6px;
+            top: 2px;
             width: 6px;
             height: 10px;
-            border: solid white;
+            border: solid var(--color-primary-text);
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
@@ -127,10 +128,6 @@ input[type="checkbox"] {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
-    .checkbox-label:hover {
-        background: #e9ecef;
-    }
 
 .label {
     display: block;
@@ -328,4 +325,12 @@ input[type="checkbox"] {
     gap: 1rem;
     justify-content: center;
     margin-top: 1rem;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
