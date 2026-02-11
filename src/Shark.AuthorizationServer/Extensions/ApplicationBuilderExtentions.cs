@@ -48,15 +48,6 @@ public static class ApplicationBuilderExtentions
         services.Configure<AuthorizationServerSecurityConfiguration>(
             configuration.GetSection(AuthorizationServerSecurityConfiguration.Name));
 
-        var authorizationServerConfiguration = new AuthorizationServerConfiguration();
-        configuration.GetSection(AuthorizationServerConfiguration.Name).Bind(authorizationServerConfiguration);
-
-        var basicAuthenticationOptions = new BasicAuthenticationOptions();
-        configuration.GetSection(BasicAuthenticationOptions.Name).Bind(basicAuthenticationOptions);
-
-        var clientTokenAuthenticationOptions = new ClientTokenAuthenticationOptions();
-        configuration.GetSection(ClientTokenAuthenticationOptions.Name).Bind(clientTokenAuthenticationOptions);
-
         // Authentication session (cookie).
         // Cookies scheme is used to extract user identity from authentication cookies.
         // However, None scheme is used to support non-browser-based flows (without user).
@@ -80,7 +71,7 @@ public static class ApplicationBuilderExtentions
             .AddAuthentication(Scheme.Basic)
             .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(
                 Scheme.Basic,
-                options => options = basicAuthenticationOptions);
+                options => { });
 
         services
             .AddAuthorizationBuilder()
@@ -92,7 +83,7 @@ public static class ApplicationBuilderExtentions
             .AddAuthentication(Scheme.ClientToken)
             .AddScheme<ClientTokenAuthenticationOptions, ClientTokenAuthenticationHandler>(
                 Scheme.ClientToken,
-                options => options = clientTokenAuthenticationOptions);
+                options => { });
 
         // Bearer token authentication.
         services.AddTransient<ISecurityKeyProvider, SecurityKeyLocalProvider>();
