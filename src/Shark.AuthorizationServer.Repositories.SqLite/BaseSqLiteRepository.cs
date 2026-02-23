@@ -32,7 +32,7 @@ public abstract class BaseSqLiteRepository(IOptions<SqLiteConfiguration> sqLiteC
 
     protected async Task Execute(string commandText, SqliteParameter[] sqliteParameters)
     {
-        using var connection = new SqliteConnection(@"Data Source=C:\src\oauth\data\oauth.db");
+        using var connection = new SqliteConnection(_sqLiteConfiguration.ConnectionString);
         await connection.OpenAsync();
 
         var command = connection.CreateCommand();
