@@ -1,0 +1,29 @@
+info:
+  name: Device Flow Token
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{HostUri}}/token/"
+  body:
+    type: form-urlencoded
+    data:
+      - name: grant_type
+        value: urn:ietf:params:oauth:grant-type:device_code
+      - name: client_id
+        value: "{{DeviceClientId}}"
+      - name: scope
+        value: device_auto
+      - name: device_code
+        value: "{{DeviceCode}}"
+  auth:
+    type: basic
+    username: "{{DeviceClientId}}"
+    password: "{{DeviceClientSecretPermanent}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

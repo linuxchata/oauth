@@ -1,0 +1,50 @@
+info:
+  name: Refresh Token Flow
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{HostUri}}/token/"
+  body:
+    type: form-urlencoded
+    data:
+      - name: grant_type
+        value: refresh_token
+      - name: client_id
+        value: "{{ClientIdPermanent}}"
+      - name: refresh_token
+        value: "{{RefreshToken}}"
+      - name: redirect_uri
+        value: https://oauthdebugger.com/debug
+      - name: scope
+        value: offline_access read add update delete openid profile email address phone
+  auth:
+    type: basic
+    username: "{{ClientIdPermanent}}"
+    password: "{{ClientSecretPermanent}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "// Parse the JSON response body\r
+
+        let responseData = res.getBody();\r
+
+        \r
+
+        // Set the 'RefreshToken' from the response as a collection variable\r
+
+        bru.setVar(\"RefreshToken\", responseData.refresh_token);\r
+
+        \r
+
+        // Set the 'AccessToken' from the response as a collection variable\r
+
+        bru.setVar(\"AccessToken\", responseData.access_token);"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

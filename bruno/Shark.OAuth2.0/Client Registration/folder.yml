@@ -1,0 +1,7 @@
+info:
+  name: Client Registration
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit

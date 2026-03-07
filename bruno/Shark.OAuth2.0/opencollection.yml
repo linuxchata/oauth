@@ -1,0 +1,48 @@
+opencollection: 1.0.0
+
+info:
+  name: Shark.OAuth2.0
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  variables:
+    - name: HostUri
+      value: https://localhost:7000
+    - name: ClientIdPermanent
+      value: client-1
+    - name: ClientSecretPermanent
+      value: client-secret-01
+    - name: DeviceClientId
+      value: device-client-1
+    - name: DeviceClientSecretPermanent
+      value: client-secret-02
+    - name: ClientId
+      value: f8cc510d-2d65-4f36-b188-1e9f5e0c61ed
+    - name: RegistrationAccessToken
+      value: JwYLZwXxZsDhqyaUoQxoDiDYxFEsuaHqxnsrCLyJzO
+    - name: State
+      value: 448193cf742745e4a71213d54a11aea1
+    - name: AuthorizeCode
+      value: ""
+    - name: AccessToken
+      value: ""
+    - name: RefreshToken
+      value: ""
+    - name: DeviceCode
+      value: ""
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

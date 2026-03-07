@@ -1,0 +1,44 @@
+info:
+  name: Token
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{HostUri}}/token/"
+  body:
+    type: form-urlencoded
+    data:
+      - name: grant_type
+        value: authorization_code
+      - name: client_id
+        value: "{{ClientIdPermanent}}"
+      - name: code
+        value: "{{AuthorizeCode}}"
+      - name: redirect_uri
+        value: https://oauthdebugger.com/debug
+      - name: scope
+        value: offline_access read add update delete openid profile email address phone
+  auth:
+    type: basic
+    username: "{{ClientIdPermanent}}"
+    password: "{{ClientSecretPermanent}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        // Parse the JSON response body
+        let responseData = res.getBody();
+
+        // Set the 'RefreshToken' from the response as a collection variable
+        bru.setVar("RefreshToken", responseData.refresh_token);
+
+        // Set the 'AccessToken' from the response as a collection variable
+        bru.setVar("AccessToken", responseData.access_token);
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

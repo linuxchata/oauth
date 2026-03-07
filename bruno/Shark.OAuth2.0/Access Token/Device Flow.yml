@@ -1,0 +1,39 @@
+info:
+  name: Device Flow
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{HostUri}}/deviceauthorization"
+  headers:
+    - name: Content-Type
+      value: application/x-www-form-urlencoded
+  body:
+    type: form-urlencoded
+    data:
+      - name: client_id
+        value: "{{DeviceClientId}}"
+      - name: client_secret
+        value: "{{DeviceClientSecretPermanent}}"
+      - name: scope
+        value: device_auto
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "// Parse the JSON response body\r
+
+        let responseData = res.getBody();\r
+
+        \r
+
+        // Set the 'RefDeviceCodereshToken' from the response as a collection variable\r
+
+        bru.setVar(\"DeviceCode\", responseData.device_code);"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

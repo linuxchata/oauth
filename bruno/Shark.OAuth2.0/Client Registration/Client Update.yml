@@ -1,0 +1,47 @@
+info:
+  name: Client Update
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{HostUri}}/register/{{ClientId}}"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: "{\r
+
+      \  \"redirect_uris\": [\r
+
+      \    \"https://localhost:9001/callback\",\r
+
+      \    \"https://localhost:9001/callback_\"\r
+
+      \  ],\r
+
+      \  \"token_endpoint_auth_method\": \"client_secret_basic\",\r
+
+      \  \"grant_types\": \"authorization_code\",\r
+
+      \  \"response_types\": \"code\",\r
+
+      \  \"client_name\": \"client-2\",\r
+
+      \  \"client_id\": \"{{ClientId}}\",\r
+
+      \  \"scope\": \"read add update delete\",\r
+
+      \  \"audience\": \"http://protected-resource-pp.com\"\r
+
+      }"
+  auth:
+    type: bearer
+    token: "{{RegistrationAccessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
