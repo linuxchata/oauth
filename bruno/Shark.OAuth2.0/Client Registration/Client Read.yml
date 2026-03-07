@@ -1,0 +1,17 @@
+info:
+  name: Client Read
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{HostUri}}/register/{{ClientId}}"
+  auth:
+    type: bearer
+    token: "{{RegistrationAccessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

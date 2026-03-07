@@ -1,0 +1,25 @@
+info:
+  name: Revoke Refresh Token
+  type: http
+  seq: 10
+
+http:
+  method: POST
+  url: "{{HostUri}}/revoke"
+  body:
+    type: form-urlencoded
+    data:
+      - name: token
+        value: "{{RefreshToken}}"
+      - name: token_hint
+        value: refresh_token
+  auth:
+    type: basic
+    username: "{{ClientIdPermanent}}"
+    password: "{{ClientSecretPermanent}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

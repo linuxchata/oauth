@@ -1,0 +1,17 @@
+info:
+  name: Client Delete
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{HostUri}}/register/{{ClientId}}"
+  auth:
+    type: bearer
+    token: "{{RegistrationAccessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,59 @@
+info:
+  name: Client Register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{HostUri}}/register"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: "{\r
+
+      \  \"redirect_uris\": [\r
+
+      \    \"https://localhost:9001/callback\"\r
+
+      \  ],\r
+
+      \  \"token_endpoint_auth_method\": \"client_secret_basic\",\r
+
+      \  \"grant_types\": \"authorization_code\",\r
+
+      \  \"response_types\": \"code\",\r
+
+      \  \"client_name\": \"client-2\",\r
+
+      \  \"scope\": \"read\",\r
+
+      \  \"audience\": \"http://protected-resource-dev.com\"\r
+
+      }"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "// Parse the JSON response body\r
+
+        let responseData = res.getBody();\r
+
+        \r
+
+        // Set the 'ClientId' from the response as a collection variable\r
+
+        bru.setVar(\"ClientId\", responseData.client_id);\r
+
+        \r
+
+        // Set the 'ClientId' from the response as a collection variable\r
+
+        bru.setVar(\"RegistrationAccessToken\", responseData.registration_access_token);"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

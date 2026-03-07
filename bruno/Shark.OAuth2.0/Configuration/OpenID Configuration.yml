@@ -1,0 +1,14 @@
+info:
+  name: OpenID Configuration
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{HostUri}}/.well-known/openid-configuration"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

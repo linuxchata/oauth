@@ -1,0 +1,17 @@
+info:
+  name: User Info Post
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{HostUri}}/userinfo"
+  auth:
+    type: bearer
+    token: ""
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

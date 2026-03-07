@@ -1,0 +1,41 @@
+info:
+  name: Authorize
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{HostUri}}/authorize/?response_type=code&client_id={{ClientIdPermanent}}&state={{State}}&redirect_uri=https://oauthdebugger.com/debug&scope=offline_access read add update delete openid profile email address phone"
+  params:
+    - name: response_type
+      value: code
+      type: query
+    - name: client_id
+      value: "{{ClientIdPermanent}}"
+      type: query
+    - name: state
+      value: "{{State}}"
+      type: query
+    - name: redirect_uri
+      value: https://oauthdebugger.com/debug
+      type: query
+    - name: scope
+      value: offline_access read add update delete openid profile email address phone
+      type: query
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const redirectUrl = res.getHeader('Location');
+        if (redirectUrl != null)
+        {
+          const urlObj = new URL(redirectUrl);
+          bru.setVar("AuthorizeCode", urlObj.searchParams.get('code'));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

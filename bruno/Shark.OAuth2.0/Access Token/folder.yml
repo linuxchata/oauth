@@ -1,0 +1,25 @@
+info:
+  name: Access Token
+  type: folder
+  seq: 1
+
+request:
+  auth:
+    type: oauth2
+    flow: authorization_code
+    authorizationUrl: https://localhost:7000/login?returnurl=authorize%2f%3fresponse_type%3dcode%26client_id%3dclient-1%26redirect_uri%3dhttps%253a%252f%252flocalhost%253a9001%252fcallback%26state%3dd743f82481cb406b91b8ec540f2d53e0
+    accessTokenUrl: https://localhost:7000/token
+    callbackUrl: https://localhost:9001/callback
+    credentials:
+      clientId: "{{ClientIdPermanent}}"
+      clientSecret: "{{ClientSecretPermanent}}"
+      placement: basic_auth_header
+    state: da150dde94be049ee86e8adf876f4b426
+    pkce:
+      disabled: true
+    tokenConfig:
+      placement:
+        header: ""
+    settings:
+      autoFetchToken: true
+      autoRefreshToken: false
