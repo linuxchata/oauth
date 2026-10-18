@@ -53,13 +53,13 @@ public class AuthorizeApplicationServiceTests
     }
 
     [Test]
-    public void Execute_WhenRequestIsNull_ThrowsArgumentNullException()
+    public async Task Execute_WhenRequestIsNull_ThrowsArgumentNullException()
     {
         // Arrange
         AuthorizeInternalRequest? request = null;
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(async () => await _sut.Execute(request!, _userIdentity));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await _sut.Execute(request!, _userIdentity));
     }
 
     [Test]
@@ -115,7 +115,7 @@ public class AuthorizeApplicationServiceTests
     }
 
     [Test]
-    public void Execute_WhenResponseTypeIsUnsupported_ThrowsInvalidOperationException()
+    public async Task Execute_WhenResponseTypeIsUnsupported_ThrowsInvalidOperationException()
     {
         // Arrange
         var request = new AuthorizeInternalRequest
@@ -136,8 +136,8 @@ public class AuthorizeApplicationServiceTests
           .Returns((AuthorizeInternalBadRequestResponse)null!);
 
         // Act & Assert
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await _sut.Execute(request, _userIdentity));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _sut.Execute(request, _userIdentity));
 
         Assert.That(exception!.Message, Is.EqualTo("Unsupported response type unsupported_type"));
     }

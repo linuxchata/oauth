@@ -8,7 +8,7 @@ public static class CodeChallengeMethod
 
     public const string Sha256 = "S256";
 
-    public readonly static ImmutableHashSet<string> Supported =
+    public static readonly ImmutableHashSet<string> Supported =
     [
         Plain,
         Sha256,

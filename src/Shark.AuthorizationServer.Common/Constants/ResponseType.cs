@@ -8,7 +8,7 @@ public static class ResponseType
 
     public const string Token = "token";
 
-    public readonly static ImmutableHashSet<string> Supported =
+    public static readonly ImmutableHashSet<string> Supported =
     [
         Code,
         Token,
