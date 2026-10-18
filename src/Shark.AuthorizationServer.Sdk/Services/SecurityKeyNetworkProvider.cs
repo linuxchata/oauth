@@ -51,7 +51,7 @@ internal sealed class SecurityKeyNetworkProvider(
         if (!string.IsNullOrWhiteSpace(configurationJwksResponse.X509CertificateChain))
         {
             var certificateBytes = Convert.FromBase64String(configurationJwksResponse.X509CertificateChain!);
-            var certificate = new X509Certificate2(certificateBytes);
+            var certificate = X509CertificateLoader.LoadCertificate(certificateBytes);
 
             var x509SecurityKey = new X509SecurityKey(certificate)
             {

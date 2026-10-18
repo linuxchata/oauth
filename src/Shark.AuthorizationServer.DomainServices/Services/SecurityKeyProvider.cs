@@ -38,7 +38,7 @@ public static class SecurityKeyProvider
     {
         ArgumentNullException.ThrowIfNull(certificatePath, nameof(certificatePath));
 
-        var certificate = new X509Certificate2(certificatePath);
+        var certificate = X509CertificateLoader.LoadCertificateFromFile(certificatePath);
 
         if (certificate.HasPrivateKey)
         {
@@ -53,7 +53,7 @@ public static class SecurityKeyProvider
         ArgumentNullException.ThrowIfNull(certificatePath, nameof(certificatePath));
         ArgumentNullException.ThrowIfNull(certificatePassword, nameof(certificatePassword));
 
-        var certificate = new X509Certificate2(certificatePath, certificatePassword);
+        var certificate = X509CertificateLoader.LoadPkcs12FromFile(certificatePath, certificatePassword);
 
         if (!certificate.HasPrivateKey)
         {

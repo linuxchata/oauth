@@ -16,7 +16,7 @@ public static class GrantType
 
     public const string DeviceCode = "urn:ietf:params:oauth:grant-type:device_code";
 
-    public readonly static ImmutableHashSet<string> Allowed =
+    public static readonly ImmutableHashSet<string> Allowed =
     [
         AuthorizationCode,
         RefreshToken,
@@ -26,7 +26,7 @@ public static class GrantType
         DeviceCode,
     ];
 
-    public readonly static ImmutableArray<string> Supported =
+    public static readonly ImmutableArray<string> Supported =
     [
         AuthorizationCode,
         RefreshToken,

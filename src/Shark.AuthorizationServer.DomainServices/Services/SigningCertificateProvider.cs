@@ -9,7 +9,7 @@ public static class SigningCertificateProvider
     {
         ArgumentNullException.ThrowIfNull(certificatePath, nameof(certificatePath));
 
-        var certificate = new X509Certificate2(certificatePath);
+        var certificate = X509CertificateLoader.LoadCertificateFromFile(certificatePath);
 
         return new SigningCertificate
         {

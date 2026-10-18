@@ -18,7 +18,7 @@ public sealed class BearerTokenAuthenticationHandler(
 {
     private readonly IBearerTokenHandler _bearerTokenHandler = bearerTokenHandler;
 
-    protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var accessToken = _bearerTokenHandler.GetAccessToken(Request.Headers);
         if (string.IsNullOrWhiteSpace(accessToken))

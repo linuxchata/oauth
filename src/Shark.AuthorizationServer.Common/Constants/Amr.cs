@@ -46,7 +46,7 @@ public static class Amr
 
     public const string Custom = "custom";
 
-    public readonly static ImmutableHashSet<string> Supported =
+    public static readonly ImmutableHashSet<string> Supported =
     [
         Face, Fpt, Geo, Hwk, Iris, Kba, Mca, Mfa, Otp, Pin, Pwd, Rba, Retina, Sc, Sms, Swk, Tel, User, Vbm, Wia,
     ];
