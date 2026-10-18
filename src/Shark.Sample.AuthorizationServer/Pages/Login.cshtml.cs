@@ -41,12 +41,17 @@ public sealed class LoginModel(
         return Page();
     }
 
-    public async Task OnPost(string returnUrl, string userName, string[] selectedScopes)
+    public async Task<IActionResult> OnPost(string returnUrl, string userName, string[] selectedScopes)
     {
+        if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+        {
+            return RedirectToPage("Error");
+        }
+
         await HttpContext.SignInAsync(userName, Amr.Pwd);
 
         var authorizeEndpointUrl = _redirectionService.BuildAuthorizeUrl(returnUrl, selectedScopes);
 
-        HttpContext.Response.Redirect(authorizeEndpointUrl);
+        return Redirect(authorizeEndpointUrl);
     }
 }
